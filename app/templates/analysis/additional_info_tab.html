@@ -1,0 +1,94 @@
+{% block additional_info %}
+    <div class="tab-pane fade" id="additionalinfo">
+        <div class="container" style="padding-top: 14px;">
+            <!-- File identification ############################################## -->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-question-sign"></span><strong style="font-size:14px">
+                    File Identification</strong>
+                </div>
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-condensed">
+                        <tr>
+                            <td><strong>MD5</strong></td>
+                            <td>{{ sample.md5 }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SHA1</strong></td>
+                            <td>{{ sample.sha1 }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SHA256</strong></td>
+                            <td>{{ sample.sha256 }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ssdeep</strong></td>
+                            <td>{{ sample.ssdeep }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>File size</strong></td>
+                            <td>{{ sample.filesize | filesizeformat }}</td>
+                            <!--  | filesizeformat -->
+                        </tr>
+                        <tr>
+                            <td><strong>Mime type</strong></td>
+                            <td>{{ sample.filemime }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Magic literal</strong></td>
+                            <td>{{ sample.filetype }}</td>
+                        </tr>
+                        {% if trid %}
+                            <tr>
+                                <td><strong>TrID</strong></td>
+                                <td>
+                                    <ul>
+                                        {% for id in trid %}
+                                            <li>{{ id }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+            <!-- PE sections ############################################## -->
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-hdd"></span><strong style="font-size:14px;margin:5px 0"> Malice
+                    metadata</strong></div>
+                <!-- Table -->
+                <div class="table-responsive">
+                    <table class="table table-condensed">
+                        <tr>
+                            <td><strong>First Submission</strong></td>
+                            <td>
+                                <script>document.write(moment("{{ file.first_uploaded }}").format("MM-DD-YYYY HH:mm:ss"));</script>
+                                (
+                                <script>document.write(moment("{{ file.first_uploaded }}").fromNow());</script>
+                                )
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Last Submission</strong></td>
+                            <td>
+                                <script>document.write(moment("{{ file.last_uploaded }}").format("MM-DD-YYYY HH:mm:ss"));</script>
+                                (
+                                <script>document.write(moment("{{ file.last_uploaded }}").fromNow());</script>
+                                )
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>File Names</strong></td>
+                            <td>{{ file.file_names }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

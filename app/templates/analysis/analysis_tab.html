@@ -1,0 +1,86 @@
+{% block av %}
+    <div class="tab-pane fade in active" id="analysis">
+        <div class="container" style="padding-top: 14px;">
+            <!-- MetaScan AntiVirus Results ############################################## -->
+            {% if metascan_results %}
+                <div class="panel panel-default">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading"><span
+                            class="glyphicon glyphicon-align-justify"></span><strong
+                            style="font-size:14px;margin:5px 0"> Metascan AV</strong>
+                    </div>
+                    <!-- Table -->
+                    <div class="table-responsive" style="padding-top: 14px">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Antivirus</th>
+                                <th>Result</th>
+                                <th>Updated</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for av in metascan_results %}
+                                <tr>
+                                    <td>{{ av }}</td>
+                                    {% if metascan_results[av].scan_result_i == 1 %}
+                                        <td><span class="label label-danger">
+                                            {{ metascan_results[av].threat_found }}</span>
+                                        </td>
+                                    {% elif metascan_results[av].scan_result_i == 0 %}
+                                        <td><span class="label label-success">Clean</span></td>
+                                    {% else %}
+                                        <td><span class="label label-warning">Error</span></td>
+                                    {% endif %}
+                                    <td>
+                                        <script>document.write(moment("{{ metascan_results[av].def_time }}").format("MM-DD-YYYY HH:mm:ss"));</script>
+                                        (
+                                        <script>document.write(moment("{{ metascan_results[av].def_time }}").fromNow());</script>
+                                        )
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Malice AntiVirus Results ############################################## -->
+            {% if av_results %}
+                <div class="panel panel-default">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading"><span
+                            class="glyphicon glyphicon-align-justify"></span><strong
+                            style="font-size:14px;margin:5px 0"> Malice AV</strong>
+                    </div>
+                    <!-- Table -->
+                    <div class="table-responsive" style="padding-top: 14px;">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Antivirus</th>
+                                <th>Result</th>
+                                <th>Definitions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for result in av_results %}
+                                <tr>
+                                    <td>{{ result.av }}</td>
+                                    {% if result.infected %}
+                                        <td><span class="label label-danger">{{ result.infected_string }}</span></td>
+                                    {% else %}
+                                        <td><span class="label label-success">Clean</span></td>
+                                    {% endif %}
+                                    <td>{{ result.metadata.definitions }}</td>
+                                    {# <td>{{ moment(av_results[av].def_time).format("MM-DD-YYYY HH:mm:ss") }}</td>#}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

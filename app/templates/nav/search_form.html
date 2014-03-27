@@ -1,0 +1,67 @@
+{% block search_upload_form %}
+
+    <form class="navbar-form navbar-right" action="{{ url_for('index') }}" method="POST" name="search_hash">
+        <div class="input-group" style="display: inline-block;vertical-align: middle;width: auto;">
+            {{ form.label(type="text", class="form-control", id="inputHash", style="min-width:22em", placeholder="Enter MD5 Here...") }}
+            {{ form.csrf_token }}
+            <span class="input-group-btn" style="float: left;">
+                <!-- Split button -->
+                <button type="submit" class="btn btn-primary">Search</button>
+                <button id="hash_modal" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                        <span data-toggle="tooltip" data-placement="right" title
+                              data-original-title="Batch hash search">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </span>
+                </button>
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $(function () {
+                            $('[data-toggle="tooltip"]').tooltip({'placement': 'right'})
+                        });
+                    });
+                </script>
+            </span>
+        </div>
+    </form>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Enter Multiple Hashes</h4>
+                </div>
+                <div class="modal-body input-group" style="width:100%">
+                    <form action="{{ url_for('index') }}" class="" method="POST" name="search_hash_modal">
+                        <input type="text" class="form-control center-block" placeholder="Enter MD5 Here..."/>
+                        {{ form.csrf_token }}
+                        <div class="form-group">
+                            {{ form.hashes(cols="30", rows="20", style="width:100%;resize:vertical",
+                                                        placeholder='60B7C0FEAD45F2066E5B805A91F4F0FC\r\n
+                                                                     5E28284F9B5F9097640D58A73D38AD4C\r\n
+                                                                     99C3F8E9CC59D95666EB8D8A8B4C2BEB\r\n', id="inputHashList") }}
+                            <div class="btn-group" style="padding-top: 14px;">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <button type="" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!--div class="modal-footer" style="max-height: 20px">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40"
+                             aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                            <span class="sr-only">40% Complete (success)</span>
+                        </div>
+                    </div>
+                </div-->
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /Modal -->
+
+{% endblock %}

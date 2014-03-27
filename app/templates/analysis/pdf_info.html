@@ -1,0 +1,89 @@
+{% block pdf_info %}
+        <!-- PDF Metadata ############################################## -->
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><span
+                class="glyphicon glyphicon-align-justify"></span><strong
+                style="font-size:14px;margin:5px 0"> PDF Metadata</strong>
+        </div>
+        <!-- Table -->
+        <table class="table table-condensed">
+            <tr>
+                <td><strong>Target machine</strong></td>
+                <td>{{ pe.attributes.required_cpu_type }}</td>
+            </tr>
+            <tr>
+                <td><strong>Compilation timestamp</strong></td>
+                <td>{{ pe.attributes.compile_time }}</td>
+            </tr>
+            <tr>
+                <td><strong>Entry Point</strong></td>
+                <td>{{ pe.attributes.address_of_entry_point }}</td>
+            </tr>
+            <tr>
+                <td><strong>Number of sections</strong></td>
+                <td>{{ pe.sections.number_of_sections }}</td>
+            </tr>
+        </table>
+    </div>
+    <!-- PDFiD ############################################## -->
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><span
+                class="glyphicon glyphicon-align-justify"></span><strong
+                style="font-size:14px;margin:5px 0"> PDFiD</strong>
+        </div>
+        <!-- Table -->
+        <table class="table table-condensed">
+            <tr>
+                <td><strong>Target machine</strong></td>
+                <td>{{ pe.attributes.required_cpu_type }}</td>
+            </tr>
+            <tr>
+                <td><strong>Compilation timestamp</strong></td>
+                <td>{{ pe.attributes.compile_time }}</td>
+            </tr>
+            <tr>
+                <td><strong>Entry Point</strong></td>
+                <td>{{ pe.attributes.address_of_entry_point }}</td>
+            </tr>
+            <tr>
+                <td><strong>Number of sections</strong></td>
+                <td>{{ pe.sections.number_of_sections }}</td>
+            </tr>
+        </table>
+    </div>
+    <!-- PDF Parser ############################################## -->
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><span
+                class="glyphicon glyphicon-list"></span><strong
+                style="font-size:14px;margin:5px 0"> PDF Parser</strong>
+        </div>
+        <!-- Table -->
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Virtual address</th>
+                <th>Virtual size</th>
+                <th>Raw size</th>
+                <th>Entropy</th>
+                <th>MD5</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for section in pe.sections.section_details %}
+                <tr>
+                    <td>{{ section.name }}</td>
+                    <td>{{ section.virtual_address }}</td>
+                    <td>{{ section.virtual_size }}</td>
+                    <td>{{ section.raw_size }}</td>
+                    <td>{{ section.entropy }}</td>
+                    <td>{{ section.md5 }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

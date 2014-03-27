@@ -1,0 +1,62 @@
+{% block upload %}
+    <div class="container">
+        <div class="page-header">
+            <h1>Upload
+                <small>new samples</small>
+            </h1>
+        </div>
+        <form style="margin: 0px;" id="form-upload" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+            <div class="row-fluid">
+                    <span class="btn btn-success fileinput-button">
+                        <i class="icon-plus icon-white"></i>
+                        <span>Add Files...</span>
+                        <input id="fileupload" type="file" name="files[]" multiple>
+                    </span>
+                    <span class="files">
+                    </span>
+                <a class="btn btn-primary pull-right thread-reply" href="{{ url_for('samples') }}"><i class="icon-share-alt icon-white"></i>Reply</a>
+            </div>
+        </form>
+        <script type="text/javascript">
+            $(function () {
+                var added_files = [];
+                var submitted = false;
+                $('#form-upload').fileupload({
+                    dataType: 'json',
+                    singleFileUploads: false,
+                    forceIframeTransport: true,
+                    url: '/upload',
+                    add: function (e, data) {
+                        console.log('add', data);
+                        added_files.push(data);
+
+                        $('.thread-reply').unbind('click');
+                        $('.thread-reply').on('click', function (e) {
+                            e.preventDefault();
+                            data.formData = $('#form-upload').serializeArray();
+                            var original_data = data;
+                            var new_data = {files: [], originalFiles: [], paramName: []};
+                            jQuery.each(added_files, function (index, file) {
+                                new_data['files'] = jQuery.merge(new_data['files'], file.files);
+                                new_data['originalFiles'] = jQuery.merge(new_data['originalFiles'], file.originalFiles);
+                                new_data['paramName'] = jQuery.merge(new_data['paramName'], file.paramName);
+                            });
+                            new_data = jQuery.extend({}, original_data, new_data);
+                            console.log(new_data);
+                            new_data.submit();
+                        });
+                    },
+                    submit: function (e, data) {
+                        console.log('submitted');
+                    },
+                    done: function (e, data) {
+                        console.log('done uploading');
+                    },
+                    send: function (e, data) {
+                        console.log('sending');
+                    }
+                });
+            });
+        </script>
+    </div>
+{% endblock %}

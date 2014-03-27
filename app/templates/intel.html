@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Intel{% endblock %}
+{% block banner %}
+    <div class="container jumbotron myjumbo" style="background: linear-gradient(to right, #3e4957 , #22303e)">
+        <h1>
+            &lt;<img src="../static/img/bit9-590x254.png" class="img-rounded" style="height:80px;"/>
+            <small> Hash Search + VirusTotal</small> &gt;
+        </h1>
+    </div>
+{% endblock %}
+{% block content %}
+    <!-- Search Results Table -->
+    <div class="table-responsive">
+        <table class="table table-hover sortable" style="padding-top: 14px;">
+            <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Description</th>
+                <th>Hash</th>
+                <th data-defaultsort="asc">Trust</th>
+                <th>Threat</th>
+                <th>VT</th>
+            </tr>
+            </thead>
+            <tbody id="filetable_body">
+            {% for search in searchs %}
+                <tr>
+                    <!-- Bit9 -->
+                    {% if search.Bit9 %}
+                        {% if search.Bit9.isfound %}
+                            {% if search.Bit9.peheadermetadata.originalname %}
+                                <td id="filename">{{ search.Bit9.peheadermetadata.originalname.lower() }}</td>
+                            {% elif search.Bit9.peheadermetadata.productname %}
+                                <td id="filename">{{ search.Bit9.peheadermetadata.productname }}</td>
+                            {% else %}
+                                <td id="filename">{{ search.Bit9.fileinfo.firstseenname | tail }}</td>
+                            {% endif %}
+                            <td id="description">{{ search.Bit9.peheadermetadata.description }}</td>
+                        {% else %} <!-- Hash Not Found in Bit9 -->
+                            <td>{{ '' }}</td>
+                            <td>{{ '' }}</td>
+                        {% endif %}
+                        <td id="filehash">{{ search.md5 }}</td>
+                        {% if search.Bit9 and search.Bit9.isfound %}
+                            <td id="filetrust"><span class="label label-success" id="label_span">
+                                    <span class="glyphicon glyphicon-ok" id="glyph_span"></span>&nbsp;&nbsp;
+                                    {{ search.Bit9.trust }}
+                                </span></td>
+                            <td id="filethreat"><span class="label label-success" id="label_span">
+                                <span class="glyphicon glyphicon-ok" id="glyph_span"></span>&nbsp;&nbsp;
+                                    {{ search.Bit9.threat }}
+                                </span></td>
+                        {% else %} <!-- Hash Not Found in Bit9 -->
+                            <td id="filetrust"><span class="label label-default" id="label_span">
+                                <span class="glyphicon glyphicon-ban-circle" id="glyph_span"></span>
+                                    {{ '' }}
+                                </span></td>
+                            <td id="filethreat"><span class="label label-default" id="label_span">
+                                <span class="glyphicon glyphicon-ban-circle" id="glyph_span"></span>
+                                    {{ '' }}
+                                </span></td>
+                        {% endif %}
+                    {% endif %}
+                    <!-- VirusTotal -->
+                    {% if search.VirusTotal %}
+                        {% if search.VirusTotal.response_code %}
+                            <td id="virustotal">
+                                <a href="{{ search.VirusTotal.permalink }}" role="button"
+                                   class="btn btn-success btn-xs" id="vt_button">
+                                    {{ (search.VirusTotal.positives/search.VirusTotal.total) | percent | safe }}
+                                </a></td>
+                        {% else %} <!-- Hash Not Found in VirusTotal -->
+                            <td id="virustotal"><span class="label label-default" id="label_span">
+                                <span class="glyphicon glyphicon-ban-circle" id="glyph_span"></span>
+                                    {{ '' }}
+                                </span></td>
+                        {% endif %}
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

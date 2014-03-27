@@ -1,0 +1,251 @@
+{% block pe_info %}
+    <!-- PE Header Basic Info ############################################## -->
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><span
+                class="glyphicon glyphicon-align-justify"></span><strong
+                style="font-size:14px;margin:5px 0"> PE header basic information</strong>
+        </div>
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-condensed">
+                <tr>
+                    <td><strong>Target machine</strong></td>
+                    <td>{{ pe.attributes.required_cpu_type }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Subsystem</strong></td>
+                    <td>{{ pe.attributes.subsystem }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Compilation timestamp</strong></td>
+                    <td>
+                        <script>document.write(moment("{{ pe.attributes.compile_time }}").format("MM-DD-YYYY HH:mm:ss"));</script>
+                        (
+                        <script>document.write(moment("{{ pe.attributes.compile_time }}").fromNow());</script>
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Entry Point</strong></td>
+                    <td>{{ pe.attributes.address_of_entry_point }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Number of sections</strong></td>
+                    <td>{{ pe.sections.number_of_sections }}</td>
+                </tr>
+                {#                <tr>#}
+                {#                    <td><strong>Verify Checksum</strong></td>#}
+                {#                    {% if pe.attributes.verify_checksum %}#}
+                {#                        <td><span class="label label-success">{{ pe.attributes.verify_checksum }}</span></td>#}
+                {#                    {% else %}#}
+                {#                        <td><span class="label label-danger">{{ pe.attributes.verify_checksum }}</span></td>#}
+                {#                    {% endif %}#}
+                {#                </tr>#}
+            </table>
+        </div>
+    </div>
+    <!-- PEiD ################################################# -->
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><span
+                class="glyphicon glyphicon-lock"></span><strong
+                style="font-size:14px;margin:5px 0"> PEiD</strong>
+        </div>
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-condensed">
+                {% if pe.peid.peid_signature_match %}
+                    <tr>
+                        <td class="col-sm-3 col-md-2"><strong>Signature Match</strong></td>
+                        {% for match in pe.peid.peid_signature_match %}
+                            <td><span class="label label-danger">{{ match }}</span></td>
+                        {% endfor %}
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td class="col-sm-3 col-md-2"><strong>Is Probably Packed</strong></td>
+                    {% if pe.peid.is_probably_packed %}
+                        <td><span class="label label-danger">{{ pe.peid.is_probably_packed }}</span></td>
+                    {% else %}
+                        <td><span class="label label-success">{{ pe.peid.is_probably_packed }}</span></td>
+                    {% endif %}
+                </tr>
+                {% if pe.peid.is_suspicious %}
+                    <tr>
+                        <td class="col-sm-3 col-md-2"><strong>Is Suspicious</strong></td>
+                        <td>{{ pe.peid.is_suspicious }}</td>
+                    </tr>
+                {% endif %}
+                {% if pe.peid.is_valid %}
+                    <tr>
+                        <td class="col-sm-3 col-md-2"><strong>Is Valid</strong></td>
+                        <td>{{ pe.peid.is_valid }}</td>
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+    <!-- PE sections ############################################## -->
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><span
+                class="glyphicon glyphicon-list"></span><strong
+                style="font-size:14px;margin:5px 0"> PE sections</strong>
+        </div>
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Virtual address</th>
+                    <th>Virtual size</th>
+                    <th>Raw size</th>
+                    <th>Entropy</th>
+                    <th>MD5</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for section in pe.sections.section_details %}
+                    <tr>
+                        <td>{{ section.name }}</td>
+                        <td>{{ section.virtual_address }}</td>
+                        <td>{{ section.virtual_size }}</td>
+                        <td>{{ section.raw_size }}</td>
+                        <td>{{ section.entropy }}</td>
+                        <td>{{ section.md5 }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- PE Exports ############################################## -->
+    {% if pe.exports %}
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><span
+                    class="glyphicon glyphicon-export"></span><strong
+                    style="font-size:14px;margin:5px 0"> PE Exports</strong>
+            </div>
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                    <tr>
+                        <th>Ordinal</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for export in pe.exports %}
+                        <tr>
+                            <td>{{ export.ordinal }}</td>
+                            <td>{{ export.name }}</td>
+                            <td>{{ export.address }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+    <!--  PE Imports ############################################## -->
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-import"></span>
+            <strong style="font-size:14px;margin:5px 0"> PE Imports</strong>
+        </div>
+        <!-- Lists -->
+        <div class="panel-group" id="accordion">
+            <div class="container" style="margin-left: 2em">
+                <div class="row">
+                    <div class="col-sm-3 col-md-2 col-lg-2">
+                        <h5><strong style="padding-right: 1em">PE Import Hash</strong></h5>
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4">
+                        <h5>{{ pe.importhash }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% for dll in pe.imports %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion"
+                               href="#{{ dll|lower|replace('.', '') }}">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                                <strong style="font-size:12px;margin:5px 0"> {{ dll }}</strong>
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="{{ dll|lower|replace('.', '') }}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <!-- Table -->
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Address</th>
+                                        <th>Name</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for import in pe['imports'][dll] %}
+                                        <tr>
+                                            <td>{{ import.address }}</td>
+                                            <td>{{ import.name }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!--  PE Resources  ############################################## -->
+    {% if pe.resources %}
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-briefcase"></span>
+                <strong style="font-size:14px;margin:5px 0"> PE Resources</strong>
+            </div>
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Offset</th>
+                        <th>Size</th>
+                        <th>Language</th>
+                        <th>Sublanguage</th>
+                        <th>File Type</th>
+                        <th>MD5</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for resource in pe.resources %}
+                        <tr>
+                            <td>{{ resource.name }}</td>
+                            <td>{{ resource.offset }}</td>
+                            <td>{{ resource.size }}</td>
+                            <td>{{ resource.language }}</td>
+                            <td>{{ resource.sublanguage }}</td>
+                            <td>{{ resource.filetype }}</td>
+                            <td>{{ resource.md5 }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

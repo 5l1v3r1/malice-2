@@ -1,0 +1,78 @@
+{% block basic_info %}
+    <div class="panel panel-default">
+        <div id="basic-info" class="panel-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="table-responsive">
+                        <table class="table table-condensed">
+                            <tbody>
+                            <tr>
+                                <td><strong>SHA256</strong></td>
+                                <td>{{ sample.sha256 }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>File name</strong></td>
+                                <td>{{ file.filename }}</td>
+                            </tr>
+                            {% if detection_ratio %}
+                                <tr>
+                                    <td><strong>Detection ratio</strong></td>
+                                    <td  id="basic_detect_ratio" class="text-success">
+                                        <strong>{{ detection_ratio.infected }}/{{ detection_ratio.count }}</strong>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            <tr>
+                                <td><strong>Analysis date</strong></td>
+                                <td><script>
+                                    document.write(moment("{{ file.analysis_date }}").format("MM-DD-YYYY HH:mm:ss"));
+                                </script>
+                                    (<script>document.write(moment("{{ file.analysis_date }}").fromNow());</script>)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>First uploaded</strong></td>
+                                <td><script>
+                                    document.write(moment("{{ file.first_uploaded }}").format("MM-DD-YYYY HH:mm:ss"));
+                                </script>
+                                    (<script>document.write(moment("{{ file.first_uploaded }}").fromNow());</script>)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tags</strong></td>
+                                {#                                {% for tag in tags %}#}
+                                <td><span class="label label-primary">{{ tags }}</span></td>
+                                {#                                {% endfor %}#}
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <img src="../../static/img/rage/rage.png" alt="Responsive image" class="img-responsive img-circle"
+                         style="height:200px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../static/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var $this_dr_cell = $(this).find("#basic_detect_ratio");
+            var fraction = $this_dr_cell.text();
+            var nums = fraction.split('/');
+            var dr = nums[0]/nums[1];
+            dr = parseInt(dr*100);
+            <!-- VirusTotal -->
+            if (dr < 25) {
+                $this_dr_cell.attr('class', "text-success");
+            }
+            if (dr > 25) {
+                $this_dr_cell.attr('class', "text-warning");
+            }
+            if (dr > 50) {
+                $this_dr_cell.attr('class', "text-danger");
+            }
+        });
+    </script>
+{% endblock %}

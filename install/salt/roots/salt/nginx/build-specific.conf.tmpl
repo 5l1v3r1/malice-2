@@ -1,0 +1,52 @@
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name {{ build_name }}.tangentsnowball.com.au;
+    access_log /var/log/nginx/access.{{ build_name }}.tangentsnowball.com.au;
+
+    ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;
+    ssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;
+    ssl_session_timeout 5m;
+    ssl_protocols SSLv2 SSLv3 TLSv1;
+    ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+    ssl_prefer_server_ciphers on;
+
+    gzip on;
+    gzip_proxied any;
+    gzip_types text/plain application/xml application/x-javascript text/javascript text/css;
+
+    proxy_pass_request_headers on;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_read_timeout 120s;
+
+    client_max_body_size 200m;
+
+    location / {
+        {% if nginx_config.get('basic_auth') -%}
+        auth_basic "Basic Authentication Required";
+        auth_basic_user_file {{ project_dir }}/{{ build }}-{{ project }}-{{ client }}_htpasswd;
+        {% endif -%}
+
+        include uwsgi_params;
+        uwsgi_pass unix:{{ project_dir }}/run/{{ build }}/{{ build_name }}.sock;
+    }
+
+    location =/favicon.ico {
+        root {{ project_dir }}/builds/{{ build }}/public/static/oscar/;
+        expires max;
+    }
+
+    location /static/ {
+        expires max;
+        alias {{ project_dir }}/builds/{{ build }}/public/static/;
+        break;
+    }
+
+    location /media/ {
+        expires max;
+        alias {{ project_dir }}/builds/{{ build }}/public/media/;
+        break;
+    }
+}

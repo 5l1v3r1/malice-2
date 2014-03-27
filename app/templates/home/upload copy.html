@@ -1,0 +1,254 @@
+{% block upload %}
+    <div class="container">
+        <!-- <form style="margin: 0px;" id="form-upload" enctype="multipart/form-data">
+                    <div class="row-fluid">
+                        <div class="reply-control-group control-group">
+                            <textarea id="reply-text" name="message" style="width: 98%;" rows="3"></textarea>
+
+                            <div class="reply-spinner pull-right" style="display: none;"><p><img
+                                    src="/img/throbber_horizontal.gif"/></p></div>
+                        </div>
+                    </div>
+                    <div class="row-fluid">
+                            <span class="btn btn-success fileinput-button">
+                                <i class="icon-plus icon-white"></i>
+                                <span>Add Files...</span>
+                                <input id="fileupload" type="file" name="files[]" multiple>
+                            </span>
+                            <span class="files">
+                            </span>
+                        <a class="btn btn-primary pull-right thread-reply" href="#"><i class="icon-share-alt icon-white"></i>Reply</a>
+                    </div>
+                </form>
+            </div>
+
+
+            <script>
+                $(function () {
+
+                    var added_files = [];
+                    var submitted = false;
+                    $('#form-upload').fileupload({
+                        dataType: 'json',
+                        singleFileUploads: false,
+                        forceIframeTransport: true,
+                        url: '/upload/',
+                        add: function (e, data) {
+                            console.log('add', data);
+                            added_files.push(data);
+
+                            $('.thread-reply').unbind('click');
+                            $('.thread-reply').on('click', function (e) {
+                                e.preventDefault();
+                                data.formData = $('#form-upload').serializeArray();
+                                var original_data = data;
+                                var new_data = {files: [], originalFiles: [], paramName: []};
+                                jQuery.each(added_files, function (index, file) {
+                                    new_data['files'] = jQuery.merge(new_data['files'], file.files);
+                                    new_data['originalFiles'] = jQuery.merge(new_data['originalFiles'], file.originalFiles);
+                                    new_data['paramName'] = jQuery.merge(new_data['paramName'], file.paramName);
+                                });
+                                new_data = jQuery.extend({}, original_data, new_data);
+                                console.log(new_data);
+                                new_data.submit();
+                            });
+                        },
+                        submit: function (e, data) {
+                            console.log('submitted');
+                        },
+                        done: function (e, data) {
+                            console.log('done uploading');
+                        },
+                        send: function (e, data) {
+                            console.log('sending');
+                        }
+                    });
+                });
+            </script> -->
+
+        <div class="page-header">
+             <h1>Upload <small>new samples</small></h1>
+        </div>
+        <!-- The file upload form used as target for the file upload widget -->
+        <form id="fileupload" method="post" action="{{ url_for('upload') }}"
+              enctype="multipart/form-data">
+            <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+            <div class="row fileupload-buttonbar">
+                <div class="span7">
+                    <!-- The fileinput-button span is used to style the file input field as a button -->
+                        <span class="btn btn-primary fileinput-button">
+                            <i class="icon-plus icon-white"></i>
+                            <span>Add files...</span>
+                            <input type="file" name="photo" multiple>
+                        </span>
+                    <button type="submit" id="upload-btn" data-loading-text="Uploading..." class="btn btn-success start">
+                        <i class="icon-upload icon-white"></i>
+                        <span>Start upload</span>
+                    </button>
+                    <script>
+                        $('#loading-example-btn').click(function () {
+                            var btn = $(this);
+                            btn.button('loading');
+                            $.ajax().always(function () {
+                                btn.button('reset');
+                            });
+                        });
+                    </script>
+                    <!--<button type="reset" class="btn btn-warning cancel">-->
+                    <!--<i class="icon-ban-circle icon-white"></i>-->
+                    <!--<span>Cancel upload</span>-->
+
+                    <!--</button>-->
+                    <!--<button type="button" class="btn btn-danger delete">-->
+                    <!--<i class="icon-trash icon-white"></i>-->
+                    <!--<span>Delete files</span>-->
+                    <!--</button>-->
+                    <!--<input type="checkbox" class="toggle">-->
+
+                    <!-- The loading indicator is shown during file processing -->
+                    <!--<span class="fileupload-loading"></span>-->
+
+                </div>
+                <!-- The global progress information -->
+                <div class="span5 fileupload-progress fade">
+                    <!-- The global progress bar -->
+                    <div class="progress progress-success progress-striped active">
+                        <div class="bar" style="width:0%;"></div>
+                    </div>
+                    <!-- The extended global progress information -->
+                    <div class="progress-extended">&nbsp;</div>
+                </div>
+            </div>
+            <!-- The loading indicator is shown during file processing -->
+            <div class="fileupload-loading"></div>
+            <!-- The table listing the files available for upload/download -->
+            <table class="table table-striped">
+                <tbody class="files"></tbody>
+            </table>
+        </form>
+        <div class="fileupload-content">
+            <table class="files"></table>
+            <div class="fileupload-progressbar"></div>
+        </div>
+    </div>
+{% endblock %}
+
+
+<!-- html >
+            <div class="photo-picker">
+                <ul class="photo-picker">
+                    <li><a><span class="ss-icon">plus</span></a></li>
+                    <li><a><span class="ss-icon">plus</span></a></li>
+                    <li><a><span class="ss-icon">plus</span></a></li>
+                </ul>
+{#                <input class="fileupload" type="file" name="files[]" data-url="{{ url_for('upload') }}">#}
+
+                <div id="progress">
+                    <div class="bar" style="width: 0%;"></div>
+                </div>
+            </div>
+
+
+            <div id="invisible">
+{#                <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" id="upload_form">#}
+                    <input type="file" name="file"/>
+                </form>
+            </div>
+            <button class="ladda-button" data-color="red" data-style="contract-overlay" style="z-index: 10;">
+                <span class="ladda-label">Submit</span>
+                <span class="ladda-spinner"></span>
+            </button>
+            <div class="spinner">
+                <div class="spinner-container container1">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+                <div class="spinner-container container2">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+                <div class="spinner-container container3">
+                    <div class="circle1"></div>
+                    <div class="circle2"></div>
+                    <div class="circle3"></div>
+                    <div class="circle4"></div>
+                </div>
+            </div>
+            <div id="wrapper">
+                <div id="progress_container">
+                    <div id="progress_bar"></div>
+                </div>
+            </div>
+            <div id="status_container">Status: <span id="status">idle</span></div>
+        </div>
+    </div>
+    <!-- javascript >
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // do photo uploads
+            $('.fileupload').fileupload({
+                dataType: 'json',
+                add: function (e, data) {
+                    var picker = $(this).data('link');
+                    $(picker).children('span').html('check');
+                    data.submit();
+                    /*
+                     data.context = $('<button/>').text('Upload')
+                     .appendTo(document.body)
+                     .click(function () {
+                     data.context = $('<p/>').text('Uploading...').replaceAll($(this));
+                     data.submit();
+                     });
+                     */
+                },
+                done: function (e, data) {
+                    //data.context.text('Upload finished.');
+                    $.each(data.result.files, function (index, file) {
+                        $('<p/>').text(file.name).appendTo(document.body);
+                    });
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    $('#progress .bar').css(
+                            'width',
+                            progress + '%'
+                    );
+                }
+            });
+        });
+    </script>
+    <script>
+
+        // Bind normal buttons
+        Ladda.bind('.button-demo button', { timeout: 2000 });
+
+        // Bind progress buttons and simulate loading progress
+        Ladda.bind('.progress-demo button', {
+            callback: function (instance) {
+                var progress = 0;
+                var interval = setInterval(function () {
+                    progress = Math.min(progress + Math.random() * 0.1, 1);
+                    instance.setProgress(progress);
+
+                    if (progress === 1) {
+                        instance.stop();
+                        clearInterval(interval);
+                    }
+                }, 200);
+            }
+        });
+
+        // You can control loading explicitly using the JavaScript API
+        // as outlined below:
+
+        // var l = Ladda.create( document.querySelector( 'button' ) );
+        // l.start();
+        // l.stop();
+        // l.toggle();
+        // l.isLoading();
+        // l.setProgress( 0-1 );
+    </script-->

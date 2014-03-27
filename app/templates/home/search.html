@@ -1,0 +1,100 @@
+{% block search %}
+    <div class="container">
+        <div class="page-header">
+            <h1>Search
+                <small>hash intel</small>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col col-sm-8 col-lg-6">
+                <!-- Search Hash Form -->
+                <form class="form" action="{{ url_for('intel') }}" role="search" method="POST" name="search_hash">
+                    <div class="form-group">
+                        <div class="input-group">
+                            {{ form.label(type="text", class="form-control", id="inputHash", placeholder="Enter MD5 Here...") }}
+                            {{ form.csrf_token }}
+                            <div class="input-group-btn">
+                                <!-- Split button -->
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col col-sm-4 col-lg-2">
+                <button id="hash_modal" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            <span data-toggle="tooltip" data-placement="right" title="Enter Multiple Hashes"
+                  data-original-title="Batch hash search">
+                <i class="glyphicon glyphicon-plus"></i></span>
+                </button>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="myModalLabel">Enter Multiple Hashes</h4>
+                    </div>
+                    <div class="modal-body input-group" style="width:100%">
+                        <form action="{{ url_for('intel') }}" class="" method="POST" name="search_hash_modal">
+                            {{ form.csrf_token }}
+                            <div class="form-group">
+                                {{ form.hashes(cols="30", rows="20", style="width:100%;resize:vertical",
+                                    placeholder='60B7C0FEAD45F2066E5B805A91F4F0FC\r\n
+                                                 5E28284F9B5F9097640D58A73D38AD4C\r\n
+                                                 99C3F8E9CC59D95666EB8D8A8B4C2BEB\r\n', id="inputHashList")|safe }}
+                                <div class="btn-group" style="padding-top: 14px;">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!--div class="modal-footer" style="max-height: 20px">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40"
+                                 aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                <span class="sr-only">40% Complete (success)</span>
+                            </div>
+                        </div>
+                    </div-->
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+
+        <script type="text/javascript">
+            var $modal = $('#myModal');
+
+            $('.ajax .demo').on('click', function () {
+                // create the backdrop and wait for next modal to be triggered
+                $('body').modalmanager('loading');
+
+                setTimeout(function () {
+                    $modal.load('modal_ajax_test.html', '', function () {
+                        $modal.modal();
+                    });
+                }, 1000);
+            });
+
+            $modal.on('click', '.update', function () {
+                $modal.modal('loading');
+                setTimeout(function () {
+                    $modal
+                            .modal('loading')
+                            .find('.modal-body')
+                            .prepend('<div class="alert alert-info fade in">' +
+                                    'Updated!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+                                    '</div>');
+                }, 1000);
+            });
+        </script>
+        <!-- /.modal -->
+    </div>
+{% endblock %}

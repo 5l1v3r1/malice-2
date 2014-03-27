@@ -1,0 +1,29 @@
+{
+  "name": "Malice",
+  "version": "0.0.2",
+  "authors": [
+    "Jay Bech <jbecht3l@gmail.com>"
+  ],
+  "description": "VirusTotal Wanna Be",
+  "main": "what",
+  "keywords": [
+    "malice, av, intel, sandbox, volatility"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "install",
+    "tests"
+  ],
+  "dependencies": {
+    "font-awesome": "latest",
+    "jquery-ui": "latest",
+    "jquery": "latest",
+    "moment": "latest",
+    "bootstrap": "latest",
+    "angular": "latest",
+    "jquery-file-upload": "latest"
+  }
+}

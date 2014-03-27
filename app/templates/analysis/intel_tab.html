@@ -1,0 +1,131 @@
+{% block intel_tab %}
+    <div class="tab-pane fade" id="intel">
+        <div class="table-responsive" style="padding-top: 14px;">
+            <table class="table table-hover sortable">
+                <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Description</th>
+                    <th>Hash</th>
+                    <th data-defaultsort="asc">Trust</th>
+                    <th>Threat</th>
+                    <th>VT</th>
+                </tr>
+                </thead>
+                <tbody id="filetable_body">
+                {#                {% for sample in sample %}#}
+                <tr>
+                    <!-- Bit9 -->
+                    {% if sample.Bit9 %}
+                        {% if sample.Bit9.isfound %}
+                            {% if sample.Bit9.peheadermetadata.originalname %}
+                                <td id="filename">{{ sample.Bit9.peheadermetadata.originalname.lower() }}</td>
+                            {% elif sample.Bit9.peheadermetadata.productname %}
+                                <td id="filename">{{ sample.Bit9.peheadermetadata.productname }}</td>
+                            {% else %}
+                                <td id="filename">{{ sample.Bit9.fileinfo.firstseenname | tail }}</td>
+                            {% endif %}
+                            <td id="description">{{ sample.Bit9.peheadermetadata.description }}</td>
+                        {% else %} <!-- Hash Not Found in Bit9 -->
+                            <td>{{ '' }}</td>
+                            <td>{{ '' }}</td>
+                        {% endif %}
+                        <td id="filehash">{{ sample.md5 }}</td>
+                        {% if sample.Bit9 and sample.Bit9.isfound %}
+                            <td id="filetrust"><span class="label label-success" id="label_span">
+                                    <span class="glyphicon glyphicon-ok" id="glyph_span"></span>&nbsp;&nbsp;
+                                    {{ sample.Bit9.trust }}
+                                </span></td>
+                            <td id="filethreat"><span class="label label-success" id="label_span">
+                                <span class="glyphicon glyphicon-ok" id="glyph_span"></span>&nbsp;&nbsp;
+                                    {{ sample.Bit9.threat }}
+                                </span></td>
+                        {% else %} <!-- Hash Not Found in Bit9 -->
+                            <td id="filetrust"><span class="label label-default" id="label_span">
+                                <span class="glyphicon glyphicon-ban-circle" id="glyph_span"></span>
+                                    {{ '' }}
+                                </span></td>
+                            <td id="filethreat"><span class="label label-default" id="label_span">
+                                <span class="glyphicon glyphicon-ban-circle" id="glyph_span"></span>
+                                    {{ '' }}
+                                </span></td>
+                        {% endif %}
+                    {% endif %}
+                    <!-- VirusTotal -->
+                    {% if sample.VirusTotal %}
+                        {% if sample.VirusTotal.response_code %}
+                            <td id="virustotal">
+                                <a href="{{ sample.VirusTotal.permalink }}" role="button"
+                                   class="btn btn-success btn-xs" id="vt_button">
+                                    {{ (sample.VirusTotal.positives/sample.VirusTotal.total) | percent | safe }}
+                                </a></td>
+                        {% else %} <!-- Hash Not Found in VirusTotal -->
+                            <td id="virustotal"><span class="label label-default" id="label_span">
+                                <span class="glyphicon glyphicon-ban-circle" id="glyph_span"></span>
+                                    {{ '' }}
+                                </span></td>
+                        {% endif %}
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                </tr>
+                {#                {% endfor %}#}
+                </tbody>
+            </table>
+        </div>
+        <!-- Javascript to Color Rows and Change Trust, Threat and VT Label based on Score -->
+        <script>
+            $("#filetable_body").find("tr").each(function () {
+                var $this_row = $(this);
+                var $this_trust_cell = $(this).find("#filetrust");
+                var $this_threat_cell = $(this).find("#filethreat");
+                var $this_vt_cell = $(this).find("#virustotal")
+                var fileTrust = $this_trust_cell.text();
+                var fileThreat = $this_threat_cell.text();
+                var vt = $this_vt_cell.text();
+                vt = parseInt(vt.replace("%", ''));
+                <!-- Trust -->
+                if (!fileTrust.trim()) {
+                    $this_trust_cell.find("#label_span").attr('class', "label label-default");
+                    $this_trust_cell.find("#glyph_span").attr('class', 'glyphicon glyphicon-ban-circle');
+                } else {
+                    if (fileTrust < 8) {
+                        $this_trust_cell.find("#label_span").attr('class', 'label label-warning');
+                        $this_trust_cell.find("#glyph_span").attr('class', 'glyphicon glyphicon-warning-sign');
+                    }
+                    if (fileTrust < 5) {
+                        $this_row.addClass("danger");
+                        $this_trust_cell.find("#label_span").attr('class', "label label-danger");
+                        $this_trust_cell.find("#glyph_span").attr('class', 'glyphicon glyphicon-remove');
+                    }
+                }
+                <!-- Threat -->
+                if (!fileThreat.trim()) {
+                    $this_threat_cell.find("#label_span").attr('class', "label label-default");
+                    $this_threat_cell.find("#glyph_span").attr('class', 'glyphicon glyphicon-ban-circle');
+                } else {
+                    if (fileThreat > 5) {
+                        $this_threat_cell.find("#label_span").attr('class', 'label label-warning');
+                        $this_threat_cell.find("#glyph_span").attr('class', 'glyphicon glyphicon-warning-sign');
+                    }
+                    if (fileThreat > 8) {
+                        $this_row.addClass("danger");
+                        $this_threat_cell.find("#label_span").attr('class', "label label-danger");
+                        $this_threat_cell.find("#glyph_span").attr('class', 'glyphicon glyphicon-remove');
+                    }
+                }
+                <!-- VirusTotal -->
+                if (vt < 33) {
+                    $this_vt_cell.find("#vt_button").attr('class', 'btn btn-success btn-xs');
+                }
+                if (vt > 33) {
+                    $this_vt_cell.find("#vt_button").attr('class', "btn btn-warning btn-xs");
+                }
+                if (vt > 66) {
+                    $this_row.addClass("danger");
+                    $this_vt_cell.find("#vt_button").attr('class', "btn btn-danger btn-xs");
+                }
+            });
+        </script>
+    </div>
+{% endblock %}

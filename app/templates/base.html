@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Malice - {% block title %}{% endblock %}</title>
+    <title>Bit9 - Hash Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+    <link rel="shortcut icon" href="../static/img/malice.ico">
+    <!-- Latest compiled and minified CSS -->
+{#    <link href="../static/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">#}
+    <link href="../static/css/bootstrap_superhero.min.css" rel="stylesheet">
+    <!-- <link href="../static/css/flat-ui.css" rel="stylesheet"> -->
+    <!-- Optional theme -->
+    <!-- <link href="../static/bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet"> -->
+    <link href="../static/css/bootstrap-sortable.css" rel="stylesheet">
+    <link href="../static/css/style.css" rel="stylesheet">
+    <link href="../static/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!--link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"-->
+    <link href="../static/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/jquery.fileupload.css">
+    <link rel="stylesheet" href="../static/css/jquery.fileupload-ui.css">
+    <script type="text/javascript" src="../static/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/bower_components/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="../static/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../static/bower_components/jquery-ui/ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="../static/bower_components/jquery-ui/ui/jquery.ui.widget.js"></script>
+
+    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.fileupload.js"></script>
+    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.fileupload-process.js"></script>
+{#    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.fileupload-validate.js"></script>#}
+    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.fileupload-angular.js"></script>
+    <script src="../static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="../static/js/bootstrap-sortable.js"></script>
+</head>
+<body class="">
+
+<!-- Navigation Bar - [nav.html]__________________________________ -->
+{% include 'nav/nav.html' %}
+
+<!-- Banner / Logo_______________________________________________ -->
+{% block banner %}
+
+{% endblock %}
+<!-- Display Flash Messages______________________________________ -->
+{% with errors = get_flashed_messages(category_filter=["warning"]) %}
+    {% if errors %}
+        <div class="alert alert-warning alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <ul>
+                {%- for msg in errors %}
+                    <li>{{ msg }}</li>
+                {% endfor -%}
+            </ul>
+        </div>
+    {% endif %}
+{% endwith %}
+{% with errors = get_flashed_messages(category_filter=["error"]) %}
+    {% if errors %}
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <ul>
+                {%- for msg in errors %}
+                    <li>{{ msg }}</li>
+                {% endfor -%}
+            </ul>
+        </div>
+    {% endif %}
+{% endwith %}
+
+<!-- Main Content - [index.html]__________________________________ -->
+<div id="wrap">
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+<!-- Footer________________________________________________________ -->
+{% block footer %}
+    <div id="footer">
+        <div class="container">
+            <p class="text-muted">&copy; blacktop (<a href="{{ my_github }}">Github</a>) 2014</p>
+        </div>
+    </div>
+{% endblock footer %}
+
+<script src="../static/js/table.format.js"></script>
+<!-- <script src="../static/js/my.file.upload.js"></script> -->
+<!-- <script src="../static/js/spin.min.js"></script>
+<script src="../static/js/ladda.min.js"></script>
+<!-- <script src="../static/js/my.file.upload.js"></script> -->
+</body>
+</html>

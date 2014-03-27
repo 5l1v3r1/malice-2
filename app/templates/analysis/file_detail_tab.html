@@ -1,0 +1,36 @@
+{% block file_detal %}
+    <div class="tab-pane fade" id="filedetail">
+        <div class="container" style="padding-top: 14px;">
+            {% if pe %}
+                {% include 'analysis/pe_info.html' %}
+            {% endif %}
+            {% if pdf %}
+                {% include 'analysis/pdf_info.html' %}
+            {% endif %}
+            {% if office %}
+                {% include 'analysis/office_info.html' %}
+            {% endif %}
+            <!--  ExifTool file metadata ############################################## -->
+            {% if exif %}
+                <div class="panel panel-default">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading"><span
+                            class="glyphicon glyphicon-tags"></span><strong style="font-size:14px;margin:5px 0">
+                        ExifTool
+                        file metadata</strong></div>
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-condensed table-hover">
+                            {% for key, value in exif.iteritems() %}
+                                <tr style="font-size: 13px;">
+                                    <td><strong>{{ key }}</strong></td>
+                                    <td>{{ value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
