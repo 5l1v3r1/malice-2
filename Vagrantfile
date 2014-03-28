@@ -5,8 +5,8 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure("2") do |config|
-  config.vm.synced_folder ".", "/vagrant", type: "rsync",
-    rsync__exclude: [".git/", ".idea/"]
+  config.vm.synced_folder ".", "/vagrant"#, type: "rsync",
+#     rsync__exclude: [".git/", ".idea/"]
   config.vm.box = "hashicorp/precise64"
   config.vm.hostname = "malice"
   #config.vm.box_url = "http://files.vagrantup.com/precise64.box"
@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
     vmwf.vmx["numvcpus"] = "4"
     vmwf.vmx["memsize"] = "4096"
     ## For masterless, mount your file roots file root
-    config.vm.synced_folder "install/salt/roots/", "/srv/", type: "rsync"
+    config.vm.synced_folder "install/salt/roots/", "/srv/"#, type: "rsync"
 
     ## Set your salt configs here
     config.vm.provision :salt do |salt|

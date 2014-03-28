@@ -23,7 +23,7 @@ from forms import SearchForm
 
 __author__ = 'Josh Maine'
 
-csrf = CsrfProtect(app)
+# csrf = CsrfProtect(app)
 
 config = ConfigParser.ConfigParser()
 config.read(os.path.join(app.root_path, '..', 'conf/config.cfg'))
@@ -123,7 +123,7 @@ def update_upload_file_metadata(sample):
         db_insert(file)
 
 
-@csrf.exempt
+# @csrf.exempt
 @app.route('/upload', methods=['POST'])
 # @login_required
 def upload():

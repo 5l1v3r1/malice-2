@@ -27,7 +27,7 @@ except ImportError:
     pass
 
 mod_api = Blueprint('api', __name__, url_prefix='/api/v1')
-csrf = CsrfProtect(app)
+# csrf = CsrfProtect(app)
 
 @mod_api.route('/search/file', methods=['GET'])
 @ratelimit(limit=300, per=60 * 15)
@@ -60,7 +60,7 @@ def batch_search_view():
     else:
         return jsonify(dict(error='Missing Parameters', response=400)), 400
 
-@csrf.exempt
+# @csrf.exempt
 @mod_api.route('/file/scan', methods=['POST'])
 @ratelimit(limit=300, per=60 * 15)
 def upload_view():

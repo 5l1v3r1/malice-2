@@ -9,7 +9,7 @@ base:
     - uwsgi
     - rethinkdb
 #    - mongodb
-#    - redis
+    - redis
     - nodejs
     - requirements
     - trid
