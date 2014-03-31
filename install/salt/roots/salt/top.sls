@@ -15,6 +15,6 @@ base:
     - trid
     - exif
     - clamav
-    - avg
-    - eset
-    - kaspersky
+#    - avg
+#    - eset
+#    - kaspersky
