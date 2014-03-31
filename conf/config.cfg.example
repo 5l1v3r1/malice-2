@@ -29,3 +29,7 @@ Github: https://github.com/black-top/malice
 # Password: password
 # Server: smtp.example.com
 # Port: 465
+
+[reCAPTCHA]
+# PublicKey: pubkey
+# PrivateKey: privkey

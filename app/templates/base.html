@@ -4,33 +4,49 @@
     <title>Malice - {% block title %}{% endblock %}</title>
     <title>Bit9 - Hash Search</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
-    <link rel="shortcut icon" href="../static/img/malice.ico">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/malice.ico') }}">
     <!-- Latest compiled and minified CSS -->
-{#    <link href="../static/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">#}
-    <link href="../static/css/bootstrap_superhero.min.css" rel="stylesheet">
+    {#
+    <link type=text/css href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}"
+          rel="stylesheet">
+    #}
+    <link type=text/css href="{{ url_for('static', filename='css/bootstrap_superhero.min.css') }}" rel="stylesheet">
     <!-- <link href="../static/css/flat-ui.css" rel="stylesheet"> -->
-    <!-- Optional theme -->
-    <!-- <link href="../static/bower_components/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet"> -->
-    <link href="../static/css/bootstrap-sortable.css" rel="stylesheet">
-    <link href="../static/css/style.css" rel="stylesheet">
-    <link href="../static/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <!--link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"-->
-    <link href="../static/css/sticky-footer-navbar.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/jquery.fileupload.css">
-    <link rel="stylesheet" href="../static/css/jquery.fileupload-ui.css">
-    <script type="text/javascript" src="../static/bower_components/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="../static/bower_components/moment/min/moment.min.js"></script>
-    <script type="text/javascript" src="../static/bower_components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../static/bower_components/jquery-ui/ui/jquery-ui.js"></script>
-    <script type="text/javascript" src="../static/bower_components/jquery-ui/ui/jquery.ui.widget.js"></script>
 
-    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.fileupload.js"></script>
-    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.fileupload-process.js"></script>
-{#    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.fileupload-validate.js"></script>#}
-    <script type="text/javascript" src="../static/bower_components/jquery-file-upload/js/jquery.fileupload-angular.js"></script>
-    <script src="../static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="../static/js/bootstrap-sortable.js"></script>
+    <link href="{{ url_for('static', filename='css/bootstrap-sortable.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='bower_components/font-awesome/css/font-awesome.min.css') }}"
+          rel="stylesheet">
+    <!--link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700" rel="stylesheet" type="text/css"-->
+    <link href="{{ url_for('static', filename='css/sticky-footer-navbar.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.fileupload.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.fileupload-ui.css') }}">
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/moment/min/moment.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/angular/angular.min.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/jquery-ui/ui/jquery-ui.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/jquery-ui/ui/jquery.ui.widget.js') }}"></script>
+
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/jquery-file-upload/js/jquery.iframe-transport.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/jquery-file-upload/js/jquery.fileupload.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/jquery-file-upload/js/jquery.fileupload-process.js') }}"></script>
+    {#
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/jquery-file-upload/js/jquery.fileupload-validate.js') }}"></script>
+    #}
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/jquery-file-upload/js/jquery.fileupload-angular.js') }}"></script>
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-sortable.js') }}"></script>
 </head>
 <body class="">
 
@@ -83,7 +99,7 @@
     </div>
 {% endblock footer %}
 
-<script src="../static/js/table.format.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='') }}"></script>
 <!-- <script src="../static/js/my.file.upload.js"></script> -->
 <!-- <script src="../static/js/spin.min.js"></script>
 <script src="../static/js/ladda.min.js"></script>

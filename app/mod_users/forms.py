@@ -1,7 +1,6 @@
 from wtforms.validators import Required, Email, EqualTo
 from wtforms import TextField, PasswordField
-from flask.ext.wtf import Form, validators
-
+from flask.ext.wtf import Form, validators, RecaptchaField
 
 from app.mod_users.models import User
 from app import db
@@ -33,6 +32,7 @@ class RegistrationForm(Form):
     email = TextField(validators=[Email()])
     password = PasswordField(validators=[Required(), EqualTo('confirm_password', message='Passwords did not match')])
     confirm_password = PasswordField(validators=[Required()])
+    recaptcha = RecaptchaField()
 
     def validate_login(self, field):
         if db.session.query(User).filter_by(username=self.username.data).count() > 0:
