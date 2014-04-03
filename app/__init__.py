@@ -11,6 +11,7 @@ from flask import Flask, render_template, url_for
 from flask.ext.restful import Api
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
+from flask.ext.ldap import LDAP
 from flask_mail import Mail
 
 # Define the WSGI application object
@@ -18,14 +19,18 @@ from flask_mail import Mail
 app = Flask(__name__)
 
 # Configurations
-app.config.from_object('settings.DebugConfiguration')
+app.config.from_object('settings.BaseConfiguration')
 
 # Define the database object which is imported
 # by modules and controllers
 db = SQLAlchemy(app)
 #
 mail = Mail(app)
-#
+# LDAP Login
+# ldap = LDAP(app)
+# # TODO - Test out LDAP
+# app.add_url_rule('/login', 'login', ldap.login, methods=['GET', 'POST'])
+# Regular Login
 login_manager = LoginManager(app)
 
 # Import a module / component using its blueprint handler variable (mod_auth)

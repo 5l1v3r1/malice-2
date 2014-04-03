@@ -30,6 +30,13 @@ Github: https://github.com/black-top/malice
 # Server: smtp.example.com
 # Port: 465
 
+[LDAP]
+# LDAP_HOST: 'ldap.example.com'
+# LDAP_DOMAIN" 'example.com'
+# LDAP_AUTH_TEMPLATE: 'login.html'
+# LDAP_PROFILE_KEY: 'employeeID'
+# LDAP_AUTH_VIEW: 'login'
+
 [reCAPTCHA]
 # PublicKey: pubkey
 # PrivateKey: privkey

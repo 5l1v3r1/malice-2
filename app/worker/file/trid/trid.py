@@ -2,6 +2,7 @@ from os import unlink
 from os.path import exists
 import tempfile
 import envoy
+from lib.common.out import print_error
 
 __author__ = 'Josh Maine'
 
@@ -29,9 +30,15 @@ class TrID():
         with open(name, "wb") as f:
             f.write(self.data)
         #: Run exiftool on tmp file
-        r = envoy.run('/opt/trid/trid ' + name, timeout=15)
-        #: delete tmp file
-        unlink(name)
-        exists(name)
-        #: return key, stdout as a dictionary
-        return 'trid', self.format_output(r.std_out.split(name)[-1])
+        try:
+            r = envoy.run('/opt/trid/trid ' + name, timeout=15)
+        except AttributeError:
+            print_error('ERROR: TrID Failed.')
+            return 'trid', dict(error='TrID failed to run.')
+        else:
+            #: return key, stdout as a dictionary
+            return 'trid', self.format_output(r.std_out.split(name)[-1])
+        finally:
+            #: delete tmp file
+            unlink(name)
+            # exists(name)

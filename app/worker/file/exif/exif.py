@@ -2,6 +2,7 @@ from os import unlink
 from os.path import exists
 import tempfile
 import envoy
+from lib.common.out import print_error
 
 __author__ = 'Josh Maine'
 
@@ -29,9 +30,15 @@ class Exif():
         with open(name, "wb") as f:
             f.write(self.data)
         #: Run exiftool on tmp file
-        r = envoy.run('exiftool ' + name, timeout=15)
-        #: delete tmp file
-        unlink(name)
-        exists(name)
-        #: return key, stdout as a dictionary
-        return 'exif', self.format_output(r.std_out)
+        try:
+            r = envoy.run('exiftool ' + name, timeout=15)
+        except AttributeError:
+            print_error('ERROR: Exif Failed.')
+            return 'trid', dict(error='Exiftool failed to run.')
+        else:
+            #: return key, stdout as a dictionary
+            return 'exif', self.format_output(r.std_out)
+        finally:
+            #: delete tmp file
+            unlink(name)
+            # exists(name)

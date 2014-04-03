@@ -12,6 +12,10 @@ req_packages:
             - libgeoip-dev
             - libxml2-dev
             - libxslt1-dev
+            # Needed for LDAP
+            - libldap2-dev
+            - libsasl2-dev
+            - libssl-dev
 
 /home/vagrant/malice/venv:
     virtualenv.managed:

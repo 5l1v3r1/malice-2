@@ -11,6 +11,7 @@ Flask-Script
 Flask-Uploads
 Flask-WTF
 Flask-Login
+Flask-LDAP
 Flask-Mail
 Foundations
 Jinja2
@@ -55,3 +56,4 @@ python-magic
 prettytable
 envoy
 pydeep
+psutil

@@ -95,7 +95,11 @@ class clamav_engine(AbstractEvilnessEngine):
 
     def _scan(self, file_object):
         self._connect()
-        return pyclamd.scan_stream(file_object.all_content)
+        try:
+            return pyclamd.scan_stream(file_object.all_content)
+        except (ValueError, pyclamd.BufferTooLong):
+            print "ERROR: File to large to scan as a stream"
+            return None
 
     def _parse_scan_result(self, scan_result):
 

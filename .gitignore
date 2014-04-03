@@ -119,6 +119,9 @@ drafts/
 # user database
 *.db
 
+# file hash bloomfilter
+*.bloom
+
 # AV Binaries/Licenses
 install-media/
 install_media/

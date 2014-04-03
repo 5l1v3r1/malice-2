@@ -24,7 +24,7 @@ class BaseConfiguration(object):
     # using 2 per available processor cores - to handle
     # incoming requests using one and performing background
     # operations using the other.
-    THREADS_PER_PAGE = 2 * psutil.NUM_CPUS
+    THREADS_PER_PAGE = 2 #* psutil.NUM_CPUS
 
     # Enable protection agains *Cross-site Request Forgery (CSRF)*
     CSRF_ENABLED = True
@@ -50,6 +50,12 @@ class BaseConfiguration(object):
     MAIL_PASSWORD = config.get('Email', 'Password')
     DEFAULT_MAIL_SENDER = ADMINS
 
+    LDAP_HOST = config.get('LDAP', 'LDAP_HOST')
+    LDAP_DOMAIN = config.get('LDAP', 'LDAP_DOMAIN')
+    LDAP_AUTH_TEMPLATE = config.get('LDAP', 'LDAP_AUTH_TEMPLATE')
+    LDAP_PROFILE_KEY = config.get('LDAP', 'LDAP_PROFILE_KEY')
+    LDAP_AUTH_VIEW = config.get('LDAP', 'LDAP_AUTH_VIEW')
+
     RECAPTCHA_USE_SSL = False
     RECAPTCHA_PUBLIC_KEY = config.get('reCAPTCHA', 'PublicKey')
     RECAPTCHA_PRIVATE_KEY = config.get('reCAPTCHA', 'PrivateKey')
@@ -67,4 +73,4 @@ class TestConfiguration(BaseConfiguration):
 
 class DebugConfiguration(BaseConfiguration):
     DEBUG = True
-    SQLALCHEMY_ECHO = True
+    # SQLALCHEMY_ECHO = True

@@ -1,8 +1,17 @@
 # -*- coding: utf-8 -*-
 from flask.ext.login import login_required
 from flask_wtf.csrf import CsrfProtect
+from werkzeug.utils import secure_filename
 from rethinkdb.errors import RqlDriverError
 import ConfigParser
+
+import os
+from app.scans import *
+from lib.common.pagination import Pagination
+from lib.common.utils import parse_hash_list
+from lib.core.database import is_hash_in_db, insert_in_samples_db, update_sample_in_db, db_insert
+from app import app
+from forms import SearchForm
 
 try:
     import pydeep
@@ -13,13 +22,12 @@ try:
 except ImportError:
     pass
 
-import os
-from app.scans import *
-from lib.common.utils import parse_hash_list
-from lib.core.database import is_hash_in_db, insert_in_samples_db, update_sample_in_db, db_insert
-from app import app
-from forms import SearchForm
+from pybloomfilter import BloomFilter
 
+if os.path.isfile('filter.bloom'):
+    bf = BloomFilter.open('filter.bloom')
+else:
+    bf = BloomFilter(10000000, 0.01, 'filter.bloom')
 
 __author__ = 'Josh Maine'
 
@@ -58,6 +66,7 @@ def allowed_file(filename):
 
 
 @app.route('/', methods=['GET', 'POST'])
+# @ldap.login_required
 # @login_required
 def index():
     form = SearchForm(request.form)
@@ -67,6 +76,7 @@ def index():
 
 
 @app.route('/intel', methods=['GET', 'POST'])
+# @ldap.login_required
 # @login_required
 def intel():
     form = SearchForm(request.form)
@@ -125,34 +135,40 @@ def update_upload_file_metadata(sample):
 
 # @csrf.exempt
 @app.route('/upload', methods=['POST'])
+# @ldap.login_required
 # @login_required
 def upload():
-    # form = SearchForm(request.form)
+    form = SearchForm(request.form)
     if request.method == 'POST':
         # TODO: use secure_filename
         for upload_file in request.files.getlist('files[]'):
             file_stream = upload_file.stream.read()
-            #: Collect upload file data
-            sample = {'filename': upload_file.filename,
-                      'sha1': hashlib.sha1(file_stream).hexdigest().upper(),
-                      'sha256': hashlib.sha256(file_stream).hexdigest().upper(),
-                      'md5': hashlib.md5(file_stream).hexdigest().upper(),
-                      'ssdeep': pydeep.hash_buf(file_stream),
-                      'filesize': len(file_stream),
-                      'filetype': magic.from_buffer(file_stream),
-                      'filemime': upload_file.mimetype,
-                      'upload_date': r.now(),
-                      'uploaded_by': "jmaine",  # g.user
-                      'detection_ratio': dict(infected=0, count=0),
-                      'filestatus': 'Processing'}
-            insert_in_samples_db(sample)
-            update_upload_file_metadata(sample)
-            #: Run all configured scanners
-            sample['detection_ratio'] = scan_upload(file_stream, sample)
-            #: Done Processing File
-            sample['filestatus'] = 'Complete'
-            sample['scancomplete'] = r.now()
-            update_sample_in_db(sample)
+            file_md5 = hashlib.md5(file_stream).hexdigest().upper()
+            #: Add file hash to Bloomfilter unless it is already there
+            #: Check if user wishes to force a sample rescan
+            if file_md5 not in bf or form.force.data:
+                bf.add(file_md5)
+                #: Collect upload file data
+                sample = {'filename': secure_filename(upload_file.filename.encode('utf-8')),
+                          'sha1': hashlib.sha1(file_stream).hexdigest().upper(),
+                          'sha256': hashlib.sha256(file_stream).hexdigest().upper(),
+                          'md5': file_md5,
+                          'ssdeep': pydeep.hash_buf(file_stream),
+                          'filesize': len(file_stream),
+                          'filetype': magic.from_buffer(file_stream),
+                          'filemime': upload_file.mimetype,
+                          'upload_date': r.now(),
+                          'uploaded_by': "jmaine", # g.user
+                          'detection_ratio': dict(infected=0, count=0),
+                          'filestatus': 'Processing'}
+                insert_in_samples_db(sample)
+                update_upload_file_metadata(sample)
+                #: Run all configured scanners
+                sample['detection_ratio'] = scan_upload(file_stream, sample)
+                #: Done Processing File
+                sample['filestatus'] = 'Complete'
+                sample['scancomplete'] = r.now()
+                update_sample_in_db(sample)
         #: Once Finished redirect user to the samples page
         return redirect(url_for('samples'))
     return render_template('samples.html')
@@ -201,6 +217,7 @@ def parse_sample_data(found):
 
 
 @app.route('/sample/<id>', methods=['GET', 'POST'])
+# @ldap.login_required
 # @login_required
 def sample(id):
     #: Check sample id is valid hash value
@@ -216,23 +233,36 @@ def sample(id):
     return render_template('analysis.html', sample=found, file=file_metadata, tags=tags, pe=pe, exif=exif, trid=trid,
                            av_results=av_results, metascan_results=metascan_results, detection_ratio=detection_ratio)
 
-
-@app.route('/samples', methods=['GET'])
+@app.route('/samples/', defaults={'page': 1})
+@app.route('/samples/page/<int:page>', methods=['GET'])
+# @ldap.login_required
 # @login_required
-def samples():
-    # TODO : Get current status of samples and pass sample list to page
-    # TODO : Create Pageinated table to display samples
-    samples = list(r.table('samples').order_by(r.desc('upload_date')).run(g.rdb_sample_conn))
-    return render_template('samples.html', samples=samples, my_github=github)
+def samples(page):
+    PER_PAGE = 30
+    total_sample_count = r.table('samples').count().run(g.rdb_sample_conn)
+    if total_sample_count < (page - 1) * PER_PAGE or page < 1:
+        abort(404)
+    skip = (page - 1) * PER_PAGE
+    if (total_sample_count - skip) > PER_PAGE:
+        limit = PER_PAGE
+    else:
+        limit = total_sample_count - skip
+    # set up the pagination params, set count later
+    p = Pagination(total=total_sample_count, per_page=PER_PAGE, current_page=page)
+    samples = list(r.table('samples').order_by(r.desc('upload_date')).skip(skip).limit(limit).run(g.rdb_sample_conn))
+
+    return render_template('samples.html', samples=samples, per_page=PER_PAGE, pagination=p, my_github=github)
 
 
 @app.route('/system', methods=['GET'])
+# @ldap.login_required
 @login_required
 def system():
     return render_template('system.html', my_github=github)
 
 
 @app.route('/help', methods=['GET'])
+# @ldap.login_required
 @login_required
 def help():
     url = config.get('SITE', 'Url')
