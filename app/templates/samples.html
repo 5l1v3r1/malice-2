@@ -46,8 +46,8 @@
             </tbody>
         </table>
     </div>
-    <div class="pagination">
-        <ul>
+    <div class="col-md-12 text-center">
+        <ul class="pagination">
             <li{% if not pagination.prev_page %} class="disabled"{% endif %}><a
                     {% if pagination.prev_page %}
                         href="{{ url_for('samples', page=pagination.prev_page) }}"
