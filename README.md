@@ -2,5 +2,6 @@
 
 malice
 ======
+[![Build Status](https://drone.io/github.com/blacktop/malice/status.png)](https://drone.io/github.com/blacktop/malice/latest)
 
 VirusTotal Wanna Be
