@@ -17,7 +17,7 @@ def split_seq(iterable, size):
 
 
 def parse_hash_list(data):
-    found_hashes = re.findall('([0-9a-fA-F]{64}|[0-9a-fA-F]{40}|[0-9a-fA-F]{32})', data)
+    found_hashes = re.findall('((?i)(?<![a-z0-9])[a-fA-F0-9]{32}(?![a-z0-9])|(?i)(?<![a-z0-9])[a-fA-F0-9]{40}(?![a-z0-9])|(?i)(?<![a-z0-9])[a-fA-F0-9]{64}(?![a-z0-9]))', data)
     hash_list = list(set(found_hashes))
     if len(hash_list) == 1:
         return hash_list[0]
