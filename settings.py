@@ -7,9 +7,10 @@ import ConfigParser
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static/uploads')
+# TODO - Store copies of uploaded binaries in S3 for a month (or permanently) so that Malice can auto rescan
+# UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static/uploads')
 
-config = ConfigParser.ConfigParser()
+config = ConfigParser.SafeConfigParser()
 config.read(os.path.join(BASE_DIR, 'conf/config.cfg'))
 
 class BaseConfiguration(object):
@@ -32,8 +33,10 @@ class BaseConfiguration(object):
     # Use a secure, unique and absolutely secret key for
     # signing the data.
     CSRF_SESSION_KEY = os.urandom(24)
-
-    ADMINS = frozenset([config.get('SITE', 'Email')])
+    if config.has_section('SITE'):
+        ADMINS = frozenset([config.get('SITE', 'Email')])
+    else:
+        ADMINS = frozenset(['example@test.com'])
     # Secret key for signing cookies
     SECRET_KEY = os.urandom(24)
 
@@ -41,25 +44,28 @@ class BaseConfiguration(object):
     DEBUG = False
     TESTING = False
 
-    MAIL_SERVER = config.get('Email', 'Server')
-    MAIL_PORT = config.get('Email', 'Port')
-    MAIL_USE_TLS = False
-    MAIL_USE_SSL = True
-    MAIL_DEBUG = DEBUG
-    MAIL_USERNAME = config.get('Email', 'Username')
-    MAIL_PASSWORD = config.get('Email', 'Password')
-    DEFAULT_MAIL_SENDER = ADMINS
+    if config.has_section('Email'):
+        MAIL_SERVER = config.get('Email', 'Server')
+        MAIL_PORT = config.get('Email', 'Port')
+        MAIL_USE_TLS = False
+        MAIL_USE_SSL = True
+        MAIL_DEBUG = DEBUG
+        MAIL_USERNAME = config.get('Email', 'Username')
+        MAIL_PASSWORD = config.get('Email', 'Password')
+        DEFAULT_MAIL_SENDER = ADMINS
 
-    LDAP_HOST = config.get('LDAP', 'LDAP_HOST')
-    LDAP_DOMAIN = config.get('LDAP', 'LDAP_DOMAIN')
-    LDAP_AUTH_TEMPLATE = config.get('LDAP', 'LDAP_AUTH_TEMPLATE')
-    LDAP_PROFILE_KEY = config.get('LDAP', 'LDAP_PROFILE_KEY')
-    LDAP_AUTH_VIEW = config.get('LDAP', 'LDAP_AUTH_VIEW')
+    if config.has_section('LDAP'):
+        LDAP_HOST = config.get('LDAP', 'LDAP_HOST')
+        LDAP_DOMAIN = config.get('LDAP', 'LDAP_DOMAIN')
+        LDAP_AUTH_TEMPLATE = config.get('LDAP', 'LDAP_AUTH_TEMPLATE')
+        LDAP_PROFILE_KEY = config.get('LDAP', 'LDAP_PROFILE_KEY')
+        LDAP_AUTH_VIEW = config.get('LDAP', 'LDAP_AUTH_VIEW')
 
-    RECAPTCHA_USE_SSL = False
-    RECAPTCHA_PUBLIC_KEY = config.get('reCAPTCHA', 'PublicKey')
-    RECAPTCHA_PRIVATE_KEY = config.get('reCAPTCHA', 'PrivateKey')
-    RECAPTCHA_OPTIONS = {'theme': 'white'}
+    if config.has_section('reCAPTCHA'):
+        RECAPTCHA_USE_SSL = False
+        RECAPTCHA_PUBLIC_KEY = config.get('reCAPTCHA', 'PublicKey')
+        RECAPTCHA_PRIVATE_KEY = config.get('reCAPTCHA', 'PrivateKey')
+        RECAPTCHA_OPTIONS = {'theme': 'white'}
 
 
 class TestConfiguration(BaseConfiguration):

@@ -33,9 +33,9 @@ __author__ = 'Josh Maine'
 
 # csrf = CsrfProtect(app)
 
-config = ConfigParser.ConfigParser()
-config.read(os.path.join(app.root_path, '..', 'conf/config.cfg'))
-github = config.get('SITE', 'Github')
+# config = ConfigParser.SafeConfigParser()
+# config.read(os.path.join(app.root_path, '..', 'conf/config.cfg'))
+github = 'https://github.com/blacktop/malice' # config.get('SITE', 'Github')
 
 # open connection before each request
 @app.before_request
