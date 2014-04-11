@@ -22,7 +22,7 @@ if config.has_section('VirusTotal'):
     else:
         vt = vtPubAPI(config.get('VirusTotal', 'PublicApiKey'))
 else:
-    vt = vtPubAPI()
+    vt = vtPubAPI('test_key')
 
 
 # @job('low', connection=Redis(), timeout=50)
