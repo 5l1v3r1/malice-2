@@ -2,7 +2,11 @@ __author__ = 'Josh Maine'
 
 # Define the application directory
 import os
-import psutil
+
+try:
+    import psutil
+except ImportError:
+    pass
 import ConfigParser
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))

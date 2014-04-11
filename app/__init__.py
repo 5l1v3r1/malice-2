@@ -11,8 +11,15 @@ from flask import Flask, render_template, url_for
 from flask.ext.restful import Api
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
-from flask.ext.ldap import LDAP
-from flask_mail import Mail
+
+try:
+    from flask.ext.ldap import LDAP
+except ImportError:
+    pass
+try:
+    from flask_mail import Mail
+except ImportError:
+    pass
 
 # Define the WSGI application object
 # app = Flask(__name__, instance_path='../conf')

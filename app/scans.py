@@ -392,7 +392,10 @@ def pdfid_scan(file, file_md5):
 
 def run_metascan(file, file_md5):
     # TODO : remove these hardcoded creds
-    meta_scan = MetaScan(ip=config.get('Metascan', 'IP'), port=config.get('Metascan', 'Port'))
+    if config.has_section('Metascan'):
+        meta_scan = MetaScan(ip=config.get('Metascan', 'IP'), port=config.get('Metascan', 'Port'))
+    else:
+        meta_scan = MetaScan(ip='127.0.0.1', port='8008')
     if meta_scan.connected:
         results = meta_scan.scan_file_stream_and_get_results(file)
         if results.status_code != 200:
