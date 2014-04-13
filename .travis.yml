@@ -1,10 +1,29 @@
 language: python
 python:
-  - "2.6"
+#  - "2.6"
   - "2.7"
-  - "3.2"
-  - "3.3"
-# command to install dependencies
+#  - "3.2"
+#  - "3.3"
+# command to install apt dependencies 
+before_install:
+  - sudo apt-get update -qq
+  # Install ssdeep
+  - sudo apt-get install libfuzzy2
+  - sudo apt-get install libfuzzy-dev
+  - sudo apt-get install ssdeep
+  # Install GeoIP
+  - sudo apt-get install libgeoip-dev
+  - sudo apt-get install libxml2-dev
+  - sudo apt-get install libxslt1-dev
+  # Install LDAP
+  - sudo apt-get install libldap2-dev
+  - sudo apt-get install libsasl2-dev
+  - sudo apt-get install libssl-dev
+  # Install RethinkDB
+  - sudo add-apt-repository ppa:rethinkdb/ppa
+  - sudo apt-get update -q
+  - sudo apt-get install rethinkdb
+# command to install pip dependencies
 install: "pip install -r requirements.txt"
 # command to run tests
 script: nosetests
