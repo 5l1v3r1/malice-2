@@ -3,6 +3,7 @@ from flask.ext.login import login_required
 from flask_wtf.csrf import CsrfProtect
 from werkzeug.utils import secure_filename
 from rethinkdb.errors import RqlDriverError
+from flask import current_app
 import ConfigParser
 
 import os
@@ -22,7 +23,10 @@ try:
 except ImportError:
     pass
 
-from pybloomfilter import BloomFilter
+try:
+    from pybloomfilter import BloomFilter
+except ImportError:
+    pass
 
 if os.path.isfile('filter.bloom'):
     bf = BloomFilter.open('filter.bloom')
@@ -238,20 +242,20 @@ def sample(id):
 # @ldap.login_required
 # @login_required
 def samples(page):
-    PER_PAGE = 30
+    samples_per_page = current_app.config['SAMPLES_PER_PAGE']
     total_sample_count = r.table('samples').count().run(g.rdb_sample_conn)
-    if total_sample_count < (page - 1) * PER_PAGE or page < 1:
+    if total_sample_count < (page - 1) * samples_per_page or page < 1:
         abort(404)
-    skip = (page - 1) * PER_PAGE
-    if (total_sample_count - skip) > PER_PAGE:
-        limit = PER_PAGE
+    skip = (page - 1) * samples_per_page
+    if (total_sample_count - skip) > samples_per_page:
+        limit = samples_per_page
     else:
         limit = total_sample_count - skip
     # set up the pagination params, set count later
-    p = Pagination(total=total_sample_count, per_page=PER_PAGE, current_page=page)
+    p = Pagination(total=total_sample_count, per_page=samples_per_page, current_page=page)
     samples = list(r.table('samples').order_by(r.desc('upload_date')).skip(skip).limit(limit).run(g.rdb_sample_conn))
 
-    return render_template('samples.html', samples=samples, per_page=PER_PAGE, pagination=p, my_github=github)
+    return render_template('samples.html', samples=samples, per_page=samples_per_page, pagination=p, my_github=github)
 
 
 @app.route('/system', methods=['GET'])

@@ -4,17 +4,17 @@
 base:
   '*':
     - core
-    - nginx
+#    - nginx
     - python
-    - uwsgi
-    - rethinkdb
+#    - uwsgi
+#    - rethinkdb
 #    - mongodb
     - redis
-    - nodejs
+#    - nodejs
     - requirements
-    - trid
-    - exif
-    - clamav
+#    - trid
+#    - exif
+#    - clamav
 #    - avg
 #    - eset
 #    - kaspersky
