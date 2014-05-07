@@ -55,11 +55,9 @@ def batch_query_virustotal(new_hash_list):
 def single_query_virustotal(new_hash):
     data = {}
     response = vt.get_file_report(new_hash)
-    error = vt.handle_response_status_code(response)
-    if error:
-        flash(error)
-    else:
-        vt_result = response.json()
+    # error = vt.handle_response_status_code(response)
+    if response['response_code'] == 200:
+        vt_result = response['results']
         if vt_result['response_code']:
             # print "Evilness: %d" % vt_result['positives']
             data['md5'] = vt_result['md5'].upper()
@@ -69,3 +67,5 @@ def single_query_virustotal(new_hash):
         data['VirusTotal'] = vt_result
         db_insert(data)
         data.clear()
+    else:
+        flash(response['error'])

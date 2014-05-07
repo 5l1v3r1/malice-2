@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from app.mod_api.decorators import get_view_rate_limit, ratelimit
-from werkzeug.utils import secure_filename
-from flask import Blueprint, render_template, flash, redirect, session, url_for, request, g, jsonify
-from flask_wtf.csrf import CsrfProtect
+__author__ = 'Josh Maine'
 
-from app import app, db
+from .decorators import get_view_rate_limit, ratelimit
+from werkzeug.utils import secure_filename
+from flask import request, g, jsonify
+from flask_wtf.csrf import CsrfProtect
+# TODO : FIX THIS!
+from . import mod_api as api
 
 import hashlib
 import rethinkdb as r
@@ -14,8 +16,6 @@ from app.scans import single_hash_search, batch_search_hash, scan_upload
 from app.views import update_upload_file_metadata
 from lib.common.utils import parse_hash_list, list_to_string
 from lib.core.database import insert_in_samples_db, update_sample_in_db, is_hash_in_db
-
-__author__ = 'Josh Maine'
 
 try:
     import pydeep
@@ -26,10 +26,9 @@ try:
 except ImportError:
     pass
 
-mod_api = Blueprint('api', __name__, url_prefix='/api/v1')
 # csrf = CsrfProtect(app)
 
-@mod_api.route('/search/file', methods=['GET'])
+@api.route('/search/file', methods=['GET'])
 @ratelimit(limit=300, per=60 * 15)
 def search_view():
     arg_hash = request.args['md5']
@@ -44,7 +43,7 @@ def search_view():
         return 'Missing Parameters', 400
 
 
-@mod_api.route('/search/files', methods=['GET'])
+@api.route('/search/files', methods=['GET'])
 @ratelimit(limit=300, per=60 * 15)
 def batch_search_view():
     arg_hash = request.args.getlist('md5')
@@ -61,7 +60,7 @@ def batch_search_view():
         return jsonify(dict(error='Missing Parameters', response=400)), 400
 
 # @csrf.exempt
-@mod_api.route('/file/scan', methods=['POST'])
+@api.route('/file/scan', methods=['POST'])
 @ratelimit(limit=300, per=60 * 15)
 def upload_view():
     upload_file = request.files['file']
@@ -96,13 +95,13 @@ def upload_view():
     else:
         return jsonify(dict(error='Missing Parameters', response=400)), 400
 
-@mod_api.route('/file/report', methods=['GET'])
+@api.route('/file/report', methods=['GET'])
 @ratelimit(limit=300, per=60 * 15)
 def report_view():
     pass
 
 
-@mod_api.after_request
+@api.after_request
 def inject_x_rate_headers(response):
     limit = get_view_rate_limit()
     if limit and limit.send_x_headers:

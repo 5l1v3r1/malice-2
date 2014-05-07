@@ -12,7 +12,7 @@ def validate_login(form, field):
     if user is None:
         raise validators.ValidationError('Invalid user')
 
-    if not user.check_password(form.password.data):
+    if not user.verify_password(form.password.data):
         raise validators.ValidationError('Invalid password')
 
         # if email is None:
@@ -20,7 +20,7 @@ def validate_login(form, field):
 
 
 class LoginForm(Form):
-    name = TextField(validators=[Required()])
+    username = TextField(validators=[Required()])
     password = PasswordField(validators=[Required(), validate_login])
 
     def get_user(self):
@@ -28,7 +28,7 @@ class LoginForm(Form):
 
 
 class RegistrationForm(Form):
-    name = TextField(validators=[Required()])
+    username = TextField(validators=[Required()])
     email = TextField(validators=[Email()])
     password = PasswordField(validators=[Required(), EqualTo('confirm_password', message='Passwords did not match')])
     confirm_password = PasswordField(validators=[Required()])

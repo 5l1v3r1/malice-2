@@ -17,6 +17,7 @@
 [SITE]
 Url: malice.com
 Email: yourname@malice.com
+ErrorEmail: support@malice.com
 Github: https://github.com/black-top/malice
 
 [Proxie]

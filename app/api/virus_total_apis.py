@@ -212,7 +212,7 @@ class PublicApi():
         :return: dict containing the JSON response and/or the status code with error string.
         """
         if response.status_code == requests.codes.ok:
-            return response.json()
+            return dict(results=response.json(), response_code=response.status_code)
         elif response.status_code == 204:
             return dict(error='You exceed the public API request rate limit (4 requests of any nature per minute',
                         response_code=response.status_code)
@@ -782,7 +782,7 @@ class IntelApi():
         :return: dict containing the JSON response and/or the status code with error string.
         """
         if response.status_code == requests.codes.ok:
-            return response.json()
+            return dict(results=response.json(), response_code=response.status_code)
         elif response.status_code == 204:
             return dict(error='You exceed the public API request rate limit (4 requests of any nature per minute',
                         response_code=response.status_code)
