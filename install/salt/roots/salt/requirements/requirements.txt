@@ -57,3 +57,4 @@ prettytable
 envoy
 pydeep
 psutil
+pybloomfiltermmap

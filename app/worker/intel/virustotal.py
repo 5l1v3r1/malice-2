@@ -15,11 +15,14 @@ _current_dir = os.path.abspath(os.path.dirname(__file__))
 BIT9_ROOT = os.path.normpath(os.path.join(_current_dir, "..", "..", ".."))
 config = ConfigParser.SafeConfigParser()
 config.read(os.path.join(BIT9_ROOT, 'conf/config.cfg'))
-if config.has_option('Proxie', 'HTTP') and config.has_option('Proxie', 'HTTPS'):
-    vt = vtPubAPI(config.get('VirusTotal', 'PublicApiKey'),
-                  dict(http=config.get('Proxie', 'HTTP'), https=config.get('Proxie', 'HTTPS')))
+if config.has_section('VirusTotal'):
+    if config.has_option('Proxie', 'HTTP') and config.has_option('Proxie', 'HTTPS'):
+        vt = vtPubAPI(config.get('VirusTotal', 'PublicApiKey'),
+                      dict(http=config.get('Proxie', 'HTTP'), https=config.get('Proxie', 'HTTPS')))
+    else:
+        vt = vtPubAPI(config.get('VirusTotal', 'PublicApiKey'))
 else:
-    vt = vtPubAPI(config.get('VirusTotal', 'PublicApiKey'))
+    vt = vtPubAPI('test_key')
 
 
 # @job('low', connection=Redis(), timeout=50)

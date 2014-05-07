@@ -13,11 +13,14 @@ _current_dir = os.path.abspath(os.path.dirname(__file__))
 BIT9_ROOT = os.path.normpath(os.path.join(_current_dir, "..", "..", ".."))
 config = ConfigParser.SafeConfigParser()
 config.read(os.path.join(BIT9_ROOT, 'conf/config.cfg'))
-if config.has_option('Proxie', 'HTTP') and config.has_option('Proxie', 'HTTPS'):
-    bit9 = Bit9Api(config.get('Bit9', 'User'), config.get('Bit9', 'Password'),
-                   dict(http=config.get('Proxie', 'HTTP'), https=config.get('Proxie', 'HTTPS')))
+if config.has_section('Bit9'):
+    if config.has_option('Proxie', 'HTTP') and config.has_option('Proxie', 'HTTPS'):
+        bit9 = Bit9Api(config.get('Bit9', 'User'), config.get('Bit9', 'Password'),
+                       dict(http=config.get('Proxie', 'HTTP'), https=config.get('Proxie', 'HTTPS')))
+    else:
+        bit9 = Bit9Api(config.get('Bit9', 'User'), config.get('Bit9', 'Password'))
 else:
-    bit9 = Bit9Api(config.get('Bit9', 'User'), config.get('Bit9', 'Password'))
+    bit9 = Bit9Api()
 
 # @job('low', connection=Redis(), timeout=50)
 def batch_query_bit9(new_hash_list):
