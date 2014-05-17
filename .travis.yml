@@ -23,7 +23,7 @@ before_install:
   - sudo apt-get install libsasl2-dev
   - sudo apt-get install libssl-dev
 # command to install pip dependencies
-install: "pip install -r requirements.txt"
+install: "pip install -q -r requirements.txt"
 # command to set environment variables
 before_script:
   - export CSRF_SESSION_KEY=test_secret
@@ -41,7 +41,7 @@ before_script:
   - export LDAP_AUTH_VIEW=login
   - export CAPTCHA_PUBKEY=pubkey
   - export CAPTCHA_PRIVKEY=privkey
-  - sudo rethinkdb
+  - sudo rethinkdb &
 #services:
 #  - mongodb
 # command to run tests
