@@ -42,5 +42,8 @@ before_script:
   - export LDAP_AUTH_VIEW=login
   - export CAPTCHA_PUBKEY=pubkey
   - export CAPTCHA_PRIVKEY=privkey
+  - rethinkdb
+#services:
+#  - mongodb
 # command to run tests
 script: "python manage.py runserver"
