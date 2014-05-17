@@ -6,7 +6,7 @@
             </h1>
         </div>
 
-        <form id="fileupload" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data"
+        <form id="fileupload" action="{{ url_for('malice.upload') }}" method="POST" enctype="multipart/form-data"
               data-ng-app="demo" data-ng-controller="DemoFileUploadController" data-file-upload="options"
               data-ng-class="{'fileupload-processing': processing() || loadingFiles}"
               class="ng-scope ng-pristine ng-valid">

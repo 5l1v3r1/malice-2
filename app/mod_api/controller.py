@@ -4,16 +4,14 @@ __author__ = 'Josh Maine'
 
 from .decorators import get_view_rate_limit, ratelimit
 from werkzeug.utils import secure_filename
-from flask import request, g, jsonify
-from flask_wtf.csrf import CsrfProtect
 # TODO : FIX THIS!
-from . import mod_api as api
+from app import mod_api as api
 
 import hashlib
 import rethinkdb as r
 
-from app.scans import single_hash_search, batch_search_hash, scan_upload
-from app.views import update_upload_file_metadata
+from app.malice.scans import single_hash_search, batch_search_hash, scan_upload
+from app.malice.routes import update_upload_file_metadata
 from lib.common.utils import parse_hash_list, list_to_string
 from lib.core.database import insert_in_samples_db, update_sample_in_db, is_hash_in_db
 

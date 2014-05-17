@@ -1,5 +1,13 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# ███╗   ███╗ █████╗ ██╗     ██╗ ██████╗███████╗
+# ████╗ ████║██╔══██╗██║     ██║██╔════╝██╔════╝
+# ██╔████╔██║███████║██║     ██║██║     █████╗
+# ██║╚██╔╝██║██╔══██║██║     ██║██║     ██╔══╝
+# ██║ ╚═╝ ██║██║  ██║███████╗██║╚██████╗███████╗
+# ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝╚══════╝
+
 __author__ = 'Josh Maine'
 
 import os
@@ -14,6 +22,7 @@ if os.path.exists('.env'):
 from app import create_app, db
 from flask.ext.script import Manager
 from app.mod_users.models import User
+from lib.core.database import db_setup, destroy_db
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
@@ -45,6 +54,19 @@ def adduser(email, username, admin=False):
     db.session.add(user)
     db.session.commit()
     print('User {0} was registered successfully.'.format(username))
+
+
+@manager.command
+def deletedb():
+    destroy_db()
+    db.drop_all()
+    db_setup()
+
+
+@manager.command
+def runserver():
+    db_setup()
+    app.run(host='0.0.0.0', port=5000, threaded=True)
 
 
 if __name__ == '__main__':

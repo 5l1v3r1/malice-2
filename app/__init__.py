@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# ███╗   ███╗ █████╗ ██╗     ██╗ ██████╗███████╗
+# ████╗ ████║██╔══██╗██║     ██║██╔════╝██╔════╝
+# ██╔████╔██║███████║██║     ██║██║     █████╗
+# ██║╚██╔╝██║██╔══██║██║     ██║██║     ██╔══╝
+# ██║ ╚═╝ ██║██║  ██║███████╗██║╚██████╗███████╗
+# ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝╚══════╝
+
 __author__ = 'Josh Maine'
 
 from flask import Flask
@@ -60,34 +68,30 @@ def create_app(config_name):
     db.init_app(app)
     # pagedown.init_app(app)
     mail.init_app(app)
-    if not app.config['LOGIN_TYPE'] == 'LDAP':
-        login_manager.init_app(app)
-    else:
+    if app.config['USE_LDAP']:
         # LDAP Login
         ldap.init_app(app)
         # TODO : Test out LDAP
         app.add_url_rule('/login', 'login', ldap.login, methods=['GET', 'POST'])
+    else:
+        login_manager.init_app(app)
 
     # Register blueprint(s)
-    from app.mod_users.routes import mod_user as user_module
+    from .malice import malice as malice_blueprint
+    app.register_blueprint(malice_blueprint)
 
+    from app.mod_users.routes import mod_user as user_module
     app.register_blueprint(user_module, url_prefix='/auth')
 
-    from app.mod_api.controller import mod_api as api_module
-
-    app.register_blueprint(api_module, url_prefix='/api/v1')
+    # from app.mod_api.controller import mod_api as api_module
+    # app.register_blueprint(api_module, url_prefix='/api/v1')
 
     from app.emails import start_email_thread
-
     @app.before_first_request
     def before_first_request():
         start_email_thread()
 
     # from werkzeug.contrib.fixers import ProxyFix
     # app.wsgi_app = ProxyFix(app.wsgi_app)
-
+    # from app import views
     return app
-
-
-from app import views
-# from app.mod_api import routes

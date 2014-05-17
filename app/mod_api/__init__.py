@@ -6,7 +6,7 @@ from flask import Blueprint, request, g
 
 api = Blueprint('api', __name__)
 
-from mod_users.models import User
+from app.mod_users.models import User
 from . import errors
 
 

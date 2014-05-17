@@ -9,7 +9,7 @@ from functools import update_wrapper
 import functools
 import hashlib
 from flask import jsonify, request, url_for, current_app, make_response, g
-from .rate_limit import RateLimit
+# from app.mod_api.rate_limit import RateLimit
 from .errors import too_many_requests, precondition_failed, not_modified
 
 

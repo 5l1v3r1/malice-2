@@ -1,13 +1,11 @@
 from datetime import datetime
 import hashlib
-from markdown import markdown
-import bleach
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import request, current_app
 from flask.ext.login import UserMixin
 from app import db, login_manager
-from app.mixins import CRUDMixin
+from app.mod_users.mixins import CRUDMixin
 
 
 class User(UserMixin, CRUDMixin, db.Model):

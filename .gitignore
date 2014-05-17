@@ -118,6 +118,7 @@ drafts/
 
 # user database
 *.db
+*.sqlite
 
 # file hash bloomfilter
 *.bloom

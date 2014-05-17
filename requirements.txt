@@ -49,6 +49,7 @@ unittest2
 wsgiref
 xmltodict
 nose
+coverage
 pefile
 Flask-Moment
 python-magic

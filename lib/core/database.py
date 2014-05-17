@@ -1,8 +1,20 @@
-from flask import g, flash
-import rethinkdb as r
-from rethinkdb import RqlRuntimeError
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 __author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+
+from flask import g, flash
+from lib.common.exceptions import MaliceDependencyError
+
+try:
+    import rethinkdb as r
+    from rethinkdb import RqlRuntimeError
+except ImportError:
+    raise MaliceDependencyError("Unable to import rethinkdb "
+                                "(install with `pip install rethinkdb`)")
 
 
 def db_setup():
@@ -32,7 +44,7 @@ def db_insert(file_data):
     else:
         r.table('files').insert(file_data).run(g.rdb_conn)
         # r.table('sessions').insert(file_data).run(g.rdb_sess_conn)
-    # TODO : Add flashing back in for files that weren't found.
+        # TODO : Add flashing back in for files that weren't found.
 
 
 def is_hash_in_db(this_hash):
