@@ -23,6 +23,23 @@ before_install:
   - sudo add-apt-repository -y ppa:rethinkdb/ppa
   - sudo apt-get update -q
   - sudo apt-get install -y rethinkdb
+# command to set environment variables
+env:
+  - CSRF_SESSION_KEY=test_secret
+  - SECRET_KEY=test_secret
+  - MAIL_SERVER=smtp.example.com
+  - MAIL_PORT=465
+  - MAIL_USERNAME=username
+  - MAIL_PASSWORD=password
+  - DEFAULT_MAIL_SENDER=support@malice.com
+  - MAIL_ERROR_RECIPIENT=support@malice.com
+  - LDAP_HOST=ldap.example.com
+  - LDAP_DOMAIN=example.com
+  - LDAP_AUTH_TEMPLATE=login.html
+  - LDAP_PROFILE_KEY=employeeID
+  - LDAP_AUTH_VIEW=login
+  - RECAPTCHA_PUBLIC_KEY=pubkey
+  - RECAPTCHA_PRIVATE_KEY=privkey
 # command to install pip dependencies
 install: "pip install -r requirements.txt"
 # command to run tests
