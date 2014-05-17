@@ -1,5 +1,7 @@
 from datetime import datetime
 import hashlib
+# from markdown import markdown
+# import bleach
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import request, current_app
@@ -18,9 +20,8 @@ class User(UserMixin, CRUDMixin, db.Model):
     location = db.Column(db.String(64))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
-    # sites = db.relationship('Site', backref='site',
-    #
-    #                      lazy='dynamic')
+    # sites = db.relationship('Site', backref='site', lazy='dynamic')
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.email is not None and self.avatar_hash is None:
@@ -50,9 +51,9 @@ class User(UserMixin, CRUDMixin, db.Model):
 
     # TODO : Add User Comments to Malware Samples
     # def for_moderation(self, admin=False):
-    #     if admin and self.is_admin:
-    #         return Comment.for_moderation()
-    #     return Comment.query.join(Talk, Comment.talk_id == Talk.id). \
+    # if admin and self.is_admin:
+    # return Comment.for_moderation()
+    # return Comment.query.join(Talk, Comment.talk_id == Talk.id). \
     #         filter(Talk.author == self).filter(Comment.approved == False)
 
     def get_api_token(self, expiration=300):
@@ -88,14 +89,15 @@ class PendingEmail(db.Model):
     subject = db.Column(db.String(128))
     body_text = db.Column(db.Text())
     body_html = db.Column(db.Text())
-    talk_id = db.Column(db.Integer, db.ForeignKey('talks.id'))
+    # talk_id = db.Column(db.Integer, db.ForeignKey('talks.id'))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     @staticmethod
     def already_in_queue(email, talk):
         return PendingEmail.query \
-                   .filter(PendingEmail.talk_id == talk.id) \
                    .filter(PendingEmail.email == email).count() > 0
+        # .filter(PendingEmail.talk_id == talk.id) \
+
 
     @staticmethod
     def remove(email):

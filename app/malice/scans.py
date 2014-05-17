@@ -34,7 +34,7 @@ q = Queue('low', connection=Redis())
 
 config = ConfigParser.ConfigParser()
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-config.read(os.path.join(BASE_DIR, '../conf/config.cfg'))
+config.read(os.path.join(BASE_DIR, '../../conf/config.cfg'))
 
 # TODO : Make it so that it will scan with every available worker instead of having to do it explicitly
 def scan_upload(file_stream, sample):

@@ -104,7 +104,7 @@ class yara_engine(AbstractEvilnessEngine):
 		return {'engine': yara.__version__, 'definitions': self._get_def_version()}
 
 	def update_definitions(self, update_file):
-		# todo make the yara rules dir unlink more safe by checking its parent too
+		# todo make the yara dir unlink more safe by checking its parent too
 		# todo compile each file and flag update as good/bad remove if file is bad
 
 		self._clear_rule_dir()

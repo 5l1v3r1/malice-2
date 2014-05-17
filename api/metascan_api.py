@@ -20,6 +20,8 @@ class MetaScan():
             print_error("Could not connect to Metascan Server.")
             print_error("Could not connect to Metascan Server.")
             self.connected = False
+        except requests.exceptions.ConnectionError:
+            print_error("Max retries exceeded.")
         except requests.exceptions.RequestException as e:
             print_error("Metascan Error: {}".format(e))
 

@@ -7,14 +7,14 @@ base:
 #    - nginx
     - python
 #    - uwsgi
-#    - rethinkdb
-#    - mongodb
+    - rethinkdb
+    - mongodb
     - redis
 #    - nodejs
     - requirements
-#    - trid
-#    - exif
-#    - clamav
-#    - avg
+    - trid
+    - exif
+    - clamav
+    - avg
 #    - eset
 #    - kaspersky

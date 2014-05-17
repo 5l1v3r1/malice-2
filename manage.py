@@ -25,6 +25,7 @@ from app.mod_users.models import User
 from lib.core.database import db_setup, destroy_db
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+# app = create_app(os.getenv('FLASK_CONFIG') or 'production')
 manager = Manager(app)
 
 
@@ -66,6 +67,7 @@ def deletedb():
 @manager.command
 def runserver():
     db_setup()
+    db.create_all()
     app.run(host='0.0.0.0', port=5000, threaded=True)
 
 

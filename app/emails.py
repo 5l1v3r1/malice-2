@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 __author__ = 'Josh Maine'
@@ -72,8 +72,8 @@ def send_comment_notification(comment):
     for email, name in comment.notification_list():
         if not PendingEmail.already_in_queue(email, talk):
             unsubscribe = url_for('talks.unsubscribe',
-                            token=talk.get_unsubscribe_token(email),
-                            _external=True)
+                                  token=talk.get_unsubscribe_token(email),
+                                  _external=True)
             pending_email = PendingEmail(
                 name=name, email=email, subject='[talks] New comment',
                 body_text=render_template('email/notify.txt',

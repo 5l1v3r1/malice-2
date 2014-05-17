@@ -33,7 +33,8 @@ def create_app(config_name):
     # Configurations
     app.config.from_object(config[config_name])
 
-    if not app.config['DEBUG'] and not app.config['TESTING']:
+    if True:
+    # if not app.config['DEBUG'] and not app.config['TESTING']:
         # configure logging for production
 
         # email errors to the administrators
@@ -49,7 +50,7 @@ def create_app(config_name):
                     secure = ()
             mail_handler = SMTPHandler(
                 mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-                fromaddr=app.config['MAIL_DEFAULT_SENDER'],
+                fromaddr=app.config['DEFAULT_MAIL_SENDER'],
                 toaddrs=[app.config['MAIL_ERROR_RECIPIENT']],
                 subject='[Malice] Application Error',
                 credentials=credentials,
