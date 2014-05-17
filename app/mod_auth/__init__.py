@@ -7,4 +7,4 @@ from flask import Blueprint
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 mod_auth = Blueprint('auth', __name__, url_prefix='/auth')
 
-from . import routes
+from . import controllers
