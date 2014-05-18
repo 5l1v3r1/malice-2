@@ -123,6 +123,9 @@ drafts/
 # file hash bloomfilter
 *.bloom
 
+# Coverage folder
+cover/
+
 # AV Binaries/Licenses
 install-media/
 install_media/

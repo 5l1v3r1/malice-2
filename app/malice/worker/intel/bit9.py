@@ -8,7 +8,6 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 
 import os
 import ConfigParser
-from api.bit9_api import Bit9Api
 from lib.common.utils import split_seq
 from lib.core.database import db_insert
 from lib.common.exceptions import MaliceDependencyError
@@ -18,29 +17,46 @@ try:
 except ImportError:
     raise MaliceDependencyError("Unable to import rethinkdb "
                                 "(install with `pip install rethinkdb`)")
+try:
+    import bit9.bit9_api
+except ImportError:
+    raise MaliceDependencyError("Unable to import bit9-api "
+                                "(install with `pip install bit9-api`)")
 
-_current_dir = os.path.abspath(os.path.dirname(__file__))
-BIT9_ROOT = os.path.normpath(os.path.join(_current_dir, "..", "..", "..", ".."))
 
-config = ConfigParser.SafeConfigParser()
-config.read(os.path.join(BIT9_ROOT, 'conf/config.cfg'))
-
-if config.has_section('Bit9'):
-    if config.has_option('Proxie', 'HTTP') and config.has_option('Proxie', 'HTTPS'):
-        bit9 = Bit9Api(config.get('Bit9', 'User'), config.get('Bit9', 'Password'),
-                       dict(http=config.get('Proxie', 'HTTP'), https=config.get('Proxie', 'HTTPS')))
+def get_config():
+    BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY = None, None, None, None
+    # Get Malice base directory
+    _current_dir = os.path.abspath(os.path.dirname(__file__))
+    BASE_DIR = os.path.normpath(os.path.join(_current_dir, "..", "..", "..", ".."))
+    # Read config.cfg file
+    config = ConfigParser.SafeConfigParser()
+    config.read(os.path.join(BASE_DIR, 'conf/config.cfg'))
+    # Parse config.cfg file
+    if config.has_section('Bit9'):
+        BIT9_USER = config.get('Bit9', 'User')
+        BIT9_PASS = config.get('Bit9', 'Password')
+        if config.has_section('Proxie'):
+            if config.has_option('Proxie', 'HTTP'):
+                HTTP_PROXY = config.get('Proxie', 'HTTP')
+            if config.has_option('Proxie', 'HTTPS'):
+                HTTPS_PROXY = config.get('Proxie', 'HTTPS')
     else:
-        bit9 = Bit9Api(config.get('Bit9', 'User'), config.get('Bit9', 'Password'))
+        # No config.cfg creds so try the environment or use test creds
+        BIT9_USER = os.environ.get('BIT9_USER') or 'test_user'
+        BIT9_PASS = os.environ.get('BIT9_PASS') or 'test_pass'
+        HTTP_PROXY = os.environ.get('HTTP_PROXY') or False
+        HTTPS_PROXY = os.environ.get('HTTPS_PROXY') or False
+
+    return BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY
+
+
+BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY = get_config()
+
+if HTTPS_PROXY:
+    bit9 = Bit9Api(BIT9_USER, BIT9_PASS, dict(http=HTTP_PROXY, https=HTTPS_PROXY))
 else:
-    # No config.cfg creds so try the environment or use test creds
-    BIT9_USER = os.environ.get('BIT9_USER') or 'test_user'
-    BIT9_PASS = os.environ.get('BIT9_PASS') or 'test_pass'
-    HTTP_PROXY = os.environ.get('BIT9_USER') or False
-    HTTPS_PROXY = os.environ.get('BIT9_USER') or False
-    if HTTPS_PROXY:
-        bit9 = Bit9Api(BIT9_USER, BIT9_PASS, dict(http=HTTP_PROXY, https=HTTPS_PROXY))
-    else:
-        bit9 = Bit9Api(BIT9_USER, BIT9_PASS)
+    bit9 = Bit9Api(BIT9_USER, BIT9_PASS)
 
 # @job('low', connection=Redis(), timeout=50)
 def batch_query_bit9(new_hash_list):
@@ -68,7 +84,6 @@ def batch_query_bit9(new_hash_list):
                 }
                 db_insert(data)
                 data.clear()
-                # flash(new_hash + " - Not Found.", 'error')
 
 
 # @job('low', connection=Redis(), timeout=50)

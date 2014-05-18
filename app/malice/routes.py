@@ -9,6 +9,9 @@
 # ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝╚══════╝
 
 __author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
 
 from flask.ext.login import login_required
 from werkzeug.utils import secure_filename
@@ -17,34 +20,35 @@ from flask import render_template, flash, redirect, url_for, abort,\
     request, current_app, g
 
 import os
-from app.malice.scans import *
+from dateutil import parser
 from lib.common.pagination import Pagination
 from lib.common.utils import parse_hash_list
 from lib.core.database import is_hash_in_db, insert_in_samples_db, update_sample_in_db, db_insert
-# import app
+
 from . import malice
+from app.malice.scans import *
 from .forms import SearchForm
 
 try:
     import pydeep
 except ImportError:
-    pass
+    raise MaliceDependencyError("Unable to import pydeep "
+                                "(install with `pip install pydeep`)")
 try:
     import magic
 except ImportError:
-    pass
-
+    raise MaliceDependencyError("Unable to import magic "
+                                "(install with `pip install magic`)")
 try:
     from pybloomfilter import BloomFilter
 except ImportError:
-    pass
+    raise MaliceDependencyError("Unable to import pybloomfilter "
+                                "(install with `pip install pybloomfilter`)")
 
 if os.path.isfile('filter.bloom'):
     bf = BloomFilter.open('filter.bloom')
 else:
     bf = BloomFilter(10000000, 0.01, 'filter.bloom')
-
-__author__ = 'Josh Maine'
 
 # csrf = CsrfProtect(app)
 
@@ -94,9 +98,10 @@ def index():
 # @ldap.login_required
 # @login_required
 def intel():
+    # TODO : Handle edge case where VT didn't return anything, but when you requery it only pulls cached results
     form = SearchForm(request.form)
+    selection = []
     if form.validate_on_submit():
-        selection = []
         #: Check if User is using Single Hash Search
         if form.label.data:
             user_hash = parse_hash_list(form.label.data)

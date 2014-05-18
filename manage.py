@@ -1,12 +1,13 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-# ███╗   ███╗ █████╗ ██╗     ██╗ ██████╗███████╗
-# ████╗ ████║██╔══██╗██║     ██║██╔════╝██╔════╝
-# ██╔████╔██║███████║██║     ██║██║     █████╗
-# ██║╚██╔╝██║██╔══██║██║     ██║██║     ██╔══╝
-# ██║ ╚═╝ ██║██║  ██║███████╗██║╚██████╗███████╗
-# ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝╚══════╝
+#
+# `7MMM.     ,MMF'      db      `7MMF'      `7MMF' .g8"""bgd `7MM"""YMM
+#   MMMb    dPMM       ;MM:       MM          MM .dP'     `M   MM    `7
+#   M YM   ,M MM      ,V^MM.      MM          MM dM'       `   MM   d
+#   M  Mb  M' MM     ,M  `MM      MM          MM MM            MMmmMM
+#   M  YM.P'  MM     AbmmmqMA     MM      ,   MM MM.           MM   Y  ,
+#   M  `YM'   MM    A'     VML    MM     ,M   MM `Mb.     ,'   MM     ,M
+# .JML. `'  .JMML..AMA.   .AMMA..JMMmmmmMMM .JMML. `"bmmmd'  .JMMmmmmMMM
 
 __author__ = 'Josh Maine'
 
