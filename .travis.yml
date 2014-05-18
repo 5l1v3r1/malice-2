@@ -45,5 +45,4 @@ before_script:
 #services:
 #  - mongodb
 # command to run tests
-#script: "nosetests -v --with-coverage --cover-package=app --cover-branches --cover-erase --cover-html --cover-html-dir=cover"
-script: echo "exit" | python manage.py runserver
+script: "nosetests -v --with-coverage --cover-package=app --cover-branches --cover-erase --cover-html --cover-html-dir=cover"

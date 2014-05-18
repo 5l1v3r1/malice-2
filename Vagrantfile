@@ -4,12 +4,11 @@
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
 
-Vagrant.configure("2") do |config|
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.synced_folder ".", "/vagrant"#, type: "rsync",
 #     rsync__exclude: [".git/", ".idea/"]
   config.vm.box = "hashicorp/precise64"
   config.vm.hostname = "malice"
-  #config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
   # For Flask App
   config.vm.network "forwarded_port", guest: 5000, host: 5000, auto_correct: true
@@ -45,8 +44,8 @@ Vagrant.configure("2") do |config|
       salt.minion_config = "install/salt/minion"
       ## Installs our example formula in "salt/roots/salt"
       salt.verbose = true
+      salt.colorize = true
       salt.run_highstate = true
     end
   end
-
 end

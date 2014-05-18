@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+__author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+
+from flask import current_app, g
 from api.metascan_api import MetaScan
 from app.malice.worker.av.avast.scanner import avast_engine
 from app.malice.worker.av.avira.scanner import avira_engine
@@ -6,29 +15,38 @@ from app.malice.worker.av.clamav.scanner import clamav_engine
 from app.malice.worker.av.eset.scanner import eset_engine
 from app.malice.worker.av.kaspersky.scanner import kaspersky_engine
 from app.malice.worker.av.sophos.scanner import sophos_engine
-from app.malice.worker.file import trid, exif
-from app.malice.worker.file.doc.pdf import pdfparser, pdfid
-from app.malice.worker.file.exe import pe
+from app.malice.worker.av.avg import scanner as avg_engine
+# from app.malice.worker.av.f_prot import scanner as f_prot_engine
+from app.malice.worker.file.trid import trid
+from app.malice.worker.file.exif import exif
+# from app.malice.worker.file.doc.pdf import pdfparser, pdfid
+from app.malice.worker.file.exe.pe import pe
 
 from app.malice.worker.intel.bit9 import single_query_bit9, batch_query_bit9
 from app.malice.worker.intel.virustotal import single_query_virustotal, batch_query_virustotal
 
 import ConfigParser
 from dateutil import parser
+
 from lib.common.out import *
 from lib.core.database import is_hash_in_db, db_insert
 from lib.scanworker.file import PickleableFileSample
+from lib.common.exceptions import MaliceDependencyError
 
 import hashlib
-import rethinkdb as r
 
-from redis import Redis
-from rq import Queue
-from rq.decorators import job
-
-# from app import app
-
-__author__ = 'Josh Maine'
+try:
+    import rethinkdb as r
+except ImportError:
+    raise MaliceDependencyError("Unable to import rethinkdb."
+                                "(install with `pip install rethinkdb`)")
+try:
+    from redis import Redis
+    from rq import Queue
+    from rq.decorators import job
+except ImportError:
+    raise MaliceDependencyError("Unable to import redis."
+                                "(install with `pip install redis`)")
 
 q = Queue('low', connection=Redis())
 
@@ -41,9 +59,9 @@ def scan_upload(file_stream, sample):
     # job = q.enqueue(run_workers, file_stream)
     # print job.result
     print("<< Now Scanning file: {}  >>>>>>>>>>>>>>>>>>>>>>>>>>>>".format(sample['filename']))
-    print_info("Scanning with MetaScan now.")
-    if run_metascan(file_stream, sample['md5']):
-        print_success("MetaScan Complete.")
+    # print_info("Scanning with MetaScan now.")
+    # if run_metascan(file_stream, sample['md5']):
+    #     print_success("MetaScan Complete.")
     #: Run the AV workers on the file.
     print_info("Scanning with AV workers now.")
     if run_workers(file_stream):
@@ -118,15 +136,17 @@ def batch_search_hash(hash_list):
 def scan_to_dict(scan, av):
     return dict(av=av, digest=scan.digest, infected=scan.infected, infected_string=scan.infected_string,
                 metadata=scan.metadata, timestamp=r.now())
+
+
 # def scan_to_dict(scan, av):
 #     return dict(av=av, digest=scan.digest, infected=scan.infected, infected_string=scan.infected_string,
 #                 metadata=scan.metadata, timestamp=r.now())
 
 
-def avast_scan(file):
+def avast_scan(this_file):
     my_avast_engine_engine = avast_engine()
-    result = my_avast_engine_engine.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(file).hexdigest().upper()
+    result = my_avast_engine_engine.scan(PickleableFileSample.string_factory(this_file))
+    file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
     found = is_hash_in_db(file_md5_hash)
     if found:
         found['user_uploads'][-1].setdefault('av_results', []).append(scan_to_dict(result, 'Avast'))
@@ -141,11 +161,11 @@ def avast_scan(file):
     return data
 
 
-def avg_scan(file):
-    my_avg = avg_engine.AVG(file)
+def avg_scan(this_file):
+    my_avg = avg_engine.AVG(this_file)
     result = my_avg.scan()
     # result = my_avg.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(file).hexdigest().upper()
+    file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
     found = is_hash_in_db(file_md5_hash)
     if found:
         found['user_uploads'][-1].setdefault('av_results', []).append(result[1])
@@ -180,10 +200,10 @@ def avira_scan(file):
     return data
 
 
-def eset_scan(file):
+def eset_scan(this_file):
     my_eset_engine = eset_engine()
-    result = my_eset_engine.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(file).hexdigest().upper()
+    result = my_eset_engine.scan(PickleableFileSample.string_factory(this_file))
+    file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
     found = is_hash_in_db(file_md5_hash)
     if found:
         found['user_uploads'][-1].setdefault('av_results', []).append(scan_to_dict(result, 'ESET-NOD32'))
@@ -198,10 +218,10 @@ def eset_scan(file):
     return data
 
 
-def bitdefender_scan(file):
+def bitdefender_scan(this_file):
     bitdefender = bitdefender_engine()
-    result = bitdefender.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(file).hexdigest().upper()
+    result = bitdefender.scan(PickleableFileSample.string_factory(this_file))
+    file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
     found = is_hash_in_db(file_md5_hash)
     if found:
         found['user_uploads'][-1].setdefault('av_results', []).append(scan_to_dict(result, 'BitDefender'))
@@ -216,10 +236,10 @@ def bitdefender_scan(file):
     return data
 
 
-def clamav_scan(file):
+def clamav_scan(this_file):
     my_clamav_engine = clamav_engine()
-    results = my_clamav_engine.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(file).hexdigest().upper()
+    results = my_clamav_engine.scan(PickleableFileSample.string_factory(this_file))
+    file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
     found = is_hash_in_db(file_md5_hash)
     if found:
         found['user_uploads'][-1].setdefault('av_results', []).append(scan_to_dict(results, 'ClamAV'))
@@ -234,11 +254,12 @@ def clamav_scan(file):
     return data
 
 
-def f_prot_scan(file):
-    my_f_prot = f_prot_engine.F_PROT(file)
-    result = my_f_prot.scan()
+def f_prot_scan(this_file):
+    pass
+    # my_f_prot = f_prot_engine.F_PROT(this_file)
+    # result = my_f_prot.scan()
     # result = my_avg.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(file).hexdigest().upper()
+    # file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
     # found = is_hash_in_db(file_md5_hash)
     # if found:
     #     found['user_uploads'][-1].setdefault('av_results', []).append(scan_to_dict(result, 'AVG'))
@@ -253,10 +274,10 @@ def f_prot_scan(file):
     # return data
 
 
-def kaspersky_scan(file):
+def kaspersky_scan(this_file):
     my_kaspersky_engine = kaspersky_engine()
-    results = my_kaspersky_engine.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(file).hexdigest().upper()
+    results = my_kaspersky_engine.scan(PickleableFileSample.string_factory(this_file))
+    file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
     found = is_hash_in_db(file_md5_hash)
     if found:
         found['user_uploads'][-1].setdefault('av_results', []).append(scan_to_dict(results, 'Kaspersky'))
@@ -271,10 +292,10 @@ def kaspersky_scan(file):
     return data
 
 
-def sophos_scan(file):
+def sophos_scan(this_file):
     my_sophos = sophos_engine()
-    results = my_sophos.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(file).hexdigest().upper()
+    results = my_sophos.scan(PickleableFileSample.string_factory(this_file))
+    file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
     found = is_hash_in_db(file_md5_hash)
     if found:
         found['user_uploads'][-1].setdefault('av_results', []).append(scan_to_dict(results, 'Sophos'))
@@ -323,8 +344,8 @@ def trid_scan(file_stream, file_md5):
         print_error("TrID Analysis Failed.")
 
 
-def pe_scan(file, file_md5):
-    this_pe = pe.PE(file)
+def pe_scan(this_file, file_md5):
+    this_pe = pe.PE(this_file)
     if this_pe.pe:
         key, pe_results = this_pe.scan()
         found = is_hash_in_db(file_md5)
@@ -340,56 +361,58 @@ def pe_scan(file, file_md5):
         print_error("PE Analysis Failed - This file might not be a PE Executable.")
 
 
-def file_is_pdf(file):
+def file_is_pdf(this_file):
     return False
 
 
-def file_is_pe(file):
+def file_is_pe(this_file):
     return True
 
 
-def pdfparser_scan(file, file_md5):
-    this_pdf = pdfparser.PdfParser(file)
-    if this_pdf:
-        key, pe_results = this_pdf.scan()
-        found = is_hash_in_db(file_md5)
-        if found:
-            found[key] = pe_results
-            data = found
-        else:
-            data = dict(md5=file_md5)
-            data[key] = pe_results
-        db_insert(data)
-        return data
-    else:
-        pass
+def pdfparser_scan(this_file, file_md5):
+    pass
+    # this_pdf = pdfparser.PdfParser(this_file)
+    # if this_pdf:
+    #     key, pe_results = this_pdf.scan()
+    #     found = is_hash_in_db(file_md5)
+    #     if found:
+    #         found[key] = pe_results
+    #         data = found
+    #     else:
+    #         data = dict(md5=file_md5)
+    #         data[key] = pe_results
+    #     db_insert(data)
+    #     return data
+    # else:
+    #     pass
 
 
-def pdfid_scan(file, file_md5):
-    this_pdfid = pdfid.PDFiD(file)
-    if this_pdfid:
-        key, pdfid_results = this_pdfid.scan()
-        found = is_hash_in_db(file_md5)
-        if found:
-            found[key] = pdfid_results
-            data = found
-        else:
-            data = dict(md5=file_md5)
-            data[key] = pdfid_results
-        db_insert(data)
-        return data
-    else:
-        pass
+def pdfid_scan(this_file, file_md5):
+    pass
+    # this_pdfid = pdfid.PDFiD(this_file)
+    # if this_pdfid:
+    #     key, pdfid_results = this_pdfid.scan()
+    #     found = is_hash_in_db(file_md5)
+    #     if found:
+    #         found[key] = pdfid_results
+    #         data = found
+    #     else:
+    #         data = dict(md5=file_md5)
+    #         data[key] = pdfid_results
+    #     db_insert(data)
+    #     return data
+    # else:
+    #     pass
 
 
-def run_metascan(file, file_md5):
+def run_metascan(this_file, file_md5):
     # TODO : remove these hardcoded creds
     if config.has_section('Metascan'):
         meta_scan = MetaScan(ip=config.get('Metascan', 'IP'), port=config.get('Metascan', 'Port'))
     else:
         meta_scan = MetaScan(ip='127.0.0.1', port='8008')
     if meta_scan.connected:
-        results = meta_scan.scan_file_stream_and_get_results(file)
+        results = meta_scan.scan_file_stream_and_get_results(this_file)
         if results.status_code != 200:
             print_error("MetaScan can not be reached.")
             return None
@@ -397,7 +420,8 @@ def run_metascan(file, file_md5):
         #: Calculate AV Detection Ratio
         detection_ratio = dict(infected=0, count=0)
         for av in metascan_results[u'scan_results'][u'scan_details']:
-            metascan_results[u'scan_results'][u'scan_details'][av][u'def_time'] = parser.parse(metascan_results[u'scan_results'][u'scan_details'][av][u'def_time'])
+            metascan_results[u'scan_results'][u'scan_details'][av][u'def_time'] \
+                = parser.parse(metascan_results[u'scan_results'][u'scan_details'][av][u'def_time'])
             detection_ratio['count'] += 1
             if metascan_results[u'scan_results'][u'scan_details'][av]['scan_result_i'] == 1:
                 detection_ratio['infected'] += 1
@@ -435,8 +459,8 @@ def run_workers(file_stream):
     clamav_scan(file_stream)
     # print_item("Scanning with ESET.", 1)
     # eset_scan(file_stream)
-    # print_item("Scanning with Kaspersky.", 1)
-    # kaspersky_scan(file_stream)
+    print_item("Scanning with Kaspersky.", 1)
+    kaspersky_scan(file_stream)
     # print_item("Scanning with Sophos.", 1)
     # sophos_scan(file_stream)
     return True

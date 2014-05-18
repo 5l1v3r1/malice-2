@@ -1,5 +1,5 @@
 from os import unlink
-from os.path import exists
+# from os.path import exists
 import tempfile
 import envoy
 from lib.common.out import print_error
@@ -8,11 +8,13 @@ __author__ = 'Josh Maine'
 
 ignore_tags = ['Directory', 'File Name', 'File Permissions', 'File Modification Date/Time']
 
+
 class Exif():
     def __init__(self, data):
         self.data = data
 
-    def format_output(self, output):
+    @staticmethod
+    def format_output(output):
         exif_tag = {}
         exif_results = output.split('\n')
         exif_results = filter(None, exif_results)
@@ -24,7 +26,7 @@ class Exif():
         return exif_tag
 
     def scan(self):
-        #: create tmp file
+        # : create tmp file
         handle, name = tempfile.mkstemp(suffix=".data", prefix="exif_")
         #: Write data stream to tmp file
         with open(name, "wb") as f:

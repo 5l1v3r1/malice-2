@@ -185,7 +185,7 @@ def upload():
                 sample['scancomplete'] = r.now()
                 update_sample_in_db(sample)
         #: Once Finished redirect user to the samples page
-        return redirect(url_for('samples'))
+        return redirect(url_for('.samples'))
     return render_template('samples.html')
 
 
