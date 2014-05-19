@@ -26,10 +26,10 @@ Github: https://github.com/black-top/malice
 # APT: http://10.10.1.10:3128
 
 [Email]
-# Username: username
-# Password: password
-# Server: smtp.example.com
-# Port: 465
+Username: username
+Password: password
+Server: smtp.example.com
+Port: 465
 
 [LDAP]
 # LDAP_HOST: 'ldap.example.com'
