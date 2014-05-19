@@ -20,18 +20,21 @@ $ git clone https://github.com/blacktop/malice.git
 $ cd malice
 $ vagrant up
 ...wait...
+$ vagrant ssh
+$ mv /vagrant/conf/config.cfg.example /vagrant/conf/config.cfg
+$ bower install /vagrant/app/static/
 ```
 ##### NOTE - During recent testing salt states were failing for:
 (To manually install these please see the [Wiki](https://github.com/blacktop/malice/wiki/Installation))
+- nodejs
 - requirements
 - trid
 - avg
 
 Usage
 -----
+(While ssh'd into the VM via ```vagrant ssh```)
 ```bash
-$ vagrant ssh
-$ mv /vagrant/conf/config.cfg.example /vagrant/conf/config.cfg
 $ source malice/venv/bin/activate
 $ python /vagrant/manage.py runserver
 ```
