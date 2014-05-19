@@ -276,14 +276,14 @@ def samples(page):
 
 @malice.route('/system', methods=['GET'])
 # @ldap.login_required
-@login_required
+# @login_required
 def system():
     return render_template('system.html', my_github=github)
 
 
 @malice.route('/help', methods=['GET'])
 # @ldap.login_required
-@login_required
+# @login_required
 def help():
     url = config.get('SITE', 'Url')
     email = config.get('SITE', 'Email')

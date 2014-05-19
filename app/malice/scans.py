@@ -80,8 +80,8 @@ def scan_upload(file_stream, sample):
         pdfparser_scan(file_stream, sample['md5'])
         pdfid_scan(file_stream, sample['md5'])
     #: Run Intel workers
-    print_item("Searching for Intel now.", 1)
-    single_hash_search(sample['md5'])
+    # print_item("Searching for Intel now.", 1)
+    # single_hash_search(sample['md5'])
     print_success("File Analysis Complete.")
     found = is_hash_in_db(sample['md5'])
     return found['user_uploads'][-1]['detection_ratio']
@@ -447,8 +447,8 @@ def run_workers(file_stream):
     # pe_info_results = pe_scan(file_stream)
     # print_item("Scanning with Avast.", 1)
     # avast_scan(file_stream)
-    # print_item("Scanning with AVG.", 1)
-    # avg_scan(file_stream)
+    print_item("Scanning with AVG.", 1)
+    avg_scan(file_stream)
     # print_item("Scanning with F-PROT.", 1)
     # f_prot_scan(file_stream)
     # print_item("Scanning with Avira.", 1)
@@ -459,8 +459,8 @@ def run_workers(file_stream):
     clamav_scan(file_stream)
     # print_item("Scanning with ESET.", 1)
     # eset_scan(file_stream)
-    print_item("Scanning with Kaspersky.", 1)
-    kaspersky_scan(file_stream)
+    # print_item("Scanning with Kaspersky.", 1)
+    # kaspersky_scan(file_stream)
     # print_item("Scanning with Sophos.", 1)
     # sophos_scan(file_stream)
     return True
