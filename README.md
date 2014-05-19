@@ -23,8 +23,6 @@ $ vagrant up
 ```
 ##### NOTE - During recent testing salt states were failing for:
 - trid
-- exif
-- clamav
 - avg
 
 Usage
