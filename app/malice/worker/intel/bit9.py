@@ -18,7 +18,7 @@ except ImportError:
     raise MaliceDependencyError("Unable to import rethinkdb "
                                 "(install with `pip install rethinkdb`)")
 try:
-    import bit9.bit9_api
+    from bit9_api import Bit9Api
 except ImportError:
     raise MaliceDependencyError("Unable to import bit9-api "
                                 "(install with `pip install bit9-api`)")

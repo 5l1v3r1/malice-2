@@ -14,7 +14,7 @@ from lib.common.utils import split_seq, list_to_string
 from lib.common.exceptions import MaliceDependencyError
 
 try:
-    from virustotal.virus_total_apis import PublicApi as vtPubAPI
+    from virus_total_apis import PublicApi as vtPubAPI
 except ImportError:
     raise MaliceDependencyError("Unable to import virustotal-api "
                                 "(install with `pip install virustotal-api`)")
