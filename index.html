@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Malice : VirusTotal Wanna Be" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Malice</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/blacktop/malice">View on GitHub</a>
+
+          <h1 id="project_title">Malice</h1>
+          <h2 id="project_tagline">VirusTotal Wanna Be</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/blacktop/malice/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/blacktop/malice/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p><img src="https://raw.githubusercontent.com/black-top/malice/master/app/static/img/logo/malice_logo.png" alt="malice logo"></p>
+
+<h1>
+<a name="malice" class="anchor" href="#malice"><span class="octicon octicon-link"></span></a>malice</h1>
+
+<p><a href="https://drone.io/github.com/blacktop/malice/latest"><img src="https://drone.io/github.com/blacktop/malice/status.png" alt="Build Status"></a>
+<a href="https://travis-ci.org/blacktop/malice"><img src="https://travis-ci.org/blacktop/malice.svg?branch=master" alt="Build Status"></a>
+<a href="https://www.gittip.com/blacktop/"><img src="http://img.shields.io/gittip/blacktop.svg" alt="Support blacktop via Gittip"></a></p>
+
+<p>VirusTotal Wanna Be</p>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ol>
+<li>
+<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a> or <a href="https://www.vmware.com/products/fusion/">VMWare</a>
+</li>
+<li><a href="http://www.vagrantup.com/downloads.html">Vagrant</a></li>
+</ol><h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>git clone https://github.com/blacktop/malice.git
+<span class="nv">$ </span><span class="nb">cd </span>malice
+<span class="nv">$ </span>vagrant up
+...wait...
+</pre></div>
+
+<h5>
+<a name="note---during-recent-testing-salt-states-were-failing-for" class="anchor" href="#note---during-recent-testing-salt-states-were-failing-for"><span class="octicon octicon-link"></span></a>NOTE - During recent testing salt states were failing for:</h5>
+
+<ul>
+<li>trid</li>
+<li>exif</li>
+<li>clamav</li>
+<li>avg</li>
+</ul><h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>vagrant ssh
+<span class="nv">$ </span><span class="nb">source </span>malice/venv/bin/activate
+<span class="nv">$ </span>python /vagrant/manage.py runserver
+</pre></div>
+
+<p>Then browse to <a href="http://127.0.0.1:5000">http://127.0.0.1:5000</a></p>
+
+<h3>
+<a name="home" class="anchor" href="#home"><span class="octicon octicon-link"></span></a>Home</h3>
+
+<p><img src="https://raw.githubusercontent.com/blacktop/malice/master/docs/images/index.png" alt="malice logo"></p>
+
+<h3>
+<a name="samples" class="anchor" href="#samples"><span class="octicon octicon-link"></span></a>Samples</h3>
+
+<p><img src="https://raw.githubusercontent.com/blacktop/malice/master/docs/images/samples.png" alt="malice logo"></p>
+
+<h3>
+<a name="analysis" class="anchor" href="#analysis"><span class="octicon octicon-link"></span></a>Analysis</h3>
+
+<p><img src="https://raw.githubusercontent.com/blacktop/malice/master/docs/images/analysis.png" alt="malice logo"></p>
+
+<h2>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
+
+<p>Documentation is comming soon.</p>
+
+<h2>
+<a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h2>
+
+<p>To run the tests (in the project directory):</p>
+
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>pip install nose coverage
+<span class="nv">$ </span>nosetests --with-coverage --cover-html -s
+</pre></div>
+
+<h2>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>Todo</h2>
+
+<ul>
+<li>[x] Get Initial Alpha Release Ready</li>
+<li>[ ] Create Salt states for uwsgi and nginx and supervisor so Malice auto starts on <strong>vagrant up</strong>
+</li>
+<li>[ ] Transition to MongoDB</li>
+<li>[ ] Re-implement async distribute worker task framework (<a href="http://python-rq.org">python-rq</a> or <a href="http://www.celeryproject.org">celery</a>/<a href="http://www.rabbitmq.com">RabbitMQ</a>)</li>
+<li>[ ] Create Plug-in framework</li>
+<li>[ ] Transition to <a href="">Docker</a>, <a href="">CoreOS</a> and <a href="">serf</a>
+</li>
+<li>[ ] Deploy Demo server</li>
+</ul><h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<ol>
+<li>Fork it.</li>
+<li>Create a branch (<code>git checkout -b my_malice</code>)</li>
+<li>Commit your changes (<code>git commit -am "Added Something Cool"</code>)</li>
+<li>Push to the branch (<code>git push origin my_malice</code>)</li>
+<li>Open a <a href="https://github.com/blacktop/malice/pulls">Pull Request</a>
+</li>
+<li>Wait for me to figure out what the heck a pull request is...</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Malice maintained by <a href="https://github.com/blacktop">blacktop</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
