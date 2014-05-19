@@ -69,8 +69,8 @@ Todo
 Contributing
 ------------
 1. Fork it.
-2. Create a branch (`git checkout -b my_virus_total_api`)
+2. Create a branch (`git checkout -b my_malice`)
 3. Commit your changes (`git commit -am "Added Something Cool"`)
-4. Push to the branch (`git push origin my_virus_total_api`)
-5. Open a [Pull Request](https://github.com/blacktop/virustotal-api/pulls)
+4. Push to the branch (`git push origin my_malice`)
+5. Open a [Pull Request](https://github.com/blacktop/malice/pulls)
 6. Wait for me to figure out what the heck a pull request is...
