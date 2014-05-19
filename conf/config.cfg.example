@@ -1,9 +1,9 @@
 [Bit9]
-# User: user
-# Password: password
+User: user
+Password: password
 
 [VirusTotal]
-# PublicApiKey: key
+PublicApiKey: key
 # IntelApiKey: key
 
 [TotalHash]
@@ -32,12 +32,12 @@ Server: smtp.example.com
 Port: 465
 
 [LDAP]
-# LDAP_HOST: 'ldap.example.com'
-# LDAP_DOMAIN" 'example.com'
-# LDAP_AUTH_TEMPLATE: 'login.html'
-# LDAP_PROFILE_KEY: 'employeeID'
-# LDAP_AUTH_VIEW: 'login'
+LDAP_HOST: 'ldap.example.com'
+LDAP_DOMAIN" 'example.com'
+LDAP_AUTH_TEMPLATE: 'login.html'
+LDAP_PROFILE_KEY: 'employeeID'
+LDAP_AUTH_VIEW: 'login'
 
 [reCAPTCHA]
-# PublicKey: pubkey
-# PrivateKey: privkey
+PublicKey: pubkey
+PrivateKey: privkey
