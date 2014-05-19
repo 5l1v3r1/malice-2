@@ -31,7 +31,7 @@ Usage
 -----
 ```bash
 $ vagrant ssh
-$ source /malice/venv/bin/activate
+$ source malice/venv/bin/activate
 $ python /vagrant/manage.py runserver
 ```
 
