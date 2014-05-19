@@ -37,6 +37,13 @@ $ python /vagrant/manage.py runserver
 
 Then browse to http://127.0.0.1:5000
 
+### Home
+![malice logo](https://raw.githubusercontent.com/blacktop/malice/master/docs/images/index.png)
+### Samples
+![malice logo](https://raw.githubusercontent.com/blacktop/malice/master/docs/images/samples.png)
+### Analysis
+![malice logo](https://raw.githubusercontent.com/blacktop/malice/master/docs/images/analysis.png)
+
 Documentation
 -------------
 Documentation is comming soon.
