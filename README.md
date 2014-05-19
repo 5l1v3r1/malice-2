@@ -22,6 +22,7 @@ $ vagrant up
 ...wait...
 ```
 ##### NOTE - During recent testing salt states were failing for:
+(To manually install these please see the [Wiki](https://github.com/blacktop/malice/wiki/Installation))
 - trid
 - avg
 
