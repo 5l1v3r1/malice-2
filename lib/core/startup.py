@@ -16,13 +16,14 @@ import copy
 import json
 import urllib
 import urllib2
+import requests
 import logging
 import logging.handlers
 
-import modules.auxiliary
-import modules.processing
-import modules.signatures
-import modules.reporting
+import modules.av
+import modules.intel
+import modules.file
+
 
 from lib.common.colors import red, green, yellow, cyan
 from lib.common.config import Config
@@ -45,27 +46,28 @@ def check_python_version():
                                  "of Python, please use 2.7")
 
 
-def check_working_directory():
-    """Checks if working directories are ready.
-    @raise MaliceStartupError: if directories are not properly configured.
-    """
-    if not os.path.exists(MALICE_ROOT):
-        raise MaliceStartupError("You specified a non-existing root "
-                                 "directory: {0}".format(MALICE_ROOT))
-
-    cwd = os.path.join(os.getcwd(), "py")
-    if not os.path.exists(cwd):
-        raise MaliceStartupError("You are not running Malice from it's "
-                                 "root directory")
+# def check_working_directory():
+#     """Checks if working directories are ready.
+#     @raise MaliceStartupError: if directories are not properly configured.
+#     """
+#     if not os.path.exists(MALICE_ROOT):
+#         raise MaliceStartupError("You specified a non-existing root "
+#                                  "directory: {0}".format(MALICE_ROOT))
+#
+#     cwd = os.path.join(os.getcwd(), "malice.py")
+#     if not os.path.exists(cwd):
+#         raise MaliceStartupError("You are not running Malice from it's "
+#                                  "root directory")
 
 
 def check_configs():
     """Checks if config files exist.
     @raise MaliceStartupError: if config files do not exist.
     """
-    configs = [os.path.join(MALICE_ROOT, "conf", "conf"),
-               os.path.join(MALICE_ROOT, "conf", "reporting.conf"),
-               os.path.join(MALICE_ROOT, "conf", "auxiliary.conf")]
+    configs = [os.path.join(MALICE_ROOT, "conf", "malice.conf"),
+               os.path.join(MALICE_ROOT, "conf", "av.conf"),
+               os.path.join(MALICE_ROOT, "conf", "intel.conf"),
+               os.path.join(MALICE_ROOT, "conf", "file.conf")]
 
     for config in configs:
         if not os.path.exists(config):
@@ -93,32 +95,29 @@ def check_version():
     """Checks version of Malice."""
     cfg = Config()
 
-    if not cfg.version_check:
+    if not cfg.malice.version_check:
         return
 
     print(" Checking for updates...")
 
     url = "https://api.github.com/repos/blacktop/malice/releases"
-    # TODO : Replace with requests code.
-    data = urllib.urlencode({"version": MALICE_VERSION})
-
     try:
-        request = urllib2.Request(url, data)
-        response = urllib2.urlopen(request)
-    except (urllib2.URLError, urllib2.HTTPError):
+        response = requests.get(url=url)
+    except requests.RequestException as e:
         print(red(" Failed! ") + "Unable to establish connection.\n")
         return
+        # return dict(error=e)
 
-    try:
-        response_data = json.loads(response.read())
-    except ValueError:
-        print(red(" Failed! ") + "Invalid response.\n")
-        return
-
-    if not response_data["error"]:
-        if response_data["response"] == "NEW_VERSION":
+    if response.status_code == requests.codes.ok:
+        try:
+            response_data = response.json()
+        except:
+            print(red(" Failed! ") + "Invalid response.\n")
+            return
+        latest_version = response_data[0][u'name']
+        if latest_version != MALICE_VERSION:
             msg = "Malice version {0} is available " \
-                  "now.\n".format(response_data["current"])
+                  "now.\n".format(latest_version)
             print(red(" Outdated! ") + msg)
         else:
             print(green(" Good! ") + "You have the latest version "
@@ -176,7 +175,7 @@ def init_logging():
 #     # db = Database()
 #     cfg = Config()
 #
-#     if cfg.reschedule:
+#     if cfg.malice.reschedule:
 #         log.debug("Checking for locked tasks...")
 #
 #         tasks = db.list_tasks(status=TASK_RUNNING)

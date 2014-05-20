@@ -18,8 +18,8 @@ import logging
 from collections import defaultdict
 from distutils.version import StrictVersion
 
-from lib.common.abstracts import Auxiliary, Machinery, Processing
-from lib.common.abstracts import Report, Signature
+# from lib.common.abstracts import Auxiliary, Machinery, Processing
+# from lib.common.abstracts import Report, Signature
 from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT, MALICE_VERSION
 from lib.common.exceptions import MaliceCriticalError
@@ -27,7 +27,7 @@ from lib.common.exceptions import MaliceOperationalError
 from lib.common.exceptions import MaliceProcessingError
 from lib.common.exceptions import MaliceReportError
 from lib.common.exceptions import MaliceDependencyError
-from lib.core.database import Database
+# from lib.core.database import Database
 
 log = logging.getLogger(__name__)
 

@@ -1,45 +1,37 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-# ███╗   ███╗ █████╗ ██╗     ██╗ ██████╗███████╗
-# ████╗ ████║██╔══██╗██║     ██║██╔════╝██╔════╝
-# ██╔████╔██║███████║██║     ██║██║     █████╗
-# ██║╚██╔╝██║██╔══██║██║     ██║██║     ██╔══╝
-# ██║ ╚═╝ ██║██║  ██║███████╗██║╚██████╗███████╗
-# ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝╚══════╝
-
+# ___  ___      _ _
+# |  \/  |     | (_)
+# | .  . | __ _| |_  ___ ___
+# | |\/| |/ _` | | |/ __/ _ \
+# | |  | | (_| | | | (_|  __/
+# \_|  |_/\__,_|_|_|\___\___|
 
 __author__ = 'Josh Maine'
 
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.login import LoginManager
-from flask.ext.ldap import LDAP
 # from flask.ext.pagedown import PageDown
 from flask.ext.mail import Mail
-from settings import config
+from settings import settings
 from lib.common.logo import logo
-from lib.core.startup import check_configs, check_version, check_working_directory
+from lib.core.startup import check_configs, check_version
+from lib.common.exceptions import MaliceDependencyError
 
-db = SQLAlchemy()
 # pagedown = PageDown()
 mail = Mail()
-ldap = LDAP()
-
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
+db = SQLAlchemy()
 
 logo()
-check_working_directory()
 check_configs()
 check_version()
 # create_structure()
 
-def create_app(config_name):
+def create_app(setting_name):
     # Define the WSGI application object
     app = Flask(__name__)
     # Configurations
-    app.config.from_object(config[config_name])
+    app.config.from_object(settings[setting_name])
 
     # if True:
     if not app.config['DEBUG'] and not app.config['TESTING']:
@@ -74,15 +66,28 @@ def create_app(config_name):
         syslog_handler.setLevel(logging.WARNING)
         app.logger.addHandler(syslog_handler)
 
-    db.init_app(app)
     # pagedown.init_app(app)
+    db.init_app(app)
     mail.init_app(app)
+
     if app.config['USE_LDAP']:
+        try:
+            from flask.ext.ldap import LDAP
+        except ImportError:
+            raise MaliceDependencyError("Unable to import LDAP "
+                                        "(install with `pip install Flask-LDAP`)")
+        ldap = LDAP(app)
         # LDAP Login
-        ldap.init_app(app)
         # TODO : Test out LDAP
         app.add_url_rule('/login', 'login', ldap.login, methods=['GET', 'POST'])
     else:
+        try:
+            from flask.ext.login import LoginManager
+        except ImportError:
+            raise MaliceDependencyError("Unable to import LoginManager "
+                                        "(install with `pip install Flask-Login`)")
+        login_manager = LoginManager()
+        login_manager.login_view = 'auth.login'
         login_manager.init_app(app)
 
     # Register blueprint(s)
@@ -102,5 +107,4 @@ def create_app(config_name):
 
     # from werkzeug.contrib.fixers import ProxyFix
     # app.wsgi_app = ProxyFix(app.wsgi_app)
-    # from app import views
     return app

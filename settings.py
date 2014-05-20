@@ -22,7 +22,7 @@ class BaseConfig:
     # using 2 per available processor cores - to handle
     # incoming requests using one and performing background
     # operations using the other.
-    THREADS_PER_PAGE = 2
+    THREADS_PER_PAGE = 1
 
     # Enable protection agains *Cross-site Request Forgery (CSRF)*
     CSRF_ENABLED = True
@@ -91,9 +91,10 @@ class ProductionConfig(BaseConfig):
                               'sqlite:///' + os.path.join(BASE_DIR, 'users.sqlite')
 
 
-config = {
+settings = {
     'development': DevConfig,
     'testing': TestConfig,
     'production': ProductionConfig,
+
     'default': DevConfig
 }

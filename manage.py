@@ -20,8 +20,9 @@ if os.path.exists('.env'):
         if len(var) == 2:
             os.environ[var[0]] = var[1]
 
-from app import create_app, db
+from app import create_app
 from flask.ext.script import Manager
+from app import db
 from app.mod_users.models import User
 from lib.core.database import db_setup, destroy_db
 
@@ -63,13 +64,6 @@ def deletedb():
     destroy_db()
     db.drop_all()
     db_setup()
-
-
-@manager.command
-def runserver():
-    db_setup()
-    db.create_all()
-    app.run(host='0.0.0.0', port=5000, threaded=True)
 
 
 if __name__ == '__main__':

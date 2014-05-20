@@ -108,6 +108,7 @@ Icon
 # Covers Configuration Files
 ##########################################
 *.cfg
+.env
 
 # Covers bower files
 ####################

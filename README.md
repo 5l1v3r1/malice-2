@@ -12,6 +12,7 @@ Requirements
 ------------
 1. [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [VMWare](https://www.vmware.com/products/fusion/)
 2. [Vagrant](http://www.vagrantup.com/downloads.html)
+#### Note: I haven't tested with VirtualBox yet.
 
 Installation
 -----------
@@ -35,8 +36,8 @@ Usage
 -----
 (While ssh'd into the VM via ```vagrant ssh```)
 ```bash
-$ source malice/venv/bin/activate
-$ python /vagrant/manage.py runserver
+$ source ~/malice/venv/bin/activate
+(venv)$ python /vagrant/manage.py runserver
 ```
 
 Then browse to http://127.0.0.1:5000
