@@ -8,6 +8,7 @@
 # ██║ ╚═╝ ██║██║  ██║███████╗██║╚██████╗███████╗
 # ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝╚══════╝
 
+
 __author__ = 'Josh Maine'
 
 from flask import Flask
@@ -17,6 +18,8 @@ from flask.ext.ldap import LDAP
 # from flask.ext.pagedown import PageDown
 from flask.ext.mail import Mail
 from settings import config
+from lib.common.logo import logo
+from lib.core.startup import check_configs, check_version, check_working_directory
 
 db = SQLAlchemy()
 # pagedown = PageDown()
@@ -26,6 +29,11 @@ ldap = LDAP()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
+logo()
+check_working_directory()
+check_configs()
+check_version()
+# create_structure()
 
 def create_app(config_name):
     # Define the WSGI application object
@@ -33,8 +41,8 @@ def create_app(config_name):
     # Configurations
     app.config.from_object(config[config_name])
 
-    if True:
-    # if not app.config['DEBUG'] and not app.config['TESTING']:
+    # if True:
+    if not app.config['DEBUG'] and not app.config['TESTING']:
         # configure logging for production
 
         # email errors to the administrators

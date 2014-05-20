@@ -24,80 +24,83 @@ import modules.processing
 import modules.signatures
 import modules.reporting
 
-from lib.cuckoo.common.colors import red, green, yellow, cyan
-from lib.cuckoo.common.config import Config
-from lib.cuckoo.common.constants import CUCKOO_ROOT, CUCKOO_VERSION
-from lib.cuckoo.common.exceptions import CuckooStartupError
-from lib.cuckoo.common.exceptions import CuckooOperationalError
-from lib.cuckoo.common.utils import create_folders
-from lib.cuckoo.core.database import Database, TASK_RUNNING
-from lib.cuckoo.core.plugins import import_plugin, import_package, list_plugins
+from lib.common.colors import red, green, yellow, cyan
+from lib.common.config import Config
+from lib.common.constants import MALICE_ROOT, MALICE_VERSION
+from lib.common.exceptions import MaliceStartupError
+# from lib.common.exceptions import MaliceOperationalError
+# from lib.common.utils import create_folders
+# from lib.core.database import Database, TASK_RUNNING
+from lib.core.plugins import import_plugin, import_package, list_plugins
 
 log = logging.getLogger()
 
+
 def check_python_version():
-    """Checks if Python version is supported by Cuckoo.
-    @raise CuckooStartupError: if version is not supported.
+    """Checks if Python version is supported by Malice.
+    @raise MaliceStartupError: if version is not supported.
     """
     if sys.version_info[:2] != (2, 7):
-        raise CuckooStartupError("You are running an incompatible version "
+        raise MaliceStartupError("You are running an incompatible version "
                                  "of Python, please use 2.7")
 
 
 def check_working_directory():
     """Checks if working directories are ready.
-    @raise CuckooStartupError: if directories are not properly configured.
+    @raise MaliceStartupError: if directories are not properly configured.
     """
-    if not os.path.exists(CUCKOO_ROOT):
-        raise CuckooStartupError("You specified a non-existing root "
-                                 "directory: {0}".format(CUCKOO_ROOT))
+    if not os.path.exists(MALICE_ROOT):
+        raise MaliceStartupError("You specified a non-existing root "
+                                 "directory: {0}".format(MALICE_ROOT))
 
-    cwd = os.path.join(os.getcwd(), "cuckoo.py")
+    cwd = os.path.join(os.getcwd(), "py")
     if not os.path.exists(cwd):
-        raise CuckooStartupError("You are not running Cuckoo from it's "
+        raise MaliceStartupError("You are not running Malice from it's "
                                  "root directory")
 
 
 def check_configs():
     """Checks if config files exist.
-    @raise CuckooStartupError: if config files do not exist.
+    @raise MaliceStartupError: if config files do not exist.
     """
-    configs = [os.path.join(CUCKOO_ROOT, "conf", "cuckoo.conf"),
-               os.path.join(CUCKOO_ROOT, "conf", "reporting.conf"),
-               os.path.join(CUCKOO_ROOT, "conf", "auxiliary.conf")]
+    configs = [os.path.join(MALICE_ROOT, "conf", "conf"),
+               os.path.join(MALICE_ROOT, "conf", "reporting.conf"),
+               os.path.join(MALICE_ROOT, "conf", "auxiliary.conf")]
 
     for config in configs:
         if not os.path.exists(config):
-            raise CuckooStartupError("Config file does not exist at "
+            raise MaliceStartupError("Config file does not exist at "
                                      "path: {0}".format(config))
 
     return True
 
-def create_structure():
-    """Creates Cuckoo directories."""
-    folders = [
-        "log",
-        "storage",
-        os.path.join("storage", "analyses"),
-        os.path.join("storage", "binaries")
-    ]
 
-    try:
-        create_folders(root=CUCKOO_ROOT, folders=folders)
-    except CuckooOperationalError as e:
-        raise CuckooStartupError(e)
+# def create_structure():
+# """Creates Malice directories."""
+#     folders = [
+#         "log",
+#         "storage",
+#         os.path.join("storage", "analyses"),
+#         os.path.join("storage", "binaries")
+#     ]
+#
+#     try:
+#         create_folders(root=MALICE_ROOT, folders=folders)
+#     except MaliceOperationalError as e:
+#         raise MaliceStartupError(e)
 
 def check_version():
-    """Checks version of Cuckoo."""
+    """Checks version of Malice."""
     cfg = Config()
 
-    if not cfg.cuckoo.version_check:
+    if not cfg.version_check:
         return
 
     print(" Checking for updates...")
 
-    url = "http://api.cuckoosandbox.org/checkversion.php"
-    data = urllib.urlencode({"version": CUCKOO_VERSION})
+    url = "https://api.github.com/repos/blacktop/malice/releases"
+    # TODO : Replace with requests code.
+    data = urllib.urlencode({"version": MALICE_VERSION})
 
     try:
         request = urllib2.Request(url, data)
@@ -114,7 +117,7 @@ def check_version():
 
     if not response_data["error"]:
         if response_data["response"] == "NEW_VERSION":
-            msg = "Cuckoo Sandbox version {0} is available " \
+            msg = "Malice version {0} is available " \
                   "now.\n".format(response_data["current"])
             print(red(" Outdated! ") + msg)
         else:
@@ -122,13 +125,13 @@ def check_version():
                                      "available.\n")
 
 
-class DatabaseHandler(logging.Handler):
-    """Logging to database handler."""
-
-    def emit(self, record):
-        if hasattr(record, "task_id"):
-            db = Database()
-            db.add_error(record.msg, int(record.task_id))
+# class DatabaseHandler(logging.Handler):
+#     """Logging to database handler."""
+#
+#     def emit(self, record):
+#         if hasattr(record, "task_id"):
+#             db = Database()
+#             db.add_error(record.msg, int(record.task_id))
 
 class ConsoleHandler(logging.StreamHandler):
     """Logging to console handler."""
@@ -148,11 +151,12 @@ class ConsoleHandler(logging.StreamHandler):
 
         logging.StreamHandler.emit(self, colored)
 
+
 def init_logging():
     """Initializes logging."""
     formatter = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 
-    fh = logging.handlers.WatchedFileHandler(os.path.join(CUCKOO_ROOT, "log", "cuckoo.log"))
+    fh = logging.handlers.WatchedFileHandler(os.path.join(MALICE_ROOT, "logs", "malice.log"))
     fh.setFormatter(formatter)
     log.addHandler(fh)
 
@@ -160,43 +164,39 @@ def init_logging():
     ch.setFormatter(formatter)
     log.addHandler(ch)
 
-    dh = DatabaseHandler()
-    dh.setLevel(logging.ERROR)
-    log.addHandler(dh)
+    # dh = DatabaseHandler()
+    # dh.setLevel(logging.ERROR)
+    # log.addHandler(dh)
 
     log.setLevel(logging.INFO)
 
-def init_tasks():
-    """Check tasks and reschedule uncompleted ones."""
-    db = Database()
-    cfg = Config()
 
-    if cfg.cuckoo.reschedule:
-        log.debug("Checking for locked tasks...")
-
-        tasks = db.list_tasks(status=TASK_RUNNING)
-
-        for task in tasks:
-            db.reschedule(task.id)
-            log.info("Rescheduled task with ID {0} and "
-                     "target {1}".format(task.id, task.target))
+# def init_tasks():
+#     """Check tasks and reschedule uncompleted ones."""
+#     # db = Database()
+#     cfg = Config()
+#
+#     if cfg.reschedule:
+#         log.debug("Checking for locked tasks...")
+#
+#         tasks = db.list_tasks(status=TASK_RUNNING)
+#
+#         for task in tasks:
+#             db.reschedule(task.id)
+#             log.info("Rescheduled task with ID {0} and "
+#                      "target {1}".format(task.id, task.target))
 
 
 def init_modules():
     """Initializes plugins."""
     log.debug("Importing modules...")
 
-    # Import all auxiliary modules.
-    import_package(modules.auxiliary)
-    # Import all processing modules.
-    import_package(modules.processing)
-    # Import all signatures.
-    import_package(modules.signatures)
-    # Import all reporting modules.
-    import_package(modules.reporting)
-
-    # Import machine manager.
-    import_plugin("modules.machinery." + Config().cuckoo.machinery)
+    # Import all antivirus modules.
+    import_package(modules.av)
+    # Import all intel modules.
+    import_package(modules.intel)
+    # Import all file analysis modules.
+    import_package(modules.file)
 
     for category, entries in list_plugins().items():
         log.debug("Imported \"%s\" modules:", category)

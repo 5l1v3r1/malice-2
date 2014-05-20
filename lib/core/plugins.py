@@ -18,16 +18,16 @@ import logging
 from collections import defaultdict
 from distutils.version import StrictVersion
 
-from lib.cuckoo.common.abstracts import Auxiliary, Machinery, Processing
-from lib.cuckoo.common.abstracts import Report, Signature
-from lib.cuckoo.common.config import Config
-from lib.cuckoo.common.constants import CUCKOO_ROOT, CUCKOO_VERSION
-from lib.cuckoo.common.exceptions import CuckooCriticalError
-from lib.cuckoo.common.exceptions import CuckooOperationalError
-from lib.cuckoo.common.exceptions import CuckooProcessingError
-from lib.cuckoo.common.exceptions import CuckooReportError
-from lib.cuckoo.common.exceptions import CuckooDependencyError
-from lib.cuckoo.core.database import Database
+from lib.common.abstracts import Auxiliary, Machinery, Processing
+from lib.common.abstracts import Report, Signature
+from lib.common.config import Config
+from lib.common.constants import MALICE_ROOT, MALICE_VERSION
+from lib.common.exceptions import MaliceCriticalError
+from lib.common.exceptions import MaliceOperationalError
+from lib.common.exceptions import MaliceProcessingError
+from lib.common.exceptions import MaliceReportError
+from lib.common.exceptions import MaliceDependencyError
+from lib.core.database import Database
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ def import_plugin(name):
     try:
         module = __import__(name, globals(), locals(), ["dummy"], -1)
     except ImportError as e:
-        raise CuckooCriticalError("Unable to import plugin "
+        raise MaliceCriticalError("Unable to import plugin "
                                   "\"{0}\": {1}".format(name, e))
     else:
         load_plugins(module)
@@ -81,7 +81,7 @@ class RunAuxiliary(object):
     def __init__(self, task, machine):
         self.task = task
         self.machine = machine
-        self.cfg = Config(cfg=os.path.join(CUCKOO_ROOT, "conf", "auxiliary.conf"))
+        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "auxiliary.conf"))
         self.enabled = []
 
     def start(self):
@@ -101,7 +101,7 @@ class RunAuxiliary(object):
 
                 try:
                     options = self.cfg.get(module_name)
-                except CuckooOperationalError:
+                except MaliceOperationalError:
                     log.debug("Auxiliary module %s not found in "
                               "configuration file", module_name)
                     continue
@@ -146,8 +146,8 @@ class RunProcessing(object):
     def __init__(self, task_id):
         """@param task_id: ID of the analyses to process."""
         self.task = Database().view_task(task_id).to_dict()
-        self.analysis_path = os.path.join(CUCKOO_ROOT, "storage", "analyses", str(task_id))
-        self.cfg = Config(cfg=os.path.join(CUCKOO_ROOT, "conf", "processing.conf"))
+        self.analysis_path = os.path.join(MALICE_ROOT, "storage", "analyses", str(task_id))
+        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "processing.conf"))
 
     def process(self, module):
         """Run a processing module.
@@ -170,7 +170,7 @@ class RunProcessing(object):
 
         try:
             options = self.cfg.get(module_name)
-        except CuckooOperationalError:
+        except MaliceOperationalError:
             log.debug("Processing module %s not found in configuration file",
                       module_name)
             return None
@@ -197,9 +197,9 @@ class RunProcessing(object):
             # If succeeded, return they module's key name and the data to be
             # appended to it.
             return {current.key: data}
-        except CuckooDependencyError as e:
+        except MaliceDependencyError as e:
             log.warning("The processing module \"%s\" has missing dependencies: %s", current.__class__.__name__, e)
-        except CuckooProcessingError as e:
+        except MaliceProcessingError as e:
             log.warning("The processing module \"%s\" returned the following "
                         "error: %s", current.__class__.__name__, e)
         except:
@@ -252,7 +252,7 @@ class RunSignatures(object):
         """Loads overlay data from a json file.
         See example in data/signature_overlay.json
         """
-        filename = os.path.join(CUCKOO_ROOT, "data", "signature_overlay.json")
+        filename = os.path.join(MALICE_ROOT, "data", "signature_overlay.json")
 
         try:
             with open(filename) as fh:
@@ -277,18 +277,18 @@ class RunSignatures(object):
         """
         # Since signatures can hardcode some values or checks that might
         # become obsolete in future versions or that might already be obsolete,
-        # I need to match its requirements with the running version of Cuckoo.
-        version = CUCKOO_VERSION.split("-")[0]
+        # I need to match its requirements with the running version of Malice.
+        version = MALICE_VERSION.split("-")[0]
 
-        # If provided, check the minimum working Cuckoo version for this
+        # If provided, check the minimum working Malice version for this
         # signature.
         if current.minimum:
             try:
-                # If the running Cuckoo is older than the required minimum
+                # If the running Malice is older than the required minimum
                 # version, skip this signature.
                 if StrictVersion(version) < StrictVersion(current.minimum.split("-")[0]):
                     log.debug("You are running an older incompatible version "
-                              "of Cuckoo, the signature \"%s\" requires "
+                              "of Malice, the signature \"%s\" requires "
                               "minimum version %s",
                               current.name, current.minimum)
                     return None
@@ -297,15 +297,15 @@ class RunSignatures(object):
                           current.name)
                 return None
 
-        # If provided, check the maximum working Cuckoo version for this
+        # If provided, check the maximum working Malice version for this
         # signature.
         if current.maximum:
             try:
-                # If the running Cuckoo is newer than the required maximum
+                # If the running Malice is newer than the required maximum
                 # version, skip this signature.
                 if StrictVersion(version) > StrictVersion(current.maximum.split("-")[0]):
                     log.debug("You are running a newer incompatible version "
-                              "of Cuckoo, the signature \"%s\" requires "
+                              "of Malice, the signature \"%s\" requires "
                               "maximum version %s",
                               current.name, current.maximum)
                     return None
@@ -464,8 +464,8 @@ class RunReporting:
         """@param analysis_path: analysis folder path."""
         self.task = Database().view_task(task_id).to_dict()
         self.results = results
-        self.analysis_path = os.path.join(CUCKOO_ROOT, "storage", "analyses", str(task_id))
-        self.cfg = Config(cfg=os.path.join(CUCKOO_ROOT, "conf", "reporting.conf"))
+        self.analysis_path = os.path.join(MALICE_ROOT, "storage", "analyses", str(task_id))
+        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "reporting.conf"))
 
     def process(self, module):
         """Run a single reporting module.
@@ -486,7 +486,7 @@ class RunReporting:
 
         try:
             options = self.cfg.get(module_name)
-        except CuckooOperationalError:
+        except MaliceOperationalError:
             log.debug("Reporting module %s not found in configuration file", module_name)
             return
 
@@ -506,16 +506,16 @@ class RunReporting:
         try:
             current.run(self.results)
             log.debug("Executed reporting module \"%s\"", current.__class__.__name__)
-        except CuckooDependencyError as e:
+        except MaliceDependencyError as e:
             log.warning("The reporting module \"%s\" has missing dependencies: %s", current.__class__.__name__, e)
-        except CuckooReportError as e:
+        except MaliceReportError as e:
             log.warning("The reporting module \"%s\" returned the following error: %s", current.__class__.__name__, e)
         except:
             log.exception("Failed to run the reporting module \"%s\":", current.__class__.__name__)
 
     def run(self):
         """Generates all reports.
-        @raise CuckooReportError: if a report module fails.
+        @raise MaliceReportError: if a report module fails.
         """
         # In every reporting module you can specify a numeric value that
         # represents at which position that module should be executed among
