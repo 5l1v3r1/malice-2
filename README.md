@@ -12,7 +12,8 @@ Requirements
 ------------
 1. [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [VMWare](https://www.vmware.com/products/fusion/)
 2. [Vagrant](http://www.vagrantup.com/downloads.html)
-#### Note: I haven't tested with VirtualBox yet.
+
+##### Note: I haven't tested with VirtualBox yet.
 
 Installation
 -----------
