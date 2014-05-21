@@ -29,6 +29,8 @@ from . import malice
 from app.malice.scans import *
 from .forms import SearchForm
 
+from scans import ScanManager
+
 try:
     import pydeep
 except ImportError:
@@ -51,6 +53,8 @@ else:
     bf = BloomFilter(10000000, 0.01, 'filter.bloom')
 
 # csrf = CsrfProtect(app)
+
+sm = ScanManager()
 
 # config = ConfigParser.SafeConfigParser()
 # config.read(os.path.join(app.root_path, '..', 'conf/config.cfg'))

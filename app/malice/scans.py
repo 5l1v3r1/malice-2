@@ -30,6 +30,7 @@ from dateutil import parser
 from lib.common.out import *
 from lib.core.database import is_hash_in_db, db_insert
 from lib.scanworker.file import PickleableFileSample
+from lib.common.config import Config
 from lib.common.exceptions import MaliceDependencyError
 from lib.common.constants import MALICE_ROOT
 
@@ -49,11 +50,16 @@ except ImportError:
     raise MaliceDependencyError("Unable to import redis."
                                 "(install with `pip install redis`)")
 
+from modules import av
+from modules import file
+from modules import intel
+
+
 q = Queue('low', connection=Redis())
 
+conf_path = os.path.normpath(os.path.join(MALICE_ROOT, "conf", "config.cfg"))
 config = ConfigParser.ConfigParser()
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-config.read(os.path.join(BASE_DIR, '../../conf/config.cfg'))
+config.read(conf_path)
 
 log = logging.getLogger(__name__)
 
@@ -105,35 +111,35 @@ class ScanManager(object):
             print_info("Scanning with AV workers now.")
 
             if self.av_options.avast.enabled:
-                results["pslist"] = avast.scan()
+                results[avast.name] = avast.scan()
             if self.av_options.avg.enabled:
-                results["psxview"] = avg.scan()
+                results[avg.name] = avg.scan()
             if self.av_options.avira.enabled:
-                results["callbacks"] = avira.scan()
+                results[avira.name] = avira.scan()
             if self.av_options.bitdefender.enabled:
-                results["idt"] = bitdefender.scan()
+                results[bitdefender.name] = bitdefender.scan()
             if self.av_options.clamav.enabled:
-                results["timers"] = clamav.scan()
+                results[clamav.name] = clamav.scan()
             if self.av_options.comodo.enabled:
-                results["pslist"] = comodo.scan()
+                results[comodo.name] = comodo.scan()
             if self.av_options.eset.enabled:
-                results["psxview"] = eset.scan()
+                results[eset.name] = eset.scan()
             if self.av_options.fprot.enabled:
-                results["callbacks"] = fprot.scan()
+                results[fprot.name] = fprot.scan()
             if self.av_options.kaspersky.enabled:
-                results["idt"] = kaspersky.scan()
+                results[kaspersky.name] = kaspersky.scan()
             if self.av_options.metascan.enabled:
-                 results["idt"] = metascan.scan(ip=self.av_options.metascan.ip,
+                 results[metascan.name] = metascan.scan(ip=self.av_options.metascan.ip,
                                                 port=self.av_options.metascan.port,
                                                 key=self.av_options.metascan.key)
             if self.av_options.panda.enabled:
-                results["pslist"] = panda.scan()
+                results[panda.name] = panda.scan()
             if self.av_options.sophos.enabled:
-                results["psxview"] = sophos.scan()
+                results[sophos.name] = sophos.scan()
             if self.av_options.symantec.enabled:
-                results["callbacks"] = symantec.scan()
+                results[symantec.name] = symantec.scan()
             if self.av_options.yara.enabled:
-                results["idt"] = yara.scan()
+                results[yara.name] = yara.scan()
 
             print_success("Malice AV scan Complete.")
 
@@ -141,25 +147,25 @@ class ScanManager(object):
             print_info("Searching for Intel now.")
 
             if self.intel_options.bit9.enabled:
-                results["pslist"] = bit9.query()
+                results[bit9.name] = bit9.query()
             if self.intel_options.virustotal.enabled:
-                results["pslist"] = virustotal.query()
+                results[virustotal.name] = virustotal.query()
             if self.intel_options.shadowserver.enabled:
-                results["pslist"] = shadowserver.query()
+                results[shadowserver.name] = shadowserver.query()
             if self.intel_options.teamcymru.enabled:
-                results["pslist"] = teamcymru.query()
+                results[teamcymru.name] = teamcymru.query()
             if self.intel_options.malwr.enabled:
-                results["pslist"] = malwr.query()
+                results[malwr.name] = malwr.query()
             if self.intel_options.anibus.enabled:
-                results["pslist"] = anibus.query()
+                results[anibus.name] = anibus.query()
             if self.intel_options.totalhash.enabled:
-                results["pslist"] = totalhash.query()
+                results[totalhash.name] = totalhash.query()
             if self.intel_options.domaintools.enabled:
-                results["pslist"] = domaintools.query()
+                results[domaintools.name] = domaintools.query()
             if self.intel_options.opendns.enabled:
-                results["pslist"] = opendns.query()
+                results[opendns.name] = opendns.query()
             if self.intel_options.urlquery.enabled:
-                results["pslist"] = urlquery.query()
+                results[urlquery.name] = urlquery.query()
 
             print_success("Intel Search Complete.")
 
@@ -167,35 +173,35 @@ class ScanManager(object):
             print_info("Performing file analysis now.")
 
             if self.file_options.office.enabled:
-                results["psxview"] = office.analyze()
+                results[office.name] = office.analyze()
             if self.file_options.pdf.enabled:
-                results["psxview"] = pdf.analyze()
+                results[pdf.name] = pdf.analyze()
             if self.file_options.elf.enabled:
-                results["psxview"] = elf.analyze()
+                results[elf.name] = elf.analyze()
             if self.file_options.pe.enabled:
-                results["psxview"] = pe.analyze()
+                results[pe.name] = pe.analyze()
             if self.file_options.dotnet.enabled:
-                results["psxview"] = dotnet.analyze()
+                results[dotnet.name] = dotnet.analyze()
             if self.file_options.macho.enabled:
-                results["psxview"] = macho.analyze()
+                results[macho.name] = macho.analyze()
             if self.file_options.java.enabled:
-                results["psxview"] = java.analyze()
+                results[java.name] = java.analyze()
             if self.file_options.android.enabled:
-                results["psxview"] = android.analyze()
+                results[android.name] = android.analyze()
             if self.file_options.javascript.enabled:
-                results["psxview"] = javascript.analyze()
-            if self.file_options.flash.enabled:
-                results["psxview"] = flash.analyze()
+                results[javascript.name] = javascript.analyze()
+            if self.file_options.swf.enabled:
+                results[swf.name] = swf.analyze()
             if self.file_options.php.enabled:
-                results["psxview"] = php.analyze()
+                results[php.name] = php.analyze()
             if self.file_options.html.enabled:
-                results["psxview"] = html.analyze()
+                results[html.name] = html.analyze()
             if self.file_options.trid.enabled:
-                results["psxview"] = trid.analyze()
+                results[trid.name] = trid.analyze()
             if self.file_options.exif.enabled:
-                results["psxview"] = exif.analyze()
+                results[exif.name] = exif.analyze()
             if self.file_options.yara.enabled:
-                results["psxview"] = yara.analyze()
+                results[yara.name] = yara.analyze()
 
             print_success("File Analysis Complete.")
 

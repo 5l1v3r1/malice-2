@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # `7MMM.     ,MMF'      db      `7MMF'      `7MMF' .g8"""bgd `7MM"""YMM
-# MMMb    dPMM       ;MM:       MM          MM .dP'     `M   MM    `7
+#   MMMb    dPMM       ;MM:       MM          MM .dP'     `M   MM    `7
 #   M YM   ,M MM      ,V^MM.      MM          MM dM'       `   MM   d
 #   M  Mb  M' MM     ,M  `MM      MM          MM MM            MMmmMM
 #   M  YM.P'  MM     AbmmmqMA     MM      ,   MM MM.           MM   Y  ,
@@ -17,7 +17,7 @@ if os.path.exists('.env'):
     print('Importing environment from .env...')
     for line in open('.env'):
         var = line.strip().split('=')
-        if len(var) == 2:
+        if len(var) == 2 and '#' not in var[0]:
             os.environ[var[0]] = var[1]
 
 from app import create_app
@@ -65,6 +65,7 @@ def dropdb():
         destroy_db()
         db.drop_all()
         db_setup()
+        db.create_all()
 
 
 @manager.command
@@ -76,6 +77,7 @@ def createdb():
 @manager.command
 def runserver():
     """Start the server"""
+    # TODO : Remove use_reloader when Flask 1.0 comes out
     app.run(host='0.0.0.0', port=5000, threaded=True, use_reloader=False)
 
 
