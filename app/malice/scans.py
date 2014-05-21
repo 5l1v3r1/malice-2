@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 __author__ = 'Josh Maine'
 __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-from flask import current_app, g
+from flask import flash, current_app, g, Config
 from api.metascan_api import MetaScan
 from app.malice.worker.av.avast.scanner import avast_engine
 from app.malice.worker.av.avira.scanner import avira_engine
@@ -32,8 +31,10 @@ from lib.common.out import *
 from lib.core.database import is_hash_in_db, db_insert
 from lib.scanworker.file import PickleableFileSample
 from lib.common.exceptions import MaliceDependencyError
+from lib.common.constants import MALICE_ROOT
 
 import hashlib
+import logging
 
 try:
     import rethinkdb as r
@@ -53,6 +54,154 @@ q = Queue('low', connection=Redis())
 config = ConfigParser.ConfigParser()
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 config.read(os.path.join(BASE_DIR, '../../conf/config.cfg'))
+
+log = logging.getLogger(__name__)
+
+
+class ScanManager(object):
+    """Handle Malice scan events."""
+
+    def __init__(self):
+        conf_path = os.path.join(MALICE_ROOT, "conf", "av.conf")
+        if not os.path.exists(conf_path):
+            log.error("Configuration file av.conf not found".format(conf_path))
+            self.av_options = False
+            return
+
+        self.av_options = Config(conf_path)
+
+        conf_path = os.path.join(MALICE_ROOT, "conf", "intel.conf")
+        if not os.path.exists(conf_path):
+            log.error("Configuration file intel.conf not found".format(conf_path))
+            self.intel_options = False
+            return
+
+        self.intel_options = Config(conf_path)
+
+        conf_path = os.path.join(MALICE_ROOT, "conf", "file.conf")
+        if not os.path.exists(conf_path):
+            log.error("Configuration file file.conf not found".format(conf_path))
+            self.file_options = False
+            return
+
+        self.file_options = Config(conf_path)
+
+    def run(self, file_stream, sample):
+            results = {}
+
+            # Exit if options were not loaded.
+            if not self.av_options:
+                return
+            if not self.intel_options:
+                return
+            if not self.file_options:
+                return
+
+            print("<< Now Scanning file: {}  >>>>>>>>>>>>>>>>>>>>>>>>>>>>".format(sample['filename']))
+            # vol = VolatilityAPI(self.memfile, self.osprofile)
+
+            # TODO: improve the load of scan functions.
+            # AntiVirus Engines >>>>>>>>>>>>>>>>>>>>>>>
+            print_info("Scanning with AV workers now.")
+
+            if self.av_options.avast.enabled:
+                results["pslist"] = avast.scan()
+            if self.av_options.avg.enabled:
+                results["psxview"] = avg.scan()
+            if self.av_options.avira.enabled:
+                results["callbacks"] = avira.scan()
+            if self.av_options.bitdefender.enabled:
+                results["idt"] = bitdefender.scan()
+            if self.av_options.clamav.enabled:
+                results["timers"] = clamav.scan()
+            if self.av_options.comodo.enabled:
+                results["pslist"] = comodo.scan()
+            if self.av_options.eset.enabled:
+                results["psxview"] = eset.scan()
+            if self.av_options.fprot.enabled:
+                results["callbacks"] = fprot.scan()
+            if self.av_options.kaspersky.enabled:
+                results["idt"] = kaspersky.scan()
+            if self.av_options.metascan.enabled:
+                 results["idt"] = metascan.scan(ip=self.av_options.metascan.ip,
+                                                port=self.av_options.metascan.port,
+                                                key=self.av_options.metascan.key)
+            if self.av_options.panda.enabled:
+                results["pslist"] = panda.scan()
+            if self.av_options.sophos.enabled:
+                results["psxview"] = sophos.scan()
+            if self.av_options.symantec.enabled:
+                results["callbacks"] = symantec.scan()
+            if self.av_options.yara.enabled:
+                results["idt"] = yara.scan()
+
+            print_success("Malice AV scan Complete.")
+
+            # Intel Engines >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            print_info("Searching for Intel now.")
+
+            if self.intel_options.bit9.enabled:
+                results["pslist"] = bit9.query()
+            if self.intel_options.virustotal.enabled:
+                results["pslist"] = virustotal.query()
+            if self.intel_options.shadowserver.enabled:
+                results["pslist"] = shadowserver.query()
+            if self.intel_options.teamcymru.enabled:
+                results["pslist"] = teamcymru.query()
+            if self.intel_options.malwr.enabled:
+                results["pslist"] = malwr.query()
+            if self.intel_options.anibus.enabled:
+                results["pslist"] = anibus.query()
+            if self.intel_options.totalhash.enabled:
+                results["pslist"] = totalhash.query()
+            if self.intel_options.domaintools.enabled:
+                results["pslist"] = domaintools.query()
+            if self.intel_options.opendns.enabled:
+                results["pslist"] = opendns.query()
+            if self.intel_options.urlquery.enabled:
+                results["pslist"] = urlquery.query()
+
+            print_success("Intel Search Complete.")
+
+            # File Analysis Engines >>>>>>>>>>>>>>>>>>>>>>
+            print_info("Performing file analysis now.")
+
+            if self.file_options.office.enabled:
+                results["psxview"] = office.analyze()
+            if self.file_options.pdf.enabled:
+                results["psxview"] = pdf.analyze()
+            if self.file_options.elf.enabled:
+                results["psxview"] = elf.analyze()
+            if self.file_options.pe.enabled:
+                results["psxview"] = pe.analyze()
+            if self.file_options.dotnet.enabled:
+                results["psxview"] = dotnet.analyze()
+            if self.file_options.macho.enabled:
+                results["psxview"] = macho.analyze()
+            if self.file_options.java.enabled:
+                results["psxview"] = java.analyze()
+            if self.file_options.android.enabled:
+                results["psxview"] = android.analyze()
+            if self.file_options.javascript.enabled:
+                results["psxview"] = javascript.analyze()
+            if self.file_options.flash.enabled:
+                results["psxview"] = flash.analyze()
+            if self.file_options.php.enabled:
+                results["psxview"] = php.analyze()
+            if self.file_options.html.enabled:
+                results["psxview"] = html.analyze()
+            if self.file_options.trid.enabled:
+                results["psxview"] = trid.analyze()
+            if self.file_options.exif.enabled:
+                results["psxview"] = exif.analyze()
+            if self.file_options.yara.enabled:
+                results["psxview"] = yara.analyze()
+
+            print_success("File Analysis Complete.")
+
+            return results
+
+
 
 # TODO : Make it so that it will scan with every available worker instead of having to do it explicitly
 def scan_upload(file_stream, sample):
@@ -165,19 +314,22 @@ def avg_scan(this_file):
     my_avg = avg_engine.AVG(this_file)
     result = my_avg.scan()
     # result = my_avg.scan(PickleableFileSample.string_factory(file))
-    file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
-    found = is_hash_in_db(file_md5_hash)
-    if found:
-        found['user_uploads'][-1].setdefault('av_results', []).append(result[1])
-        if result[1]['infected']:
-            found['user_uploads'][-1]['detection_ratio']['infected'] += 1
-        found['user_uploads'][-1]['detection_ratio']['count'] += 1
-        data = found
+    if 'error' in result[1]:
+        flash(result[1]['error'], 'error')
     else:
-        data = dict(md5=file_md5_hash)
-        data['user_uploads'][-1].setdefault('av_results', []).append(result[1])
-    db_insert(data)
-    return data
+        file_md5_hash = hashlib.md5(this_file).hexdigest().upper()
+        found = is_hash_in_db(file_md5_hash)
+        if found:
+            found['user_uploads'][-1].setdefault('av_results', []).append(result[1])
+            if result[1]['infected']:
+                found['user_uploads'][-1]['detection_ratio']['infected'] += 1
+            found['user_uploads'][-1]['detection_ratio']['count'] += 1
+            data = found
+        else:
+            data = dict(md5=file_md5_hash)
+            data['user_uploads'][-1].setdefault('av_results', []).append(result[1])
+        db_insert(data)
+        return data
 
 
 # TODO: metadata contains a element (description) that I should append or replace the infected string with

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from os import unlink
-from os.path import exists
+from os.path import exists, isfile
 from dateutil import parser
 import tempfile
 import envoy
@@ -14,6 +14,10 @@ __author__ = 'Josh Maine'
 class AVG():
     def __init__(self, data):
         self.data = data
+
+    @property
+    def is_installed(self):
+        return isfile('/usr/bin/avgscan')
 
     def format_output(self, output):
         avg_tag = {}
@@ -46,15 +50,18 @@ class AVG():
         return avg_tag
 
     def scan(self):
-        #: create tmp file
-        handle, name = tempfile.mkstemp(suffix=".data", prefix="avg_")
-        #: Write data stream to tmp file
-        with open(name, "wb") as f:
-            f.write(self.data)
-        #: Run exiftool on tmp file
-        r = envoy.run('/usr/bin/avgscan ' + name, timeout=15)
-        #: delete tmp file
-        unlink(name)
-        exists(name)
-        #: return key, stdout as a dictionary
-        return 'AVG', self.format_output(r.std_out)
+        if self.is_installed:
+            #: create tmp file
+            handle, name = tempfile.mkstemp(suffix=".data", prefix="avg_")
+            #: Write data stream to tmp file
+            with open(name, "wb") as f:
+                f.write(self.data)
+            #: Run exiftool on tmp file
+            r = envoy.run('/usr/bin/avgscan ' + name, timeout=15)
+            #: delete tmp file
+            unlink(name)
+            exists(name)
+            #: return key, stdout as a dictionary
+            return 'AVG', self.format_output(r.std_out)
+        else:
+            return 'AVG', dict(error='AVG Engine is not installed.')
