@@ -5,6 +5,7 @@ from app import db, login_manager
 from forms import LoginForm, RegistrationForm
 from app.mod_users.models import User
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)

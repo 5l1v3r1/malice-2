@@ -54,7 +54,7 @@ class User(UserMixin, CRUDMixin, db.Model):
     # if admin and self.is_admin:
     # return Comment.for_moderation()
     # return Comment.query.join(Talk, Comment.talk_id == Talk.id). \
-    #         filter(Talk.author == self).filter(Comment.approved == False)
+    # filter(Talk.author == self).filter(Comment.approved == False)
 
     def get_api_token(self, expiration=300):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)

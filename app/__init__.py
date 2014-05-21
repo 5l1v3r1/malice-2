@@ -13,21 +13,26 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 # from flask.ext.pagedown import PageDown
 from flask.ext.mail import Mail
+from flask.ext.login import LoginManager
+from flask.ext.ldap import LDAP
 from settings import settings
 from lib.common.logo import logo
 from lib.core.startup import check_configs, check_version
-from lib.common.exceptions import MaliceDependencyError
+
 
 # pagedown = PageDown()
 mail = Mail()
 db = SQLAlchemy()
+ldap = LDAP()
 
-logo()
-check_configs()
-check_version()
-# create_structure()
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
 
 def create_app(setting_name):
+    logo()
+    check_configs()
+    check_version()
+    # create_structure()
     # Define the WSGI application object
     app = Flask(__name__)
     # Configurations
@@ -71,23 +76,11 @@ def create_app(setting_name):
     mail.init_app(app)
 
     if app.config['USE_LDAP']:
-        try:
-            from flask.ext.ldap import LDAP
-        except ImportError:
-            raise MaliceDependencyError("Unable to import LDAP "
-                                        "(install with `pip install Flask-LDAP`)")
-        ldap = LDAP(app)
         # LDAP Login
         # TODO : Test out LDAP
         app.add_url_rule('/login', 'login', ldap.login, methods=['GET', 'POST'])
+        ldap.init_app(app)
     else:
-        try:
-            from flask.ext.login import LoginManager
-        except ImportError:
-            raise MaliceDependencyError("Unable to import LoginManager "
-                                        "(install with `pip install Flask-Login`)")
-        login_manager = LoginManager()
-        login_manager.login_view = 'auth.login'
         login_manager.init_app(app)
 
     # Register blueprint(s)
@@ -101,6 +94,7 @@ def create_app(setting_name):
     # app.register_blueprint(api_module, url_prefix='/api/v1')
 
     from app.emails import start_email_thread
+
     @app.before_first_request
     def before_first_request():
         start_email_thread()

@@ -155,7 +155,7 @@ def logo():
     $$/      $$/  $$$$$$$/ $$/ $$/  $$$$$$$/  $$$$$$$/ """)
 
     logos.append("""
-     `7MMM.     ,MMF'      db      `7MMF'      `7MMF' .g8/"/"/"/bgd `7MM/"/"/"YMM
+     `7MMM.     ,MMF'      db      `7MMF'      `7MMF' .g8""'bgd' `7MM""'YMM
        MMMb    dPMM       ;MM:       MM          MM .dP'     `M   MM    `7
        M YM   ,M MM      ,V^MM.      MM          MM dM'       `   MM   d
        M  Mb  M' MM     ,M  `MM      MM          MM MM            MMmmMM

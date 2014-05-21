@@ -21,7 +21,7 @@ if os.path.exists('.env'):
             os.environ[var[0]] = var[1]
 
 from app import create_app
-from flask.ext.script import Manager
+from flask.ext.script import Manager, prompt_bool
 from app import db
 from app.mod_users.models import User
 from lib.core.database import db_setup, destroy_db
@@ -60,10 +60,11 @@ def adduser(email, username, admin=False):
 
 
 @manager.command
-def deletedb():
-    destroy_db()
-    db.drop_all()
-    db_setup()
+def dropdb():
+    if prompt_bool("Are you sure you want to lose all your data"):
+        destroy_db()
+        db.drop_all()
+        db_setup()
 
 
 if __name__ == '__main__':
