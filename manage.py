@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # `7MMM.     ,MMF'      db      `7MMF'      `7MMF' .g8"""bgd `7MM"""YMM
-#   MMMb    dPMM       ;MM:       MM          MM .dP'     `M   MM    `7
+# MMMb    dPMM       ;MM:       MM          MM .dP'     `M   MM    `7
 #   M YM   ,M MM      ,V^MM.      MM          MM dM'       `   MM   d
 #   M  Mb  M' MM     ,M  `MM      MM          MM MM            MMmmMM
 #   M  YM.P'  MM     AbmmmqMA     MM      ,   MM MM.           MM   Y  ,
@@ -21,18 +21,17 @@ if os.path.exists('.env'):
             os.environ[var[0]] = var[1]
 
 from app import create_app
-from flask.ext.script import Manager, prompt_bool
+from flask.ext.script import Manager, Server, prompt_bool
 from app import db
 from app.mod_users.models import User
 from lib.core.database import db_setup, destroy_db
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
-# app = create_app(os.getenv('FLASK_CONFIG') or 'production')
 manager = Manager(app)
-
 
 @manager.command
 def test():
+    """Run test suite"""
     from subprocess import call
 
     call(['nosetests', '-v',
@@ -61,10 +60,23 @@ def adduser(email, username, admin=False):
 
 @manager.command
 def dropdb():
+    """Drops database tables"""
     if prompt_bool("Are you sure you want to lose all your data"):
         destroy_db()
         db.drop_all()
         db_setup()
+
+
+@manager.command
+def createdb():
+    """Create database tables"""
+    db_setup()
+    db.create_all()
+
+@manager.command
+def runserver():
+    """Start the server"""
+    app.run(host='0.0.0.0', port=5000, threaded=True, use_reloader=False)
 
 
 if __name__ == '__main__':

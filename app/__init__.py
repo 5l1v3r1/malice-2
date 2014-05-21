@@ -28,7 +28,7 @@ ldap = LDAP()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
-def create_app(setting_name):
+def create_app(config):
     logo()
     check_configs()
     check_version()
@@ -36,7 +36,7 @@ def create_app(setting_name):
     # Define the WSGI application object
     app = Flask(__name__)
     # Configurations
-    app.config.from_object(settings[setting_name])
+    app.config.from_object(settings[config])
 
     # if True:
     if not app.config['DEBUG'] and not app.config['TESTING']:
