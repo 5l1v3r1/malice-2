@@ -38,7 +38,7 @@ Usage
 (While ssh'd into the VM via ```vagrant ssh```)
 ```bash
 $ source ~/malice/venv/bin/activate
-(venv)$ python /vagrant/manage.py runserver --no-reload
+(venv)$ python /vagrant/manage.py runserver
 ```
 
 Then browse to http://127.0.0.1:5000
