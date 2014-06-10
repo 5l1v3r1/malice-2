@@ -30,6 +30,26 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     override.ssh.private_key_path = "PATH TO YOUR PRIVATE KEY"
   end
 
+  config.vm.provider "virtualbox" do |vb|
+    # Don't boot with headless mode
+    vb.gui = false
+    vb.name = "malice_dev"
+    vb.memory = 1024
+    vb.cpus = 2
+
+    ## For masterless, mount your file roots file root
+    config.vm.synced_folder "install/salt/roots/", "/srv/"#, type: "rsync"
+    ## Set your salt configs here
+    config.vm.provision :salt do |salt|
+      ## Minion config is set to ``file_client: local`` for masterless
+      salt.minion_config = "install/salt/minion"
+      ## Installs our example formula in "salt/roots/salt"
+      salt.verbose = true
+      salt.colorize = true
+      salt.run_highstate = true
+    end
+  end
+
   config.vm.provider "vmware_fusion" do |vmwf, override|
     #override.vm.box_url = "http://files.vagrantup.com/precise64_vmware.box"
     vmwf.vmx["displayName"] = "Malice"
