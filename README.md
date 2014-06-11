@@ -12,6 +12,7 @@ Requirements
 ------------
 1. [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [VMWare](https://www.vmware.com/products/fusion/)
 2. [Vagrant](http://www.vagrantup.com/downloads.html)
+
 ##### Installing Requirements on OSX
  - Install [Homebrew](http://brew.sh)
 ```bash
