@@ -29,7 +29,6 @@ $ cd malice
 $ vagrant up
 ...wait...
 $ vagrant ssh
-$ mv /vagrant/conf/config.cfg.example /vagrant/conf/config.cfg
 $ cd /vagrant/app/static
 $ bower install
 $ python /vagrant/manage.py createdb
