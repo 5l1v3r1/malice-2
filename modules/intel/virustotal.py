@@ -12,6 +12,7 @@ from flask import flash
 from lib.core.database import db_insert
 from lib.common.utils import split_seq, list_to_string
 from lib.common.exceptions import MaliceDependencyError
+from lib.common.constants import MALICE_ROOT
 
 try:
     from virus_total_apis import PublicApi as vtPubAPI
@@ -27,20 +28,19 @@ except ImportError:
 
 def get_config():
     VT_API, HTTP_PROXY, HTTPS_PROXY = None, None, None
-    # Get Malice base directory
-    _current_dir = os.path.abspath(os.path.dirname(__file__))
-    BASE_DIR = os.path.normpath(os.path.join(_current_dir, "..", "..", "..", ".."))
-    # Read config.cfg file
-    config = ConfigParser.SafeConfigParser()
-    config.read(os.path.join(BASE_DIR, 'conf/config.cfg'))
+    # Read config files
+    intel_config = ConfigParser.SafeConfigParser()
+    malice_config = ConfigParser.SafeConfigParser()
+    intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf))
+    malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf))
     # Parse config.cfg file
-    if config.has_section('VirusTotal'):
-        VT_API = config.get('VirusTotal', 'PublicApiKey')
-        if config.has_section('Proxie'):
-            if config.has_option('Proxie', 'HTTP'):
-                HTTP_PROXY = config.get('Proxie', 'HTTP')
-            if config.has_option('Proxie', 'HTTPS'):
-                HTTPS_PROXY = config.get('Proxie', 'HTTPS')
+    if config.has_section('virustotal') and malice_config.get('virustotal', 'enabled') == "yes":
+        VT_API = config.get('virustotal', 'pubapikey')
+        if malice_config.has_section('proxie') and malice_config.get('proxie', 'enabled') == "yes":
+            if malice_config.has_option('proxie', 'http'):
+                HTTP_PROXY = malice_config.get('proxie', 'http')
+            if malice_config.has_option('proxie', 'https'):
+                HTTPS_PROXY = malice_config.get('proxie', 'https')
     else:
         # No config.cfg creds so try the environment or use test creds
         VT_API = os.environ.get('VT_API') or 'test_api'

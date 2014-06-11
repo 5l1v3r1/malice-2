@@ -6,16 +6,17 @@ import os
 import psutil
 import ConfigParser
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static/uploads')
+from lib.common.constants import MALICE_ROOT
 
-config = ConfigParser.ConfigParser()
-config.read(os.path.join(BASE_DIR, 'conf/config.cfg'))
+UPLOAD_FOLDER = os.path.join(MALICE_ROOT, 'static/uploads')
+
+config = ConfigParser.SafeConfigParser()
+config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
 
 
 class BaseConfig:
     # SERVER_NAME = ''
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'users.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(MALICE_ROOT, 'users.db')
     DATABASE_CONNECT_OPTIONS = {}
 
     # Application threads. A common general assumption is
@@ -42,24 +43,28 @@ class BaseConfig:
     USE_TOKEN_AUTH = False
     USE_RATE_LIMITS = False
 
-    MAIL_SERVER = os.environ.get('MAIL_SERVER') or config.get('Email', 'Server')
-    MAIL_PORT = os.environ.get('MAIL_PORT') or config.get('Email', 'Port')
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or config.get('Email', 'Username')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or config.get('Email', 'Password')
-    DEFAULT_MAIL_SENDER = os.environ.get('MAIL_SENDER') or config.get('SITE', 'Email')
-    MAIL_FLUSH_INTERVAL = 3600  # one hour
-    MAIL_ERROR_RECIPIENT = os.environ.get('MAIL_ERROR_RECIPIENT') or config.get('SITE', 'ErrorEmail')
+    URL = os.environ.get('URL') or config.get('malice', 'url')
+    EMAIL = os.environ.get('EMAIL') or config.get('malice', 'email')
+    GITHUB = os.environ.get('GITHUB') or config.get('malice', 'github')
 
-    LDAP_HOST = os.environ.get('LDAP_HOST') or config.get('LDAP', 'LDAP_HOST')
-    LDAP_DOMAIN = os.environ.get('LDAP_DOMAIN') or config.get('LDAP', 'LDAP_DOMAIN')
-    LDAP_AUTH_TEMPLATE = os.environ.get('LDAP_AUTH_TEMPLATE') or config.get('LDAP', 'LDAP_AUTH_TEMPLATE')
-    LDAP_PROFILE_KEY = os.environ.get('LDAP_PROFILE_KEY') or config.get('LDAP', 'LDAP_PROFILE_KEY')
-    LDAP_AUTH_VIEW = os.environ.get('LDAP_AUTH_VIEW') or config.get('LDAP', 'LDAP_AUTH_VIEW')
+    MAIL_SERVER = os.environ.get('MAIL_SERVER') or config.get('email', 'server')
+    MAIL_PORT = os.environ.get('MAIL_PORT') or config.get('email', 'port')
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or config.get('email', 'username')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or config.get('email', 'password')
+    DEFAULT_MAIL_SENDER = os.environ.get('MAIL_SENDER') or config.get('malice', 'email')
+    MAIL_FLUSH_INTERVAL = 3600  # one hour
+    MAIL_ERROR_RECIPIENT = os.environ.get('MAIL_ERROR_RECIPIENT') or config.get('malice', 'erroremail')
+
+    LDAP_HOST = os.environ.get('LDAP_HOST') or config.get('ldap', 'host')
+    ldap_DOMAIN = os.environ.get('LDAP_DOMAIN') or config.get('ldap', 'domain')
+    LDAP_AUTH_TEMPLATE = os.environ.get('LDAP_AUTH_TEMPLATE') or config.get('ldap', 'auth_temp')
+    LDAP_PROFILE_KEY = os.environ.get('LDAP_PROFILE_KEY') or config.get('ldap', 'profile_key')
+    LDAP_AUTH_VIEW = os.environ.get('LDAP_AUTH_VIEW') or config.get('ldap', 'auth_view')
 
     RECAPTCHA_USE_SSL = False
-    RECAPTCHA_PUBLIC_KEY = os.environ.get('CAPTCHA_PUBKEY') or config.get('reCAPTCHA', 'PublicKey')
-    RECAPTCHA_PRIVATE_KEY = os.environ.get('CAPTCHA_PRIVKEY') or config.get('reCAPTCHA', 'PrivateKey')
+    RECAPTCHA_PUBLIC_KEY = os.environ.get('CAPTCHA_PUBKEY') or config.get('reCAPTCHA', 'pubkey')
+    RECAPTCHA_PRIVATE_KEY = os.environ.get('CAPTCHA_PRIVKEY') or config.get('reCAPTCHA', 'privkey')
     RECAPTCHA_OPTIONS = {'theme': 'white'}
 
 
@@ -69,7 +74,7 @@ class DevConfig(BaseConfig):
     # Secret key for signing cookies
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(BASE_DIR, 'users-dev.sqlite')
+                              'sqlite:///' + os.path.join(MALICE_ROOT, 'users-dev.sqlite')
     MAIL_FLUSH_INTERVAL = 60  # one minute
 
 
@@ -79,7 +84,7 @@ class TestConfig(BaseConfig):
     CSRF_ENABLED = True
     SECRET_KEY = 'test_secret'
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(BASE_DIR, 'users-test.sqlite')
+                              'sqlite:///' + os.path.join(MALICE_ROOT, 'users-test.sqlite')
     MAIL_FLUSH_INTERVAL = 60  # one minute
 
 
@@ -88,7 +93,7 @@ class ProductionConfig(BaseConfig):
     USE_TOKEN_AUTH = True
     USE_RATE_LIMITS = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(BASE_DIR, 'users.sqlite')
+                              'sqlite:///' + os.path.join(MALICE_ROOT, 'users.sqlite')
 
 
 settings = {

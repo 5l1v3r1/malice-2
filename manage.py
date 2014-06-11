@@ -78,7 +78,7 @@ def createdb():
 def runserver():
     """Start the server"""
     # TODO : Remove use_reloader when Flask 1.0 comes out
-    app.run(host='0.0.0.0', port=5000, threaded=True, use_reloader=False)
+    app.run(host='0.0.0.0', port=5000, threaded=True, use_reloader=True)
 
 
 if __name__ == '__main__':

@@ -11,6 +11,7 @@ import ConfigParser
 from lib.common.utils import split_seq
 from lib.core.database import db_insert
 from lib.common.exceptions import MaliceDependencyError
+from lib.common.constants import MALICE_ROOT
 
 try:
     import rethinkdb as r
@@ -26,21 +27,20 @@ except ImportError:
 
 def get_config():
     BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY = None, None, None, None
-    # Get Malice base directory
-    _current_dir = os.path.abspath(os.path.dirname(__file__))
-    BASE_DIR = os.path.normpath(os.path.join(_current_dir, "..", "..", "..", ".."))
     # Read config.cfg file
-    config = ConfigParser.SafeConfigParser()
-    config.read(os.path.join(BASE_DIR, 'conf/config.cfg'))
+    intel_config = ConfigParser.SafeConfigParser()
+    malice_config = ConfigParser.SafeConfigParser()
+    intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf))
+    malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf))
     # Parse config.cfg file
-    if config.has_section('Bit9'):
-        BIT9_USER = config.get('Bit9', 'User')
-        BIT9_PASS = config.get('Bit9', 'Password')
-        if config.has_section('Proxie'):
-            if config.has_option('Proxie', 'HTTP'):
-                HTTP_PROXY = config.get('Proxie', 'HTTP')
-            if config.has_option('Proxie', 'HTTPS'):
-                HTTPS_PROXY = config.get('Proxie', 'HTTPS')
+    if intel_config.has_section('bit9') and intel_config.get('bit9', 'enabled') == "yes":
+        BIT9_USER = intel_config.get('bit9', 'user')
+        BIT9_PASS = intel_config.get('bit9', 'password')
+        if malice_config.has_section('proxie') and malice_config.get('proxie', 'enabled') == "yes":
+            if malice_config.has_option('proxie', 'http'):
+                HTTP_PROXY = malice_config.get('proxie', 'http')
+            if malice_config.has_option('proxie', 'https'):
+                HTTPS_PROXY = malice_config.get('proxie', 'https')
     else:
         # No config.cfg creds so try the environment or use test creds
         BIT9_USER = os.environ.get('BIT9_USER') or 'test_user'

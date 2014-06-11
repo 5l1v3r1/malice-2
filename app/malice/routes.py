@@ -56,9 +56,7 @@ else:
 
 sm = ScanManager()
 
-# config = ConfigParser.SafeConfigParser()
-# config.read(os.path.join(app.root_path, '..', 'conf/config.cfg'))
-github = 'https://github.com/blacktop/malice' # config.get('SITE', 'Github')
+github = 'https://github.com/blacktop/malice' #current_app.config['GITHUB']
 
 # open connection before each request
 @malice.before_request
@@ -289,8 +287,8 @@ def system():
 # @ldap.login_required
 # @login_required
 def help():
-    url = config.get('SITE', 'Url')
-    email = config.get('SITE', 'Email')
+    url = current_app.config['URL']
+    email = current_app.config['EMAIL']
     return render_template('help.html', my_url=url, my_email=email, my_github=github)
 
 
