@@ -28,7 +28,7 @@ $ git clone https://github.com/blacktop/malice.git
 $ cd malice
 $ vagrant up
 
-...wait...
+wait...
 
 $ vagrant ssh
 $ cd /vagrant/app/static
