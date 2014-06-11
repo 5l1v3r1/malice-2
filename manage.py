@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # `7MMM.     ,MMF'      db      `7MMF'      `7MMF' .g8"""bgd `7MM"""YMM
-#   MMMb    dPMM       ;MM:       MM          MM .dP'     `M   MM    `7
+# MMMb    dPMM       ;MM:       MM          MM .dP'     `M   MM    `7
 #   M YM   ,M MM      ,V^MM.      MM          MM dM'       `   MM   d
 #   M  Mb  M' MM     ,M  `MM      MM          MM MM            MMmmMM
 #   M  YM.P'  MM     AbmmmqMA     MM      ,   MM MM.           MM   Y  ,
@@ -28,6 +28,7 @@ from lib.core.database import db_setup, destroy_db
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
+
 
 @manager.command
 def test():
@@ -74,11 +75,12 @@ def createdb():
     db_setup()
     db.create_all()
 
+
 @manager.command
 def runserver():
     """Start the server"""
     # TODO : Remove use_reloader when Flask 1.0 comes out
-    app.run(host='0.0.0.0', port=5000, threaded=True, use_reloader=True)
+    app.run(host='0.0.0.0', port=5000, threaded=True, use_reloader=False)
 
 
 if __name__ == '__main__':

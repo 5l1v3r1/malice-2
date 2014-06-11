@@ -10,6 +10,11 @@ pip-depends:
       - libxml2-dev
 
 uwsgi:
-  pip.installed:
+  pkg.installed:
+    - require:
+      - pkg: pip-depends
+
+uwsgi-plugin-python:
+  pkg.installed:
     - require:
       - pkg: pip-depends

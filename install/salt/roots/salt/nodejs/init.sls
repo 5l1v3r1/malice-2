@@ -9,6 +9,7 @@ nodejs:
         - pkg: nodejs
     pkg:
         - installed
+        - refresh: True
 
 npm-pkgs:
   npm.installed:
