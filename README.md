@@ -12,11 +12,16 @@ Requirements
 ------------
 1. [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [VMWare](https://www.vmware.com/products/fusion/)
 2. [Vagrant](http://www.vagrantup.com/downloads.html)
-
-##### Note: I haven't tested with VirtualBox yet.
+##### Installing Requirements on OSX
+ - Install [Homebrew](http://brew.sh)
+```bash
+$ brew install cask
+$ brew cask install virtualbox
+$ brew cask install vagrant
+```
 
 Installation
------------
+------------
 ```bash
 $ git clone https://github.com/blacktop/malice.git
 $ cd malice
