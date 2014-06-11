@@ -27,7 +27,9 @@ Installation
 $ git clone https://github.com/blacktop/malice.git
 $ cd malice
 $ vagrant up
+
 ...wait...
+
 $ vagrant ssh
 $ cd /vagrant/app/static
 $ bower install
