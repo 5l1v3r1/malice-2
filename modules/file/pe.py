@@ -35,8 +35,9 @@ try:
 except ImportError:
     HAVE_MAGIC = False
 
+from lib.common.abstracts import FileAnalysis
 
-class PE():
+class PE(FileAnalysis):
     def __init__(self, data):
         self.pe = None
         try:

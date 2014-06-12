@@ -18,7 +18,7 @@ import logging
 from collections import defaultdict
 from distutils.version import StrictVersion
 
-# from lib.common.abstracts import Auxiliary, Machinery, Processing
+from lib.common.abstracts import AntiVirus, FileAnalysis, Intel
 # from lib.common.abstracts import Report, Signature
 from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT, MALICE_VERSION
@@ -33,6 +33,7 @@ log = logging.getLogger(__name__)
 
 _modules = defaultdict(dict)
 
+
 def import_plugin(name):
     try:
         module = __import__(name, globals(), locals(), ["dummy"], -1)
@@ -42,6 +43,7 @@ def import_plugin(name):
     else:
         load_plugins(module)
 
+
 def import_package(package):
     prefix = package.__name__ + "."
     for loader, name, ispkg in pkgutil.iter_modules(package.__path__, prefix):
@@ -50,24 +52,23 @@ def import_package(package):
 
         import_plugin(name)
 
+
 def load_plugins(module):
     for name, value in inspect.getmembers(module):
         if inspect.isclass(value):
-            if issubclass(value, Auxiliary) and value is not Auxiliary:
-                register_plugin("auxiliary", value)
-            elif issubclass(value, Machinery) and value is not Machinery:
-                register_plugin("machinery", value)
-            elif issubclass(value, Processing) and value is not Processing:
-                register_plugin("processing", value)
-            elif issubclass(value, Report) and value is not Report:
-                register_plugin("reporting", value)
-            elif issubclass(value, Signature) and value is not Signature:
-                register_plugin("signatures", value)
+            if issubclass(value, AntiVirus) and value is not AntiVirus:
+                register_plugin("av", value)
+            elif issubclass(value, FileAnalysis) and value is not FileAnalysis:
+                register_plugin("file", value)
+            elif issubclass(value, Intel) and value is not Intel:
+                register_plugin("intel", value)
+
 
 def register_plugin(group, name):
     global _modules
     group = _modules.setdefault(group, [])
     group.append(name)
+
 
 def list_plugins(group=None):
     if group:
@@ -75,23 +76,24 @@ def list_plugins(group=None):
     else:
         return _modules
 
-class RunAuxiliary(object):
-    """Auxiliary modules manager."""
+
+class RunAntiVirus(object):
+    """AntiVirus modules manager."""
 
     def __init__(self, task, machine):
         self.task = task
         self.machine = machine
-        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "auxiliary.conf"))
+        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "av.conf"))
         self.enabled = []
 
     def start(self):
-        auxiliary_list = list_plugins(group="auxiliary")
-        if auxiliary_list:
-            for module in auxiliary_list:
+        av_list = list_plugins(group="av")
+        if av_list:
+            for module in av_list:
                 try:
                     current = module()
                 except:
-                    log.exception("Failed to load the auxiliary module "
+                    log.exception("Failed to load the av module "
                                   "\"{0}\":".format(module))
                     return
 
@@ -102,7 +104,7 @@ class RunAuxiliary(object):
                 try:
                     options = self.cfg.get(module_name)
                 except MaliceOperationalError:
-                    log.debug("Auxiliary module %s not found in "
+                    log.debug("AntiVirus module %s not found in "
                               "configuration file", module_name)
                     continue
 
@@ -118,10 +120,10 @@ class RunAuxiliary(object):
                 except NotImplementedError:
                     pass
                 except Exception as e:
-                    log.warning("Unable to start auxiliary module %s: %s",
+                    log.warning("Unable to start av module %s: %s",
                                 module_name, e)
                 else:
-                    log.debug("Started auxiliary module: %s", module_name)
+                    log.debug("Started av module: %s", module_name)
                     self.enabled.append(current)
 
     def stop(self):
@@ -131,12 +133,13 @@ class RunAuxiliary(object):
             except NotImplementedError:
                 pass
             except Exception as e:
-                log.warning("Unable to stop auxiliary module: %s", e)
+                log.warning("Unable to stop av module: %s", e)
             else:
-                log.debug("Stopped auxiliary module: %s", module)
+                log.debug("Stopped av module: %s", module)
 
-class RunProcessing(object):
-    """Analysis Results Processing Engine.
+
+class RunIntel(object):
+    """Analysis Results Intel Engine.
 
     This class handles the loading and execution of the processing modules.
     It executes the enabled ones sequentially and generates a dictionary which
@@ -171,7 +174,7 @@ class RunProcessing(object):
         try:
             options = self.cfg.get(module_name)
         except MaliceOperationalError:
-            log.debug("Processing module %s not found in configuration file",
+            log.debug("Intel module %s not found in configuration file",
                       module_name)
             return None
 
@@ -199,7 +202,7 @@ class RunProcessing(object):
             return {current.key: data}
         except MaliceDependencyError as e:
             log.warning("The processing module \"%s\" has missing dependencies: %s", current.__class__.__name__, e)
-        except MaliceProcessingError as e:
+        except MaliceIntelError as e:
             log.warning("The processing module \"%s\" returned the following "
                         "error: %s", current.__class__.__name__, e)
         except:
@@ -241,6 +244,7 @@ class RunProcessing(object):
 
         # Return the fat dict.
         return results
+
 
 class RunSignatures(object):
     """Run Signatures."""
@@ -452,11 +456,12 @@ class RunSignatures(object):
         # Sort the matched signatures by their severity level.
         matched.sort(key=lambda key: key["severity"])
 
+
 class RunReporting:
     """Reporting Engine.
 
     This class handles the loading and execution of the enabled reporting
-    modules. It receives the analysis results dictionary from the Processing
+    modules. It receives the analysis results dictionary from the Intel
     Engine and pass it over to the reporting modules before executing them.
     """
 

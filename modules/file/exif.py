@@ -12,16 +12,29 @@ import tempfile
 import envoy
 from lib.common.out import print_error
 
+from lib.common.abstracts import FileAnalysis
 
 ignore_tags = ['Directory', 'File Name', 'File Permissions', 'File Modification Date/Time']
 
 
-class Exif():
+class Exif(FileAnalysis):
+
+    name = "ExifTool"
+    description = "ExifTool is a platform-independent Perl library plus a command-line " \
+                  "application for reading, writing and editing meta information in a " \
+                  "wide variety of files."
+    severity = 2
+    categories = ["file type"]
+    authors = ["blacktop"]
+    references = ["http://www.sno.phy.queensu.ca/~phil/exiftool/"]
+    minimum = "v0.1-alpha"
+    # evented = True
+
     def __init__(self, data):
+        FileAnalysis.__init__(self, data)
         self.data = data
 
-    @staticmethod
-    def format_output(output):
+    def format_output(self, output):
         exif_tag = {}
         exif_results = output.split('\n')
         exif_results = filter(None, exif_results)

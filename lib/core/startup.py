@@ -23,7 +23,7 @@ import logging.handlers
 import modules.av
 import modules.intel
 import modules.file
-
+import modules.sandbox
 
 from lib.common.colors import red, green, yellow, cyan
 from lib.common.config import Config
@@ -132,6 +132,7 @@ def check_version():
 #             db = Database()
 #             db.add_error(record.msg, int(record.task_id))
 
+
 class ConsoleHandler(logging.StreamHandler):
     """Logging to console handler."""
 
@@ -196,6 +197,8 @@ def init_modules():
     import_package(modules.intel)
     # Import all file analysis modules.
     import_package(modules.file)
+    # Import all file sandbox modules.
+    import_package(modules.sandbox)
 
     for category, entries in list_plugins().items():
         log.debug("Imported \"%s\" modules:", category)

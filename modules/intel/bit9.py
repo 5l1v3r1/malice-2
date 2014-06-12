@@ -30,8 +30,8 @@ def get_config():
     # Read config.cfg file
     intel_config = ConfigParser.SafeConfigParser()
     malice_config = ConfigParser.SafeConfigParser()
-    intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf))
-    malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf))
+    intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf'))
+    malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
     # Parse config.cfg file
     if intel_config.has_section('bit9') and intel_config.get('bit9', 'enabled') == "yes":
         BIT9_USER = intel_config.get('bit9', 'user')

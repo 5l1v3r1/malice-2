@@ -17,7 +17,7 @@ from flask.ext.login import LoginManager
 from flask.ext.ldap import LDAP
 from settings import settings
 from lib.common.logo import logo
-from lib.core.startup import check_configs, check_version
+from lib.core.startup import check_configs, check_version, init_modules
 
 
 # pagedown = PageDown()
@@ -32,6 +32,9 @@ def create_app(config):
     logo()
     check_configs()
     check_version()
+
+    init_modules()
+
     # create_structure()
     # Define the WSGI application object
     app = Flask(__name__)
@@ -98,6 +101,7 @@ def create_app(config):
     @app.before_first_request
     def before_first_request():
         start_email_thread()
+
 
     # from werkzeug.contrib.fixers import ProxyFix
     # app.wsgi_app = ProxyFix(app.wsgi_app)

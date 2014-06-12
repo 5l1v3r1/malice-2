@@ -31,11 +31,11 @@ def get_config():
     # Read config files
     intel_config = ConfigParser.SafeConfigParser()
     malice_config = ConfigParser.SafeConfigParser()
-    intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf))
-    malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf))
+    intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf'))
+    malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
     # Parse config.cfg file
-    if config.has_section('virustotal') and malice_config.get('virustotal', 'enabled') == "yes":
-        VT_API = config.get('virustotal', 'pubapikey')
+    if intel_config.has_section('virustotal') and malice_config.get('virustotal', 'enabled') == "yes":
+        VT_API = intel_config.get('virustotal', 'pubapikey')
         if malice_config.has_section('proxie') and malice_config.get('proxie', 'enabled') == "yes":
             if malice_config.has_option('proxie', 'http'):
                 HTTP_PROXY = malice_config.get('proxie', 'http')

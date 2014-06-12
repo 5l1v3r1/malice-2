@@ -1,5 +1,6 @@
 __author__ = 'Josh Maine'
 __copyright__ = "Modified from MassScan/PhageScan https://github.com/scsich/phagescan"
+
 from app.malice.worker.av.generic.abstract import AbstractEvilnessEngine, L32_PLATFORM
 from app.malice.worker.av.generic.exception import ScannerUpdateError, ScannerNotInstalled
 from os import write, close

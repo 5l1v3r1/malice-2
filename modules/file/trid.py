@@ -12,9 +12,25 @@ import tempfile
 import envoy
 from lib.common.out import print_error
 
+from lib.common.abstracts import FileAnalysis
 
-class TrID():
+class TrID(FileAnalysis):
+
+    name = "TrID"
+    description = "TrID is an utility designed to identify file types " \
+                  "from their binary signatures. While there are similar " \
+                  "utilities with hard coded logic, TrID has no fixed rules. " \
+                  "Instead, it's extensible and can be trained to recognize " \
+                  "new formats in a fast and automatic way."
+    severity = 2
+    categories = ["file type"]
+    authors = ["blacktop"]
+    references = ["http://mark0.net/soft-trid-e.html"]
+    minimum = "v0.1-alpha"
+    # evented = True
+
     def __init__(self, data):
+        FileAnalysis.__init__(self, data)
         self.data = data
 
     def format_output(self, output):

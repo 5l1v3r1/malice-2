@@ -48,3 +48,13 @@ install_requirements:
         - require:
           - virtualenv: /home/vagrant/malice/venv
           - pip: update_pip_in_venv
+
+update_pefile_in_venv:
+    pip.installed:
+        - user: vagrant
+        - name: pefile
+        - source: svn+http://pefile.googlecode.com/svn/trunk/
+        - upgrade: True
+        - bin_env: /home/vagrant/malice/venv/bin/pip
+        - require:
+          - virtualenv: /home/vagrant/malice/venv
