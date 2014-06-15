@@ -46,6 +46,7 @@ class AntiVirus(object):
     """Base class for Malice anti-virus."""
 
     name = ""
+    _name = ""
     description = ""
     severity = 1
     categories = []
@@ -56,7 +57,10 @@ class AntiVirus(object):
     enabled = True
     minimum = None
     maximum = None
-
+    _platform = None
+    _engine_path = None
+    _update_path = None
+    _supported_file_types = []
     # Higher order will be processed later (only for non-evented signatures)
     # this can be used for having meta-signatures that check on other lower-
     # order signatures being matched
@@ -87,7 +91,11 @@ class AntiVirus(object):
 
     @property
     def engine_path(self):
-        return self._engine_path
+        return str(self._engine_path)
+
+    @property
+    def update_path(self):
+        return str(self._update_path)
 
     @property
     def supported_file_types(self):

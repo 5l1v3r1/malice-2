@@ -12,16 +12,66 @@ from dateutil import parser
 import tempfile
 import envoy
 
+from lib.common.abstracts import AntiVirus
 
 # ignore_tags = ['Directory', 'File Name', 'File Permissions', 'File Modification Date/Time']
 
-class AVG():
+class AVG(AntiVirus):
+
+    _engine_path = '/usr/bin/avgscan'
+    _update_path = '/usr/bin/avgupdate'
+
     def __init__(self, data):
         self.data = data
 
     @property
     def is_installed(self):
-        return isfile('/usr/bin/avgscan')
+        return isfile(self._engine_path) and isfile(self._update_path)
+
+    @property
+    def engine_path(self):
+        return self._engine_path
+
+    @property
+    def update_path(self):
+        return self._update_path
+
+    @property
+    def version(self):
+        #: Get AVG version
+        r = envoy.run(self._engine_path + ' --version', timeout=15)
+        results = filter(None, r.std_out.splitlines())
+        for result in results:
+            if 'version' in result:
+                return result.split(':')[1].strip()
+        return 'Error: version failed to execute.'
+
+    # @staticmethod
+    def update_available(self):
+        """ Check if an update is available.
+
+        :return: bool - Update availabe or not.
+        """
+        r = envoy.run('sudo ' + self._update_path + ' -c', timeout=15)
+        results = filter(None, r.std_out.splitlines())
+        for result in results:
+            if 'You are currently up-to-date' in result:
+                return False
+        return True
+
+    # @staticmethod
+    def update_definitions(self):
+        """Update AVG signatures"""
+        if self.update_available():
+            r = envoy.run('sudo ' + self._update_path, timeout=15)
+            #: return key, stdout as a dictionary
+            results = filter(None, r.std_out.splitlines())
+            for result in results:
+                if 'Update was successfully completed.' in result:
+                    return 'Update was successfully completed.'
+            return 'Error: update failed to execute.'
+        else:
+            return 'You are currently up-to-date'
 
     def format_output(self, output):
         avg_tag = {}
@@ -60,7 +110,7 @@ class AVG():
             #: Write data stream to tmp file
             with open(name, "wb") as f:
                 f.write(self.data)
-            #: Run exiftool on tmp file
+            #: Run AVG on tmp file
             r = envoy.run('/usr/bin/avgscan ' + name, timeout=15)
             #: delete tmp file
             unlink(name)
@@ -69,3 +119,9 @@ class AVG():
             return 'AVG', self.format_output(r.std_out)
         else:
             return 'AVG', dict(error='AVG Engine is not installed.')
+
+myAVG = AVG(None)
+print myAVG.is_installed
+print myAVG.version
+print myAVG.update_definitions()
+print

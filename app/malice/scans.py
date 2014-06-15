@@ -112,7 +112,7 @@ class ScanManager(object):
             print_info("Scanning with AV workers now.")
 
             if self.av_options.avast.enabled:
-                results[avast.name] = avast.scan()
+                results[av.avast.name] = av.avast.scan()
             if self.av_options.avg.enabled:
                 results[avg.name] = avg.scan()
             if self.av_options.avira.enabled:
@@ -209,7 +209,7 @@ class ScanManager(object):
             return results
 
 sm = ScanManager()
-# print sm
+
 # TODO : Make it so that it will scan with every available worker instead of having to do it explicitly
 def scan_upload(file_stream, sample):
     # job = q.enqueue(run_workers, file_stream)
