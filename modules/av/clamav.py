@@ -118,8 +118,8 @@ class ClamAV(AntiVirus):
         else:
             return 'ClamAV', dict(error='ClamAV Engine is not installed.')
 
-myClamAV = ClamAV(None)
-print myClamAV.is_installed
-print myClamAV.version
-print myClamAV.update_definitions()
-print
+# myClamAV = ClamAV(None)
+# print myClamAV.is_installed
+# print myClamAV.version
+# print myClamAV.update_definitions()
+# print

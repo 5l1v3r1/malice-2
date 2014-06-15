@@ -120,8 +120,8 @@ class AVG(AntiVirus):
         else:
             return 'AVG', dict(error='AVG Engine is not installed.')
 
-myAVG = AVG(None)
-print myAVG.is_installed
-print myAVG.version
-print myAVG.update_definitions()
-print
+# myAVG = AVG(None)
+# print myAVG.is_installed
+# print myAVG.version
+# print myAVG.update_definitions()
+# print
