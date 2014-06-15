@@ -6,9 +6,9 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-from lib.common.abstracts import Signature
+from lib.common.abstracts import AntiVirus
 
-class ClamAV(Signature):
+class ClamAV(AntiVirus):
     name = "antidbg_devices"
     description = "Checks for the presence of known devices from debuggers and forensic tools"
     severity = 3

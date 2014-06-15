@@ -34,7 +34,7 @@ def get_config():
     intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf'))
     malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
     # Parse config.cfg file
-    if intel_config.has_section('virustotal') and malice_config.get('virustotal', 'enabled') == "yes":
+    if intel_config.has_section('virustotal') and intel_config.get('virustotal', 'enabled') == "yes":
         VT_API = intel_config.get('virustotal', 'pubapikey')
         if malice_config.has_section('proxie') and malice_config.get('proxie', 'enabled') == "yes":
             if malice_config.has_option('proxie', 'http'):

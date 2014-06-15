@@ -47,3 +47,7 @@ class MaliceReportError(MaliceOperationalError):
 class MaliceResultError(MaliceOperationalError):
     """Malice result server error."""
     pass
+
+class MaliceMachineError(MaliceOperationalError):
+    """Malice machine error."""
+    pass

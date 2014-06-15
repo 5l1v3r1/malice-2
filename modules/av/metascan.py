@@ -12,12 +12,12 @@ from api.metascan_api import MetaScan, Admin
 from lib.common.constants import MALICE_ROOT
 
 
-conf_path = os.path.normpath(os.path.join(MALICE_ROOT, "conf", "config.cfg"))
+conf_path = os.path.normpath(os.path.join(MALICE_ROOT, "conf", "av.conf"))
 config = ConfigParser.ConfigParser()
 config.read(conf_path)
 
-meta_scan_ip = config.get('Metascan', 'IP')
-meta_scan_port = config.get('Metascan', 'Port')
+meta_scan_ip = config.get('metascan', 'ip')
+meta_scan_port = config.get('metascan', 'port')
 
 # metascan = MetaScan(meta_scan_ip, meta_scan_port)
 # meta_admin = Admin(meta_scan_ip, meta_scan_port)

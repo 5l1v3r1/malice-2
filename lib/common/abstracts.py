@@ -23,8 +23,8 @@ from lib.common.exceptions import MaliceOperationalError
 from lib.common.exceptions import MaliceReportError
 from lib.common.exceptions import MaliceDependencyError
 from lib.common.objects import Dictionary
-from lib.common.utils import create_folder
-from lib.core.database import Database
+# from lib.common.utils import create_folder
+# from lib.core.database import Database
 
 
 log = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ PLATFORM_CHOICES = (
     (L64_PLATFORM, 'Linux 64')
 )
 
-
+# TODO: Finish AntiVirus Abstract
 class AntiVirus(object):
     """Base class for Malice anti-virus."""
 
@@ -172,7 +172,7 @@ class AntiVirus(object):
             families=self.families
         )
 
-
+# TODO: Finish FileAnalysis Abstract
 class FileAnalysis(object):
     """Base class for Malice file analysis."""
 
@@ -239,7 +239,7 @@ class FileAnalysis(object):
             families=self.families
         )
 
-
+# TODO: Finish Intel Abstract
 class Intel(object):
     """Base abstract class for reporting module."""
     order = 1

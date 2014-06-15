@@ -18,7 +18,7 @@ import logging
 from collections import defaultdict
 from distutils.version import StrictVersion
 
-from lib.common.abstracts import AntiVirus, FileAnalysis, Intel
+from lib.common.abstracts import AntiVirus, FileAnalysis, Intel, Sandbox
 # from lib.common.abstracts import Report, Signature
 from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT, MALICE_VERSION
@@ -62,7 +62,8 @@ def load_plugins(module):
                 register_plugin("file", value)
             elif issubclass(value, Intel) and value is not Intel:
                 register_plugin("intel", value)
-
+            elif issubclass(value, Sandbox) and value is not Sandbox:
+                register_plugin("sandbox", value)
 
 def register_plugin(group, name):
     global _modules
@@ -148,9 +149,9 @@ class RunIntel(object):
 
     def __init__(self, task_id):
         """@param task_id: ID of the analyses to process."""
-        self.task = Database().view_task(task_id).to_dict()
-        self.analysis_path = os.path.join(MALICE_ROOT, "storage", "analyses", str(task_id))
-        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "processing.conf"))
+        # self.task = Database().view_task(task_id).to_dict()
+        # self.analysis_path = os.path.join(MALICE_ROOT, "storage", "analyses", str(task_id))
+        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "intel.conf"))
 
     def process(self, module):
         """Run a processing module.
