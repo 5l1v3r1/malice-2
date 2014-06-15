@@ -180,7 +180,7 @@ def upload():
                           'filetype': magic.from_buffer(file_stream),
                           'filemime': upload_file.mimetype,
                           'upload_date': r.now(),
-                          'uploaded_by': "jmaine", # g.user
+                          'uploaded_by': "anonymous", # g.user
                           'detection_ratio': dict(infected=0, count=0),
                           'filestatus': 'Processing'}
                 insert_in_samples_db(sample)
@@ -191,8 +191,14 @@ def upload():
                 sample['filestatus'] = 'Complete'
                 sample['scancomplete'] = r.now()
                 update_sample_in_db(sample)
+            else:
+                # flash('File {0} already submitted. Visit: {1}'.format(secure_filename(upload_file.filename.encode('utf-8')), file_md5), 'error')
+                flash('File {} already submitted.'.format(secure_filename(upload_file.filename.encode('utf-8'))),
+                      'error')
+                return redirect(url_for('.index'))
         #: Once Finished redirect user to the samples page
         return redirect(url_for('.samples'))
+        # return render_template('samples.html')
     return render_template('samples.html')
 
 

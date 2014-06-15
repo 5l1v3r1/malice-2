@@ -3,7 +3,7 @@ from datetime import datetime
 from os import path
 
 from lib.common.out import *
-
+from lib.common.constants import MALICE_ROOT
 
 # TODO : Reformat and clean up this file and remove Cladio's stuff or give credit
 try:
@@ -110,7 +110,7 @@ class PE():
 
     def peid(self):
         pe_matches = dict()
-        userdb_file_dir_path = path.join(path.dirname(__file__), 'data', 'UserDB.TXT')
+        userdb_file_dir_path = path.join(MALICE_ROOT, 'data', 'UserDB.TXT')
         signatures = peutils.SignatureDatabase(userdb_file_dir_path)
         packer = []
         matches = signatures.match_all(self.pe, ep_only=True)

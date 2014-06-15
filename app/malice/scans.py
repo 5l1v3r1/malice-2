@@ -54,6 +54,7 @@ from modules import av
 from modules import file
 from modules import intel
 
+import modules
 
 q = Queue('low', connection=Redis())
 
@@ -207,8 +208,8 @@ class ScanManager(object):
 
             return results
 
-
-
+sm = ScanManager()
+# print sm
 # TODO : Make it so that it will scan with every available worker instead of having to do it explicitly
 def scan_upload(file_stream, sample):
     # job = q.enqueue(run_workers, file_stream)
@@ -235,8 +236,8 @@ def scan_upload(file_stream, sample):
         pdfparser_scan(file_stream, sample['md5'])
         pdfid_scan(file_stream, sample['md5'])
     #: Run Intel workers
-    # print_item("Searching for Intel now.", 1)
-    # single_hash_search(sample['md5'])
+    print_item("Searching for Intel now.", 1)
+    single_hash_search(sample['md5'])
     print_success("File Analysis Complete.")
     found = is_hash_in_db(sample['md5'])
     return found['user_uploads'][-1]['detection_ratio']
