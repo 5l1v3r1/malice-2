@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Josh Maine'
 
-import os
-import psutil
 import ConfigParser
+import os
 
+import psutil
 from lib.common.constants import MALICE_ROOT
 
 UPLOAD_FOLDER = os.path.join(MALICE_ROOT, 'static/uploads')

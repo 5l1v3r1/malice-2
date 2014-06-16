@@ -13,6 +13,12 @@ __author__ = 'Josh Maine'
 
 import os
 
+from flask.ext.script import Manager, prompt_bool, Server
+
+from app import create_app, db
+from app.mod_users.models import User
+from lib.core.database import db_setup, destroy_db
+
 if os.path.exists('.env'):
     print('Importing environment from .env...')
     for line in open('.env'):
@@ -20,11 +26,6 @@ if os.path.exists('.env'):
         if len(var) == 2 and '#' not in var[0]:
             os.environ[var[0]] = var[1]
 
-from app import create_app
-from flask.ext.script import Manager, Server, prompt_bool
-from app import db
-from app.mod_users.models import User
-from lib.core.database import db_setup, destroy_db
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)

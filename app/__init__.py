@@ -9,16 +9,21 @@
 
 __author__ = 'Josh Maine'
 
-from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-# from flask.ext.pagedown import PageDown
-from flask.ext.mail import Mail
-from flask.ext.login import LoginManager
-from flask.ext.ldap import LDAP
-from settings import settings
-from lib.common.logo import logo
-from lib.core.startup import check_configs, check_version, init_modules
+import logging
 
+from flask import Flask
+from flask.ext.ldap import LDAP
+from flask.ext.login import LoginManager
+from flask.ext.mail import Mail
+# from flask.ext.pagedown import PageDown
+from flask.ext.sqlalchemy import SQLAlchemy
+
+from lib.common.logo import logo
+from lib.core.startup import (check_configs, check_version, init_logging,
+                              init_modules)
+from settings import settings
+
+log = logging.getLogger()
 
 # pagedown = PageDown()
 mail = Mail()
@@ -28,11 +33,14 @@ ldap = LDAP()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
+
 def create_app(config):
+
     logo()
     check_configs()
     check_version()
-
+    init_logging()
+    # log.setLevel(logging.DEBUG)
     init_modules()
 
     # create_structure()
@@ -101,7 +109,6 @@ def create_app(config):
     @app.before_first_request
     def before_first_request():
         start_email_thread()
-
 
     # from werkzeug.contrib.fixers import ProxyFix
     # app.wsgi_app = ProxyFix(app.wsgi_app)

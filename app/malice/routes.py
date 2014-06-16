@@ -13,23 +13,24 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
+import os
+
+from dateutil import parser
+from flask import (abort, current_app, flash, g, redirect, render_template,
+                   request, url_for)
 from flask.ext.login import login_required
 from werkzeug.utils import secure_filename
-from rethinkdb.errors import RqlDriverError
-from flask import render_template, flash, redirect, url_for, abort,\
-    request, current_app, g
 
-import os
-from dateutil import parser
+from app.malice.scans import *
 from lib.common.pagination import Pagination
 from lib.common.utils import parse_hash_list
-from lib.core.database import is_hash_in_db, insert_in_samples_db, update_sample_in_db, db_insert
+from lib.core.database import (db_insert, insert_in_samples_db, is_hash_in_db,
+                               update_sample_in_db)
+from rethinkdb.errors import RqlDriverError
+from scans import ScanManager
 
 from . import malice
-from app.malice.scans import *
 from .forms import SearchForm
-
-from scans import ScanManager
 
 try:
     import pydeep

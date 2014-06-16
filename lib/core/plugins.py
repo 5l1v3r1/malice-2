@@ -10,23 +10,22 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 # This file is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
 # See the file 'docs/LICENSE' for copying permission.
 
-import os
-import json
-import pkgutil
 import inspect
+import json
 import logging
+import os
+import pkgutil
 from collections import defaultdict
 from distutils.version import StrictVersion
 
 from lib.common.abstracts import AntiVirus, FileAnalysis, Intel, Sandbox
-# from lib.common.abstracts import Report, Signature
 from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT, MALICE_VERSION
-from lib.common.exceptions import MaliceCriticalError
-from lib.common.exceptions import MaliceOperationalError
-from lib.common.exceptions import MaliceProcessingError
-from lib.common.exceptions import MaliceReportError
-from lib.common.exceptions import MaliceDependencyError
+from lib.common.exceptions import (MaliceCriticalError, MaliceDependencyError,
+                                   MaliceOperationalError,
+                                   MaliceProcessingError, MaliceReportError)
+
+# from lib.common.abstracts import Report, Signature
 # from lib.core.database import Database
 
 log = logging.getLogger(__name__)

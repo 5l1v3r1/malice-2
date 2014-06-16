@@ -11,9 +11,10 @@
 __author__ = 'Josh Maine'
 
 from flask.ext.wtf import Form
-from flask.ext.wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import TextField, TextAreaField, SubmitField, BooleanField
-from wtforms.validators import Required, Length
+from flask.ext.wtf.file import FileAllowed, FileField, FileRequired
+
+from wtforms import BooleanField, SubmitField, TextAreaField, TextField
+from wtforms.validators import Length, Required
 
 
 class SearchForm(Form):

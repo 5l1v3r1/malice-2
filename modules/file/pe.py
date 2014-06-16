@@ -10,8 +10,9 @@ import hashlib
 from datetime import datetime
 from os import path
 
-from lib.common.out import *
+from lib.common.abstracts import FileAnalysis
 from lib.common.constants import MALICE_ROOT
+from lib.common.out import *
 
 # TODO : Reformat and clean up this file and remove Cladio's stuff or give credit
 try:
@@ -35,10 +36,11 @@ try:
 except ImportError:
     HAVE_MAGIC = False
 
-from lib.common.abstracts import FileAnalysis
 
 class PE(FileAnalysis):
     def __init__(self, data):
+        FileAnalysis.__init__(self, data)
+        # self.data = data
         self.pe = None
         try:
             self.pe = pefile.PE(data=data)

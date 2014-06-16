@@ -1,7 +1,9 @@
 __author__ = 'Josh Maine'
 
 from functools import wraps
-from flask import request, redirect, current_app
+
+from flask import current_app, redirect, request
+
 
 def ssl_required(fn):
     @wraps(fn)

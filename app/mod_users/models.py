@@ -1,13 +1,24 @@
-from datetime import datetime
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+__author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+
 import hashlib
-# from markdown import markdown
-# import bleach
-from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import request, current_app
+from datetime import datetime
+
+from flask import current_app, request
 from flask.ext.login import UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from app import db, login_manager
 from app.mod_users.mixins import CRUDMixin
+
+
+# from markdown import markdown
+# import bleach
 
 
 class User(UserMixin, CRUDMixin, db.Model):
@@ -45,7 +56,7 @@ class User(UserMixin, CRUDMixin, db.Model):
         else:
             url = 'http://www.gravatar.com/avatar'
         hash = self.avatar_hash or \
-               hashlib.md5(self.email.encode('utf-8')).hexdigest()
+            hashlib.md5(self.email.encode('utf-8')).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
 
@@ -95,9 +106,8 @@ class PendingEmail(db.Model):
     @staticmethod
     def already_in_queue(email, talk):
         return PendingEmail.query \
-                   .filter(PendingEmail.email == email).count() > 0
+            .filter(PendingEmail.email == email).count() > 0
         # .filter(PendingEmail.talk_id == talk.id) \
-
 
     @staticmethod
     def remove(email):

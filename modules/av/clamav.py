@@ -6,13 +6,15 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
+import tempfile
 from os import unlink
 from os.path import exists, isfile
-from dateutil import parser
-import tempfile
-import envoy
 
+from dateutil import parser
+
+import envoy
 from lib.common.abstracts import AntiVirus
+
 
 class ClamAV(AntiVirus):
 
@@ -20,6 +22,7 @@ class ClamAV(AntiVirus):
     _update_path = '/usr/bin/freshclam'
 
     def __init__(self, data):
+        AntiVirus.__init__(self, data)
         self.data = data
 
     @property

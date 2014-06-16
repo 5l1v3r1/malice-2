@@ -6,15 +6,17 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
+import tempfile
 from os import unlink
 from os.path import exists
-import tempfile
+
 import envoy
+from lib.common.abstracts import AntiVirus
 
 
 # ignore_tags = ['Directory', 'File Name', 'File Permissions', 'File Modification Date/Time']
 
-class F_PROT():
+class F_PROT(AntiVirus):
     def __init__(self, data):
         self.data = data
 

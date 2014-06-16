@@ -6,12 +6,14 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-import os
 import ConfigParser
+import os
+
+from lib.common.abstracts import Intel
+from lib.common.constants import MALICE_ROOT
+from lib.common.exceptions import MaliceDependencyError
 from lib.common.utils import split_seq
 from lib.core.database import db_insert
-from lib.common.exceptions import MaliceDependencyError
-from lib.common.constants import MALICE_ROOT
 
 try:
     import rethinkdb as r
@@ -24,6 +26,9 @@ except ImportError:
     raise MaliceDependencyError("Unable to import bit9-api "
                                 "(install with `pip install bit9-api`)")
 
+
+class Bit9(Intel):
+    pass
 
 def get_config():
     BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY = None, None, None, None
@@ -81,7 +86,7 @@ def batch_query_bit9(new_hash_list):
                         'Bit9': {'timestamp': r.now(),  # datetime.utcnow(),
                                  'isfound': False,
                                  'requestmd5': new_hash.upper()}
-                }
+                        }
                 db_insert(data)
                 data.clear()
 

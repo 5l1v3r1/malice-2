@@ -6,13 +6,16 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-import os
 import ConfigParser
+import os
+
 from flask import flash
-from lib.core.database import db_insert
-from lib.common.utils import split_seq, list_to_string
-from lib.common.exceptions import MaliceDependencyError
+
+from lib.common.abstracts import Intel
 from lib.common.constants import MALICE_ROOT
+from lib.common.exceptions import MaliceDependencyError
+from lib.common.utils import list_to_string, split_seq
+from lib.core.database import db_insert
 
 try:
     from virus_total_apis import PublicApi as vtPubAPI
@@ -26,6 +29,10 @@ except ImportError:
                                 "(install with `pip install rethinkdb`)")
 
 
+class VirusTotal(Intel):
+    pass
+
+
 def get_config():
     VT_API, HTTP_PROXY, HTTPS_PROXY = None, None, None
     # Read config files
@@ -34,9 +41,11 @@ def get_config():
     intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf'))
     malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
     # Parse config.cfg file
-    if intel_config.has_section('virustotal') and intel_config.get('virustotal', 'enabled') == "yes":
+    if intel_config.has_section('virustotal') and \
+            intel_config.get('virustotal', 'enabled') == "yes":
         VT_API = intel_config.get('virustotal', 'pubapikey')
-        if malice_config.has_section('proxie') and malice_config.get('proxie', 'enabled') == "yes":
+        if malice_config.has_section('proxie') and \
+                malice_config.get('proxie', 'enabled') == "yes":
             if malice_config.has_option('proxie', 'http'):
                 HTTP_PROXY = malice_config.get('proxie', 'http')
             if malice_config.has_option('proxie', 'https'):

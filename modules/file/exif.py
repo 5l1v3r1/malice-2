@@ -6,15 +6,19 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-from os import unlink
-# from os.path import exists
 import tempfile
+from os import unlink
+
 import envoy
+from lib.common.abstracts import FileAnalysis
 from lib.common.out import print_error
 
-from lib.common.abstracts import FileAnalysis
+# from os.path import exists
 
-ignore_tags = ['Directory', 'File Name', 'File Permissions', 'File Modification Date/Time']
+ignore_tags = ['Directory',
+               'File Name',
+               'File Permissions',
+               'File Modification Date/Time']
 
 
 class Exif(FileAnalysis):
@@ -56,7 +60,7 @@ class Exif(FileAnalysis):
             r = envoy.run('exiftool ' + name, timeout=15)
         except AttributeError:
             print_error('ERROR: Exif Failed.')
-            return 'trid', dict(error='Exiftool failed to run.')
+            return 'exif', dict(error='Exiftool failed to run.')
         else:
             #: return key, stdout as a dictionary
             return 'exif', self.format_output(r.std_out)

@@ -6,7 +6,8 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-from flask import g, flash
+from flask import flash, g
+
 from lib.common.exceptions import MaliceDependencyError
 
 try:

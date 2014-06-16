@@ -10,19 +10,18 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 # This file is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
 # See the file 'docs/LICENSE' for copying permission.
 
+import logging
 import os
 import re
-import logging
 import time
 
 from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT
-from lib.common.exceptions import MaliceCriticalError
-from lib.common.exceptions import MaliceMachineError
-from lib.common.exceptions import MaliceOperationalError
-from lib.common.exceptions import MaliceReportError
-from lib.common.exceptions import MaliceDependencyError
+from lib.common.exceptions import (MaliceCriticalError, MaliceDependencyError,
+                                   MaliceMachineError, MaliceOperationalError,
+                                   MaliceReportError)
 from lib.common.objects import Dictionary
+
 # from lib.common.utils import create_folder
 # from lib.core.database import Database
 
@@ -337,5 +336,3 @@ class Sandbox(object):
         @raise NotImplementedError: this method is abstract.
         """
         raise NotImplementedError
-
-

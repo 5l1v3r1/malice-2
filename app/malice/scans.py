@@ -5,37 +5,39 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-from flask import flash, current_app, g, Config
+import ConfigParser
+import hashlib
+import logging
+
+from dateutil import parser
+from flask import Config, current_app, flash, g
+
+import modules
 from api.metascan_api import MetaScan
 from app.malice.worker.av.avast.scanner import avast_engine
+from app.malice.worker.av.avg import scanner as avg_engine
 from app.malice.worker.av.avira.scanner import avira_engine
 from app.malice.worker.av.bitdefender.scanner import bitdefender_engine
 from app.malice.worker.av.clamav.scanner import clamav_engine
 from app.malice.worker.av.eset.scanner import eset_engine
 from app.malice.worker.av.kaspersky.scanner import kaspersky_engine
 from app.malice.worker.av.sophos.scanner import sophos_engine
-from app.malice.worker.av.avg import scanner as avg_engine
-# from app.malice.worker.av.f_prot import scanner as f_prot_engine
-from app.malice.worker.file.trid import trid
-from app.malice.worker.file.exif import exif
-# from app.malice.worker.file.doc.pdf import pdfparser, pdfid
 from app.malice.worker.file.exe.pe import pe
-
-from app.malice.worker.intel.bit9 import single_query_bit9, batch_query_bit9
-from app.malice.worker.intel.virustotal import single_query_virustotal, batch_query_virustotal
-
-import ConfigParser
-from dateutil import parser
-
-from lib.common.out import *
-from lib.core.database import is_hash_in_db, db_insert
-from lib.scanworker.file import PickleableFileSample
+from app.malice.worker.file.exif import exif
+from app.malice.worker.file.trid import trid
+from app.malice.worker.intel.bit9 import batch_query_bit9, single_query_bit9
+from app.malice.worker.intel.virustotal import (batch_query_virustotal,
+                                                single_query_virustotal)
 from lib.common.config import Config
-from lib.common.exceptions import MaliceDependencyError
 from lib.common.constants import MALICE_ROOT
+from lib.common.exceptions import MaliceDependencyError
+from lib.common.out import *
+from lib.core.database import db_insert, is_hash_in_db
+from lib.scanworker.file import PickleableFileSample
+from modules import av, file, intel
 
-import hashlib
-import logging
+# from app.malice.worker.av.f_prot import scanner as f_prot_engine
+# from app.malice.worker.file.doc.pdf import pdfparser, pdfid
 
 try:
     import rethinkdb as r
@@ -49,12 +51,6 @@ try:
 except ImportError:
     raise MaliceDependencyError("Unable to import redis."
                                 "(install with `pip install redis`)")
-
-from modules import av
-from modules import file
-from modules import intel
-
-import modules
 
 q = Queue('low', connection=Redis())
 

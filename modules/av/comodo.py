@@ -6,15 +6,17 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
+import tempfile
 from os import unlink
 from os.path import exists
-import tempfile
+
 import envoy
+from lib.common.abstracts import AntiVirus
 
 
 # ignore_tags = ['Directory', 'File Name', 'File Permissions', 'File Modification Date/Time']
 
-class Comodo():
+class Comodo(AntiVirus):
     def __init__(self, data):
         self.data = data
 
@@ -31,7 +33,8 @@ class Comodo():
             if len(tag_part) == 2:
                 if 'Infections found' in tag_part[0].strip():
                     comodo_tag['infected'] = '1' in tag_part[1]
-                comodo_tag[tag_part[0].strip()] = tag_part[1].strip().decode('utf-8')
+                comodo_tag[tag_part[0].strip()] = \
+                    tag_part[1].strip().decode('utf-8')
         return comodo_tag
 
     def scan(self):

@@ -10,29 +10,30 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 # This file is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
 # See the file 'docs/LICENSE' for copying permission.
 
-import os
-import sys
 import copy
 import json
-import urllib
-import urllib2
-import requests
 import logging
 import logging.handlers
+import os
+import sys
+import urllib
+import urllib2
+
+import requests
 
 import modules.av
-import modules.intel
 import modules.file
+import modules.intel
 import modules.sandbox
-
-from lib.common.colors import red, green, yellow, cyan
+from lib.common.colors import cyan, green, red, yellow
 from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT, MALICE_VERSION
 from lib.common.exceptions import MaliceStartupError
+from lib.core.plugins import import_package, import_plugin, list_plugins
+
 # from lib.common.exceptions import MaliceOperationalError
 # from lib.common.utils import create_folders
 # from lib.core.database import Database, TASK_RUNNING
-from lib.core.plugins import import_plugin, import_package, list_plugins
 
 log = logging.getLogger()
 
@@ -168,7 +169,8 @@ def init_logging():
     # dh.setLevel(logging.ERROR)
     # log.addHandler(dh)
 
-    log.setLevel(logging.INFO)
+    # log.setLevel(logging.INFO)
+    log.setLevel(logging.DEBUG)
 
 
 # def init_tasks():

@@ -3,24 +3,29 @@
 # This file is part of Viper - https://github.com/botherder/viper
 # See the file 'LICENSE' for copying permission.
 
+from lib.common.colors import *
 from prettytable import PrettyTable
 
-from lib.common.colors import *
 
 def print_info(message):
     print(bold(cyan("[*]")) + " {0}".format(message))
 
+
 def print_item(message, tabs=0):
     print(" {0}".format("  " * tabs) + white("*") + " {0}".format(message))
+
 
 def print_warning(message):
     print(bold(yellow("[!]")) + " {0}".format(message))
 
+
 def print_error(message):
     print(bold(red("[!]")) + " {0}".format(message))
 
+
 def print_success(message):
     print(bold(green("[+]")) + " {0}".format(message))
+
 
 def table(header, rows):
     table = PrettyTable(header)

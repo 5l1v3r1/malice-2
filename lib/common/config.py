@@ -10,12 +10,13 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 # This file is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
 # See the file 'docs/LICENSE' for copying permission.
 
-import os
 import ConfigParser
+import os
 
 from lib.common.constants import MALICE_ROOT
 from lib.common.exceptions import MaliceOperationalError
 from lib.common.objects import Dictionary
+
 
 class Config:
     """Configuration file parser."""

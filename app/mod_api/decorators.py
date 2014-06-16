@@ -3,18 +3,18 @@
 
 __author__ = 'Josh Maine'
 
+import functools
+import hashlib
 import time
 from functools import update_wrapper
 
-import functools
-import hashlib
-from flask import jsonify, request, url_for, current_app, make_response, g
-# from app.mod_api.rate_limit import RateLimit
-from .errors import too_many_requests, precondition_failed, not_modified
+from flask import current_app, g, jsonify, make_response, request, url_for
 
-
-from flask import request, g
 from redis import Redis
+
+from .errors import not_modified, precondition_failed, too_many_requests
+
+# from app.mod_api.rate_limit import RateLimit
 
 redis = Redis()
 

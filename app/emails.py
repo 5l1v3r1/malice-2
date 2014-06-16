@@ -4,11 +4,13 @@
 __author__ = 'Josh Maine'
 __copyright__ = 'https://github.com/miguelgrinberg/flask-pycon2014/blob/master/app/emails.py'
 
-from threading import Thread
 import time
 from datetime import datetime
+from threading import Thread
+
 from flask import current_app, render_template, url_for
 from flask.ext.mail import Message
+
 from app import db, mail
 from mod_users.models import PendingEmail
 

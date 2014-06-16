@@ -6,13 +6,15 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
+import itertools
+import ntpath
+import os
 import re
 import string
 import tempfile
-import itertools
-import ntpath
 from datetime import datetime
 
+from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT
 
 try:
@@ -66,9 +68,10 @@ def groupby_hash_type(hash_list):
 
 # These functions is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
 def to_unicode(s):
-    """Attempt to fix non uft-8 string into utf-8. It tries to guess input encoding,
-    if fail retry with a replace strategy (so undetectable chars will be escaped).
-    @see: fuller list of encodings at http://docs.python.org/library/codecs.html#standard-encodings
+    """Attempt to fix non uft-8 string into utf-8. It tries to guess input
+    encoding, if fail retry with a replace strategy (so undetectable chars will
+    be escaped).  @see: fuller list of encodings at
+    http://docs.python.org/library/codecs.html#standard-encodings
     """
 
     def brute_enc(s2):
@@ -109,12 +112,14 @@ def to_unicode(s):
 
     return result
 
+
 def cleanup_value(v):
     """Cleanup utility function, strips some unwanted parts from values."""
     v = str(v)
     if v.startswith("\\??\\"):
         v = v[4:]
     return v
+
 
 def sanitize_filename(x):
     """Kind of awful but necessary sanitizing of filenames to
@@ -161,12 +166,14 @@ def convert_to_printable(s):
         return s
     return "".join(convert_char(c) for c in s)
 
+
 def datetime_to_iso(timestamp):
     """Parse a datatime string and returns a datetime in iso format.
     @param timestamp: timestamp string
     @return: ISO datetime
     """
     return datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").isoformat()
+
 
 def get_filename_from_path(path):
     """Cross-platform filename extraction from path.
@@ -175,6 +182,7 @@ def get_filename_from_path(path):
     """
     dirpath, filename = ntpath.split(path)
     return filename if filename else ntpath.basename(dirpath)
+
 
 def store_temp_file(filedata, filename):
     """Store a temporary file.
