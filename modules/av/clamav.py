@@ -13,13 +13,18 @@ from os.path import exists, isfile
 from dateutil import parser
 
 import envoy
-from lib.common.abstracts import AntiVirus
+from lib.common.abstracts import AntiVirus, L32_PLATFORM
 
 
 class ClamAV(AntiVirus):
 
+    _name = 'ClamAV'
+    _platform = L32_PLATFORM
     _engine_path = '/usr/bin/clamscan'
     _update_path = '/usr/bin/freshclam'
+
+    authors = ['blacktop']
+    references = ['http://www.clamav.net']
 
     def __init__(self, data):
         AntiVirus.__init__(self, data)

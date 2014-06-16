@@ -44,12 +44,7 @@ PLATFORM_CHOICES = (
 class AntiVirus(object):
     """Base class for Malice anti-virus."""
 
-    name = ""
     _name = ""
-    description = ""
-    severity = 1
-    categories = []
-    families = []
     authors = []
     references = []
     alert = False
@@ -60,15 +55,13 @@ class AntiVirus(object):
     _engine_path = None
     _update_path = None
     _supported_file_types = []
+
     # Higher order will be processed later (only for non-evented signatures)
     # this can be used for having meta-signatures that check on other lower-
     # order signatures being matched
     order = 0
 
     evented = False
-    filter_processnames = set()
-    filter_apinames = set()
-    filter_categories = set()
 
     def __init__(self, data):
         self.data = data
@@ -78,15 +71,13 @@ class AntiVirus(object):
         self.options = None
 
     @property
-    def platform(self):
-        '''
-        OS Platform we're running on
-        '''
-        return self._platform
+    def name(self):
+        return str(self._name)
 
     @property
-    def requires_update_file_from_master(self):
-        return getattr(self, '_requires_update_file_from_master', False)
+    def platform(self):
+        """OS Platform AV is running on"""
+        return self._platform
 
     @property
     def engine_path(self):
@@ -115,14 +106,9 @@ class AntiVirus(object):
         """
         return True
 
-    def engine_path_exists(self):
-        if self._engine_path is None: return True  # not all scanners require an engine path
-        exists = self._path_exists(self._engine_path)
-        log.debug("Engine path existance is: {0}.".format(exists))
-        return exists
-
     def is_engine_path_executable(self):
-        if self._engine_path is None: return True  # not all scanners require an engine path
+        if self._engine_path is None:
+            return True  # not all scanners require an engine path
         if os.path.isfile(self._engine_path) and os.access(self._engine_path, os.X_OK):
             log.debug("Engine path '{0}' is execuatable.".format(self._engine_path))
             return True
@@ -135,7 +121,7 @@ class AntiVirus(object):
         This should be overridden by subclasses and given more stringent checks.
         """
         log.debug("Checking if engine {0} is installed.".format(self._name))
-        return self.engine_path_exists() and self.is_engine_path_executable() and self.is_engine_licensed()
+        return self.is_engine_path_executable() and self.is_engine_licensed()
 
     def update_definitions(self):
         """Update analysis tool and/or definitions.
@@ -151,11 +137,11 @@ class AntiVirus(object):
         """
         raise NotImplementedError
 
-    def scan(self):
-        """Start scanning file.
-        @raise NotImplementedError: this method is abstract.
-        """
-        raise NotImplementedError
+    # def scan(self):
+    #     """Start scanning file.
+    #     @raise NotImplementedError: this method is abstract.
+    #     """
+    #     raise NotImplementedError
 
     def scan(self, file_object):
         if not self.is_engine_licensed():
@@ -163,6 +149,9 @@ class AntiVirus(object):
         return self.do_scan(file_object)
 
     def do_scan(self, file_object):
+        """Start scanning file.
+        @raise NotImplementedError: this method is abstract.
+        """
         raise NotImplementedError
 
     def as_result(self):
@@ -171,12 +160,9 @@ class AntiVirus(object):
         """
         return dict(
             name=self.name,
-            description=self.description,
-            severity=self.severity,
             references=self.references,
             data=self.data,
             alert=self.alert,
-            families=self.families
         )
 
 # TODO: Finish FileAnalysis Abstract
@@ -336,3 +322,6 @@ class Sandbox(object):
         @raise NotImplementedError: this method is abstract.
         """
         raise NotImplementedError
+
+class ScannerRequiresLicenseFile(Exception):
+    pass
