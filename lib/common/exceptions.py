@@ -1,4 +1,4 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 __author__ = 'Josh Maine'
 __copyright__ = 'https://github.com/cuckoobox/cuckoo/blob/master/lib/cuckoo/common/exceptions.py'
