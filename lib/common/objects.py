@@ -223,7 +223,7 @@ class File:
 
         return file_type
 
-    def get_yara(self, rulepath=os.path.join(MALICE_ROOT, "data", "yara", "index_binary.yar")):
+    def get_yara(self, rulepath=os.path.join(MALICE_ROOT, "data", "yara", "index.yar")):
         """Get Yara signatures matches.
         @return: matched Yara signatures.
         """

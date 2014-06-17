@@ -99,6 +99,33 @@ class AntiVirus(object):
         """
         raise NotImplementedError
 
+    def set_options(self, options):
+        """Set report options.
+        @param options: report options dict.
+        """
+        self.options = options
+
+    def set_task(self, task):
+        """Add task information.
+        @param task: task dictionary.
+        """
+        self.task = task
+
+    def set_path(self, analysis_path):
+        """Set paths.
+        @param analysis_path: analysis folder path.
+        """
+        self.analysis_path = analysis_path
+        self.log_path = os.path.join(self.analysis_path, "analysis.log")
+        self.file_path = os.path.realpath(os.path.join(self.analysis_path,
+                                                       "binary"))
+        self.dropped_path = os.path.join(self.analysis_path, "files")
+        self.logs_path = os.path.join(self.analysis_path, "logs")
+        self.shots_path = os.path.join(self.analysis_path, "shots")
+        self.pcap_path = os.path.join(self.analysis_path, "dump.pcap")
+        self.pmemory_path = os.path.join(self.analysis_path, "memory")
+        self.memory_path = os.path.join(self.analysis_path, "memory.dmp")
+
     def is_engine_licensed(self):
         """
         Returns boolean indicating whether the scanner has a license file installed.  This function is intended to be

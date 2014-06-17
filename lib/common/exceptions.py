@@ -34,7 +34,7 @@ class MaliceAnalysisError(MaliceOperationalError):
     pass
 
 
-class MaliceProcessingError(MaliceOperationalError):
+class MaliceAntivirusError(MaliceOperationalError):
     """Error in processor module."""
     pass
 

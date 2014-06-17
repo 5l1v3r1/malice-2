@@ -13,15 +13,20 @@ from os.path import exists, isfile
 from dateutil import parser
 
 import envoy
-from lib.common.abstracts import AntiVirus
+from lib.common.abstracts import AntiVirus, L32_PLATFORM
 
 
 # ignore_tags = ['Directory', 'File Name', 'File Permissions', 'File Modification Date/Time']
 
 class AVG(AntiVirus):
 
+    _name = 'AVG'
+    _platform = L32_PLATFORM
     _engine_path = '/usr/bin/avgscan'
     _update_path = '/usr/bin/avgupdate'
+
+    authors = ['blacktop']
+    references = ['http://free.avg.com']
 
     def __init__(self, data):
         AntiVirus.__init__(self, data)
@@ -106,7 +111,7 @@ class AVG(AntiVirus):
         #             avg_tag[tag_part[0].strip()] = tag_part[1].strip().decode('utf-8')
         return avg_tag
 
-    def scan(self):
+    def do_scan(self, file_object):
         if self.is_installed:
             #: create tmp file
             handle, name = tempfile.mkstemp(suffix=".data", prefix="avg_")
