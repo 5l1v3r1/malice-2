@@ -34,7 +34,7 @@ $ vagrant ssh
 $ source ~/malice/venv/bin/activate
 (venv)$ python /vagrant/manage.py createdb
 ```
-
+#### Note: for additional notes please see the Malice [wiki](https://github.com/blacktop/malice/wiki)
 Usage
 -----
 (While ssh'd into the VM via ```vagrant ssh```)
