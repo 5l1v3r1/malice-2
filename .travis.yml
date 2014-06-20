@@ -23,7 +23,9 @@ before_install:
   - sudo apt-get install libsasl2-dev
   - sudo apt-get install libssl-dev
 # command to install pip dependencies
-install: "pip install -q -r requirements.txt"
+install: 
+  - pip install -q -r requirements.txt
+  - pip install coveralls
 # command to set environment variables
 before_script:
   - export CSRF_SESSION_KEY=test_secret
@@ -46,3 +48,5 @@ before_script:
 #  - mongodb
 # command to run tests
 script: "nosetests -v --with-coverage --cover-package=app --cover-branches --cover-erase --cover-html --cover-html-dir=cover"
+after_success:
+  coveralls
