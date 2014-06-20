@@ -7,3 +7,4 @@ ignore-paths:
     - docs
     - logs
     - install
+    - worker
