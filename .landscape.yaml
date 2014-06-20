@@ -1,5 +1,3 @@
-uses:
-    - Flask
 autodetect: yes
 ignore-paths:
     - api
