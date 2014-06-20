@@ -15,30 +15,30 @@ config = ConfigParser.ConfigParser()
 config.read(os.path.join(MALICE_ROOT, 'conf/av.conf'))
 
 if config.get('avast', 'enabled') == "yes":
-  import avast
+    import avast
 if config.get('avg', 'enabled') == "yes":
-  import avg
+    import avg
 if config.get('avira', 'enabled') == "yes":
-  import avira
+    import avira
 if config.get('bitdefender', 'enabled') == "yes":
-  import bitdefender
+    import bitdefender
 if config.get('clamav', 'enabled') == "yes":
-  import clamav
+    import clamav
 if config.get('comodo', 'enabled') == "yes":
-  import comodo
+    import comodo
 if config.get('eset', 'enabled') == "yes":
-  import eset
+    import eset
 if config.get('fprot', 'enabled') == "yes":
-  import fprot
+    import fprot
 if config.get('kaspersky', 'enabled') == "yes":
-  import kaspersky
+    import kaspersky
 if config.get('metascan', 'enabled') == "yes":
-  import metascan
+    import metascan
 if config.get('panda', 'enabled') == "yes":
-  import panda
+    import panda
 if config.get('sophos', 'enabled') == "yes":
-  import sophos
+    import sophos
 if config.get('symantec', 'enabled') == "yes":
-  import symantec
+    import symantec
 if config.get('yara', 'enabled') == "yes":
-  import yara
+    import yara

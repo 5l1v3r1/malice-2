@@ -31,7 +31,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.provider "virtualbox" do |vb|
-    # Don't boot with headless mode
+    # Boot in headless mode
     vb.gui = false
     vb.name = "malice_dev"
     vb.memory = 1024

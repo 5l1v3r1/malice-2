@@ -1,0 +1,9 @@
+uses:
+    - Flask
+autodetect: yes
+ignore-paths:
+    - api
+    - data
+    - docs
+    - logs
+    - install
