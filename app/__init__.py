@@ -81,8 +81,8 @@ def create_app(config):
     from .malice import malice as malice_blueprint
     app.register_blueprint(malice_blueprint)
 
-    from app.mod_users.routes import mod_user as user_module
-    app.register_blueprint(user_module, url_prefix='/auth')
+    from .mod_auth import mod_auth as auth_module
+    app.register_blueprint(auth_module, url_prefix='/auth')
 
     # from app.mod_api.controller import mod_api as api_module
     # app.register_blueprint(api_module, url_prefix='/api/v1')

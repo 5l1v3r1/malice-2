@@ -20,7 +20,7 @@ from . import malice
 # TODO: Fix this
 github = "https://github.com/blacktop/malice"
 
-@malice.errorhandler(400)
+@malice.app_errorhandler(400)
 def bad_request(reason):
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
@@ -30,7 +30,7 @@ def bad_request(reason):
     return render_template('error/400.html', reason=reason, my_github=github), 400
 
 
-@malice.errorhandler(401)
+@malice.app_errorhandler(401)
 def unauthorized(reason):
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
@@ -40,7 +40,7 @@ def unauthorized(reason):
     return render_template('error/401.html', reason=reason, my_github=github), 401
 
 
-@malice.errorhandler(403)
+@malice.app_errorhandler(403)
 def forbidden(reason):
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
@@ -50,7 +50,7 @@ def forbidden(reason):
     return render_template('error/404.html', reason=reason, my_github=github), 403
 
 
-@malice.errorhandler(404)
+@malice.app_errorhandler(404)
 def page_not_found(reason):
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
@@ -60,7 +60,7 @@ def page_not_found(reason):
     return render_template('error/404.html', reason=reason, my_github=github), 404
 
 
-@malice.errorhandler(413)
+@malice.app_errorhandler(413)
 def request_entity_too_large(reason):
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:
@@ -70,7 +70,7 @@ def request_entity_too_large(reason):
     return render_template('error/413.html', reason=reason, my_github=github), 413
 
 
-@malice.errorhandler(500)
+@malice.app_errorhandler(500)
 def internal_server_error(reason):
     if request.accept_mimetypes.accept_json and \
             not request.accept_mimetypes.accept_html:

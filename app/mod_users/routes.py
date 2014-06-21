@@ -30,7 +30,7 @@ def login_view():
         # g.user = user.name
         flash("Logged in successfully.", 'error')
         return redirect(request.args.get("next") or url_for("index"))
-    return render_template('users/login.html', form=form)
+    return render_template('users/../templates/auth/login.html', form=form)
 
 
 @mod_user.route('/register/', methods=('GET', 'POST'))
@@ -45,7 +45,7 @@ def register_view():
         db.session.commit()
         login_user(user)
         return redirect(url_for('index'))
-    return render_template('users/register.html', form=form)
+    return render_template('users/../templates/auth/register.html', form=form)
 
 
 @login_required
