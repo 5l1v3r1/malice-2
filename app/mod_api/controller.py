@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 
 import rethinkdb as r
 from app import mod_api as api
-from app.malice.routes import update_upload_file_metadata
+from app.malice.controller import update_upload_file_metadata
 from app.malice.scans import batch_search_hash, scan_upload, single_hash_search
 from lib.common.utils import list_to_string, parse_hash_list
 from lib.core.database import (insert_in_samples_db, is_hash_in_db,

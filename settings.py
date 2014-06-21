@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 __author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+__reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/config.py'
 
 import ConfigParser
 import os
@@ -34,10 +39,9 @@ class BaseConfig:
     # Secret key for signing cookies
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
-    SAMPLES_PER_PAGE = 30
+    SSL_DISABLE = True
 
-    # Auth Settings
-    USE_LDAP = os.environ.get('USE_LDAP') or False
+    SAMPLES_PER_PAGE = 30
 
     # API Settings
     USE_TOKEN_AUTH = False
@@ -47,19 +51,24 @@ class BaseConfig:
     EMAIL = os.environ.get('EMAIL') or config.get('malice', 'email')
     GITHUB = os.environ.get('GITHUB') or config.get('malice', 'github')
 
-    MAIL_SERVER = os.environ.get('MAIL_SERVER') or config.get('email', 'server')
-    MAIL_PORT = os.environ.get('MAIL_PORT') or config.get('email', 'port')
+    MAIL_SERVER = os.environ.get('MAIL_SERVER') or config.get('email', 'server') or 'smtp.googlemail.com'
+    MAIL_PORT = os.environ.get('MAIL_PORT') or config.get('email', 'port') or 587
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or config.get('email', 'username')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or config.get('email', 'password')
+    MALICE_MAIL_SUBJECT_PREFIX = '[Malice]'
     DEFAULT_MAIL_SENDER = os.environ.get('MAIL_SENDER') or config.get('malice', 'email')
+    MALICE_ADMIN = os.environ.get('MALICE_ADMIN') or config.get('malice', 'admin')
     MAIL_FLUSH_INTERVAL = 3600  # one hour
     MAIL_ERROR_RECIPIENT = os.environ.get('MAIL_ERROR_RECIPIENT') or config.get('malice', 'erroremail')
 
+    # Auth Settings
+    USE_LDAP = os.environ.get('USE_LDAP') or config.get('ldap', 'enabled') or False
     LDAP_HOST = os.environ.get('LDAP_HOST') or config.get('ldap', 'host')
-    ldap_DOMAIN = os.environ.get('LDAP_DOMAIN') or config.get('ldap', 'domain')
+    LDAP_DOMAIN = os.environ.get('LDAP_DOMAIN') or config.get('ldap', 'domain')
+    LDAP_SEARCH_BASE = os.environ.get('LDAP_SEARCH_BASE') or config.get('ldap', 'searchbase')
     LDAP_AUTH_TEMPLATE = os.environ.get('LDAP_AUTH_TEMPLATE') or config.get('ldap', 'auth_temp')
-    LDAP_PROFILE_KEY = os.environ.get('LDAP_PROFILE_KEY') or config.get('ldap', 'profile_key')
+    # LDAP_PROFILE_KEY = os.environ.get('LDAP_PROFILE_KEY') or config.get('ldap', 'profile_key')
     LDAP_AUTH_VIEW = os.environ.get('LDAP_AUTH_VIEW') or config.get('ldap', 'auth_view')
 
     RECAPTCHA_USE_SSL = False
@@ -67,10 +76,14 @@ class BaseConfig:
     RECAPTCHA_PRIVATE_KEY = os.environ.get('CAPTCHA_PRIVKEY') or config.get('reCAPTCHA', 'privkey')
     RECAPTCHA_OPTIONS = {'theme': 'white'}
 
+    @staticmethod
+    def init_app(app):
+        pass
 
 class DevConfig(BaseConfig):
     DEBUG = True
     CSRF_ENABLED = False
+    WTF_CSRF_ENABLED = False
     # Secret key for signing cookies
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
@@ -92,14 +105,52 @@ class ProductionConfig(BaseConfig):
     THREADS_PER_PAGE = 2 * psutil.NUM_CPUS
     USE_TOKEN_AUTH = True
     USE_RATE_LIMITS = True
+    SSL_DISABLE = False
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
                               'sqlite:///' + os.path.join(MALICE_ROOT, 'users.sqlite')
+
+    @classmethod
+    def init_app(cls, app):
+        BaseConfig.init_app(app)
+
+        # email errors to the administrators
+        import logging
+        from logging.handlers import SMTPHandler
+        credentials = None
+        secure = None
+        if getattr(cls, 'MAIL_USERNAME', None) is not None:
+            credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
+            if getattr(cls, 'MAIL_USE_TLS', None):
+                secure = ()
+        mail_handler = SMTPHandler(
+            mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
+            fromaddr=cls.DEFAULT_MAIL_SENDER,
+            toaddrs=[cls.MALICE_ADMIN],
+            subject=cls.MALICE_MAIL_SUBJECT_PREFIX + ' Application Error',
+            credentials=credentials,
+            secure=secure)
+        mail_handler.setLevel(logging.ERROR)
+        app.logger.addHandler(mail_handler)
+
+
+class UnixConfig(ProductionConfig):
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
+
+        # log to syslog
+        import logging
+        from logging.handlers import SysLogHandler
+        syslog_handler = SysLogHandler()
+        syslog_handler.setLevel(logging.WARNING)
+        app.logger.addHandler(syslog_handler)
 
 
 settings = {
     'development': DevConfig,
     'testing': TestConfig,
     'production': ProductionConfig,
+    'unix': UnixConfig,
 
     'default': DevConfig
 }

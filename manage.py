@@ -9,7 +9,12 @@
 #   M  `YM'   MM    A'     VML    MM     ,M   MM `Mb.     ,'   MM     ,M
 # .JML. `'  .JMML..AMA.   .AMMA..JMMmmmmMMM .JMML. `"bmmmd'  .JMMmmmmMMM
 
+
 __author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+__reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/manage.py'
 
 import os
 

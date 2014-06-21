@@ -11,7 +11,7 @@ import sys
 
 import requests
 
-#TODO possible use http://www.telize.com instead ?
+# TODO possible use http://www.telize.com instead ?
 def valid_ip(ip):
     pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
     return re.match(pattern, ip)

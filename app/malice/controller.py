@@ -19,6 +19,7 @@ from dateutil import parser
 from flask import (abort, current_app, flash, g, redirect, render_template,
                    request, url_for)
 from flask.ext.login import login_required
+# from flask.ext.ldap import login_required
 from werkzeug.utils import secure_filename
 
 from app.malice.scans import *
@@ -29,6 +30,7 @@ from lib.core.database import (db_insert, insert_in_samples_db, is_hash_in_db,
 from rethinkdb.errors import RqlDriverError
 from scans import ScanManager
 
+# from app import ldap
 from . import malice
 from .forms import SearchForm
 
@@ -88,7 +90,7 @@ def allowed_file(filename):
 
 
 @malice.route('/', methods=['GET', 'POST'])
-# @ldap.login_required
+@login_required
 # @login_required
 def index():
     form = SearchForm(request.form)
