@@ -43,9 +43,9 @@ class BaseConfig:
 
     SAMPLES_PER_PAGE = 30
 
-    MAX_CONTENT_LENGTH = os.environ.get('MAX_CONTENT_LENGTH') \
-        or config.get('malice', 'upload_max_size') \
-        or 50 * 1024 * 1024  # 50MB
+    MAX_CONTENT_LENGTH = os.environ.get('MAX_CONTENT_LENGTH') or \
+        config.get('malice', 'upload_max_size') or \
+        50 * 1024 * 1024  # 50MB
 
     # API Settings
     USE_TOKEN_AUTH = False
@@ -58,18 +58,18 @@ class BaseConfig:
     MAIL_SERVER = os.environ.get('MAIL_SERVER') or config.get('email', 'server')
     MAIL_PORT = os.environ.get('MAIL_PORT') or config.get('email', 'port')
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') \
-        or config.get('email', 'username')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') \
-        or config.get('email', 'password')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or \
+        config.get('email', 'username')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or \
+        config.get('email', 'password')
     MALICE_MAIL_SUBJECT_PREFIX = '[Malice]'
-    DEFAULT_MAIL_SENDER = os.environ.get('MAIL_SENDER') \
-        or config.get('malice', 'email')
-    MALICE_ADMIN = os.environ.get('MALICE_ADMIN') \
-        or config.get('malice', 'admin')
+    DEFAULT_MAIL_SENDER = os.environ.get('MAIL_SENDER') or \
+        config.get('malice', 'email')
+    MALICE_ADMIN = os.environ.get('MALICE_ADMIN') or \
+        config.get('malice', 'admin')
     MAIL_FLUSH_INTERVAL = 3600  # one hour
-    MAIL_ERROR_RECIPIENT = os.environ.get('MAIL_ERROR_RECIPIENT') \
-        or config.get('malice', 'erroremail')
+    MAIL_ERROR_RECIPIENT = os.environ.get('MAIL_ERROR_RECIPIENT') or \
+        config.get('malice', 'erroremail')
 
     # Auth Settings
     USE_LDAP = os.environ.get('USE_LDAP') or config.get('ldap', 'enabled') or False
