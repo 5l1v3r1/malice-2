@@ -1,6 +1,5 @@
 autodetect: yes
 ignore-paths:
-    - api
     - data
     - docs
     - logs

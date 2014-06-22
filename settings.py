@@ -43,6 +43,8 @@ class BaseConfig:
 
     SAMPLES_PER_PAGE = 30
 
+    MAX_CONTENT_LENGTH = os.environ.get('MAX_CONTENT_LENGTH') or config.get('malice', 'upload_max_size') or 50 * 1024 * 1024  # 50MB
+
     # API Settings
     USE_TOKEN_AUTH = False
     USE_RATE_LIMITS = False

@@ -18,12 +18,6 @@ __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/manage.py'
 
 import os
 
-from flask.ext.script import Manager, prompt_bool
-
-from app import create_app, db
-from app.models import User, Role, Permission
-from lib.core.database import db_setup, destroy_db
-
 COV = None
 if os.environ.get('MALICE_COVERAGE'):
     import coverage
@@ -37,6 +31,11 @@ if os.path.exists('.env'):
         if len(var) == 2 and '#' not in var[0]:
             os.environ[var[0]] = var[1]
 
+from flask.ext.script import Manager, prompt_bool
+
+from app import create_app, db
+from app.models import User, Role, Permission
+from lib.core.database import db_setup, destroy_db
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 manager = Manager(app)
@@ -74,7 +73,7 @@ def profile(length=25, profile_dir=None):
 
 
 @manager.command
-def adduser(email, username, admin=False):
+def adduser(email, username):
     """Register a new user."""
     from getpass import getpass
 
@@ -85,8 +84,7 @@ def adduser(email, username, admin=False):
 
         sys.exit('Error: passwords do not match.')
     db.create_all()
-    user = User(email=email, username=username, password=password,
-                is_admin=admin)
+    user = User(email=email, username=username, password=password)
     db.session.add(user)
     db.session.commit()
     print('User {0} was registered successfully.'.format(username))
@@ -107,6 +105,12 @@ def createdb():
     """Create database tables"""
     db_setup()
     db.create_all()
+
+    # create user roles
+    Role.insert_roles()
+
+    # create self-follows for all users
+    User.add_self_follows()
 
 
 @manager.command

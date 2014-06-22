@@ -24,6 +24,7 @@
     "moment": "latest",
     "bootstrap": "latest",
     "angular": "latest",
-    "jquery-file-upload": "latest"
+    "jquery-file-upload": "latest",
+    "jquery-knob": "latest"
   }
 }

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Confirm Your Account{% endblock %}
+{% block banner %}
+    <div class="container jumbotron myjumbo" style="background: linear-gradient(to right, #3e4957 , #22303e)">
+        <h1>&lt;Confirm Your Account&gt;</h1>
+    </div>
+{% endblock %}
+{% block content %}
+    <div>
+        <h1>
+            Hello, {{ current_user.username }}!
+        </h1>
+
+        <h2>You have not confirmed your account yet.</h2>
+
+        <h3>
+            Before you can access this site you need to confirm your account.  Check your inbox, you should have received an email with a confirmation link.
+        </h3>
+
+        <p>
+            Need another confirmation email?
+            <a href="{{ url_for('auth.resend_confirmation') }}">Click here</a>
+        </p>
+    </div>
+{% endblock %}

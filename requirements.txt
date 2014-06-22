@@ -2,6 +2,7 @@ pygeoip
 rq
 Flask
 Flask-Celery3
+Flask-Bootstrap
 Flask-OAuth
 Flask-RESTful
 Flask-Restless

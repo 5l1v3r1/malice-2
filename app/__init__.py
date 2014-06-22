@@ -12,6 +12,7 @@ __author__ = 'Josh Maine'
 import logging
 
 from flask import Flask
+from flask.ext.bootstrap import Bootstrap
 from flask.ext.ldap import LDAP, login_required
 from flask.ext.login import LoginManager
 from flask.ext.mail import Mail
@@ -26,6 +27,7 @@ from settings import settings
 
 log = logging.getLogger()
 
+bootstrap = Bootstrap()
 # pagedown = PageDown()
 mail = Mail()
 db = SQLAlchemy()
@@ -50,12 +52,14 @@ def create_app(config):
 
     # Define the WSGI application object
     app = Flask(__name__)
+    app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024  # 200MB
 
     # Configurations
     app.config.from_object(settings[config])
     settings[config].init_app(app)
 
     # Init All Flask Add-ons
+    bootstrap.init_app(app)
     #pagedown.init_app(app)
     db.init_app(app)
     mail.init_app(app)

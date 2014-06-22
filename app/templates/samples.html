@@ -47,6 +47,7 @@
         </table>
     </div>
     <div class="col-md-12 text-center">
+        {% if pagination %}
         <ul class="pagination">
             <li{% if not pagination.prev_page %} class="disabled"{% endif %}><a
                     {% if pagination.prev_page %}
@@ -74,6 +75,7 @@
             {% endif %}>Next</a>
             </li>
         </ul>
+        {% endif %}
     </div>
 
     <script type="text/javascript"

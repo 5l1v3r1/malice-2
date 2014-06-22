@@ -14,10 +14,11 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 
 import os
+import json
 
 from dateutil import parser
 from flask import (abort, current_app, flash, g, redirect, render_template,
-                   request, url_for)
+                   request, url_for, jsonify)
 from flask.ext.login import login_required
 # from flask.ext.ldap import login_required
 from werkzeug.utils import secure_filename
@@ -95,7 +96,7 @@ def allowed_file(filename):
 def index():
     form = SearchForm(request.form)
     if form.validate_on_submit():
-        return redirect(url_for('index'))
+        return redirect(url_for('.index'))
     return render_template('home/index.html', form=form, my_github=github)
 
 
@@ -157,52 +158,63 @@ def update_upload_file_metadata(sample):
         file.setdefault('user_uploads', []).append(upload)
         db_insert(file)
 
+def _upload_handler(files, force=False):
+    if not files:
+        return None
+    sample_names = []
+    sample_urls = []
+    for upload_file in files:
+        file_stream = upload_file.stream.read()
+        file_md5 = hashlib.md5(file_stream).hexdigest().upper()
+        #: Add file hash to Bloomfilter unless it is already there
+        #: Check if user wishes to force a sample rescan
+        if file_md5 not in bf or force:
+            bf.add(file_md5)
+            #: Collect upload file data
+            sample = {'filename': secure_filename(upload_file.filename.encode('utf-8')),
+                      'sha1': hashlib.sha1(file_stream).hexdigest().upper(),
+                      'sha256': hashlib.sha256(file_stream).hexdigest().upper(),
+                      'md5': file_md5,
+                      'ssdeep': pydeep.hash_buf(file_stream),
+                      'filesize': len(file_stream),
+                      'filetype': magic.from_buffer(file_stream),
+                      'filemime': upload_file.mimetype,
+                      'upload_date': r.now(),
+                      'uploaded_by': "anonymous", # g.user
+                      'detection_ratio': dict(infected=0, count=0),
+                      'filestatus': 'Processing'}
+            insert_in_samples_db(sample)
+            sample_urls.append(url_for('.sample', id=file_md5))
+            sample_names.append(secure_filename(upload_file.filename.encode('utf-8')))
+            update_upload_file_metadata(sample)
+            #: Run all configured scanners
+            sample['detection_ratio'] = scan_upload(file_stream, sample)
+            #: Done Processing File
+            sample['filestatus'] = 'Complete'
+            sample['scancomplete'] = r.now()
+            update_sample_in_db(sample)
+        else:
+            return sample_names
+    #: Once Finished redirect user to the samples page
+    return sample_names
 
-# @csrf.exempt
+
 @malice.route('/upload', methods=['POST'])
 # @ldap.login_required
 # @login_required
 def upload():
     form = SearchForm(request.form)
-    if request.method == 'POST':
-        # TODO: use secure_filename
-        for upload_file in request.files.getlist('files[]'):
-            file_stream = upload_file.stream.read()
-            file_md5 = hashlib.md5(file_stream).hexdigest().upper()
-            #: Add file hash to Bloomfilter unless it is already there
-            #: Check if user wishes to force a sample rescan
-            if file_md5 not in bf or form.force.data:
-                bf.add(file_md5)
-                #: Collect upload file data
-                sample = {'filename': secure_filename(upload_file.filename.encode('utf-8')),
-                          'sha1': hashlib.sha1(file_stream).hexdigest().upper(),
-                          'sha256': hashlib.sha256(file_stream).hexdigest().upper(),
-                          'md5': file_md5,
-                          'ssdeep': pydeep.hash_buf(file_stream),
-                          'filesize': len(file_stream),
-                          'filetype': magic.from_buffer(file_stream),
-                          'filemime': upload_file.mimetype,
-                          'upload_date': r.now(),
-                          'uploaded_by': "anonymous", # g.user
-                          'detection_ratio': dict(infected=0, count=0),
-                          'filestatus': 'Processing'}
-                insert_in_samples_db(sample)
-                update_upload_file_metadata(sample)
-                #: Run all configured scanners
-                sample['detection_ratio'] = scan_upload(file_stream, sample)
-                #: Done Processing File
-                sample['filestatus'] = 'Complete'
-                sample['scancomplete'] = r.now()
-                update_sample_in_db(sample)
-            else:
-                # flash('File {0} already submitted. Visit: {1}'.format(secure_filename(upload_file.filename.encode('utf-8')), file_md5), 'error')
-                flash('File {} already submitted.'.format(secure_filename(upload_file.filename.encode('utf-8'))),
-                      'error')
-                return redirect(url_for('.index'))
-        #: Once Finished redirect user to the samples page
-        return redirect(url_for('.samples'))
-        # return render_template('samples.html')
-    return render_template('samples.html')
+    try:
+        files = request.files.getlist('files[]')
+        print files
+
+        uploaded_files = _upload_handler(files, force=form.force.data)
+
+        print json.dumps({'files': uploaded_files}, sort_keys=False, indent=4)
+        return jsonify({'files': uploaded_files})
+    except Exception as e:
+        print json.dumps({'status': "{}".format(e)}, sort_keys=False, indent=4)
+        return jsonify({'status': "{}".format(e)})
 
 
 def parse_sample_data(found):
@@ -287,7 +299,7 @@ def samples(page):
 
 @malice.route('/system', methods=['GET'])
 # @ldap.login_required
-# @login_required
+@login_required
 def system():
     return render_template('system.html', my_github=github)
 

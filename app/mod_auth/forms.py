@@ -7,7 +7,7 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/auth/forms.py'
 
-from flask.ext.wtf import Form
+from flask.ext.wtf import Form, RecaptchaField
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
@@ -32,6 +32,8 @@ class RegistrationForm(Form):
     password = PasswordField('Password', validators=[
         Required(), EqualTo('password2', message='Passwords must match.')])
     confirm_password = PasswordField('Confirm password', validators=[Required()])
+    recaptcha = RecaptchaField()
+
     submit = SubmitField('Register')
 
     def validate_email(self, field):

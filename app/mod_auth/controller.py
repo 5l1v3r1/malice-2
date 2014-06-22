@@ -84,7 +84,7 @@ def confirm(token):
         flash('You have confirmed your account. Thanks!')
     else:
         flash('The confirmation link is invalid or has expired.')
-    return redirect(url_for('malice.index'))
+    return redirect(url_for('malice.index'), code=307)
 
 
 @auth.route('/confirm')
@@ -94,7 +94,7 @@ def resend_confirmation():
     send_email(current_user.email, 'Confirm Your Account',
                'auth/email/confirm', user=current_user, token=token)
     flash('A new confirmation email has been sent to you by email.')
-    return redirect(url_for('malice.index'))
+    return redirect(url_for('malice.index'), code=307)
 
 
 @auth.route('/change-password', methods=['GET', 'POST'])
