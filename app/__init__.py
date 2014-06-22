@@ -79,7 +79,7 @@ def create_app(config):
         except ImportError:
             from flask.ext.sslify import SSLify
             raise MaliceDependencyError("Unable to import Flask-SSLify "
-                            "(install with `pip install Flask-SSLify`)")
+                                  "(install with `pip install Flask-SSLify`)")
 
     # Register blueprint(s)
     from .malice import malice as malice_blueprint

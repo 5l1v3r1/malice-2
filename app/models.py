@@ -7,15 +7,18 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/faba6ec9edaaa846ba455dc85a91bfbeb25297b4/app/models.py'
 
-from datetime import datetime
 import hashlib
-from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from markdown import markdown
-import bleach
+from datetime import datetime
+
 from flask import current_app, request, url_for
-from flask.ext.login import UserMixin, AnonymousUserMixin
+from flask.ext.login import AnonymousUserMixin, UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from werkzeug.security import check_password_hash, generate_password_hash
+
+import bleach
 from app.exceptions import ValidationError
+from markdown import markdown
+
 from . import db, login_manager
 
 

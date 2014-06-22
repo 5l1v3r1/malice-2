@@ -8,9 +8,11 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/auth/forms.py'
 
 from flask.ext.wtf import Form, RecaptchaField
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import Required, Length, Email, Regexp, EqualTo
-from wtforms import ValidationError
+
+from wtforms import (BooleanField, PasswordField, StringField, SubmitField,
+                     ValidationError)
+from wtforms.validators import Email, EqualTo, Length, Regexp, Required
+
 from ..models import User
 
 
@@ -23,8 +25,7 @@ class LoginForm(Form):
 
 
 class RegistrationForm(Form):
-    email = StringField('Email', validators=[Required(), Length(1, 64),
-                                           Email()])
+    email = StringField('Email', validators=[Required(), Length(1, 64), Email()])
     username = StringField('Username', validators=[
         Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '

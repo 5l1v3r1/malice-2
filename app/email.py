@@ -8,8 +8,10 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/email.py'
 
 from threading import Thread
+
 from flask import current_app, render_template
 from flask.ext.mail import Message
+
 from . import mail
 
 

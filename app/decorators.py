@@ -8,8 +8,10 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/decorators.py'
 
 from functools import wraps
+
 from flask import abort
 from flask.ext.login import current_user
+
 from .models import Permission
 
 

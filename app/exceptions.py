@@ -7,5 +7,6 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/faba6ec9edaaa846ba455dc85a91bfbeb25297b4/app/exceptions.py'
 
+
 class ValidationError(ValueError):
     pass

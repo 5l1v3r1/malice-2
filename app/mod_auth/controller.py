@@ -7,15 +7,17 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/auth/views.py'
 
-from flask import render_template, redirect, request, url_for, flash
-from flask.ext.login import login_user, logout_user, login_required, \
-    current_user
+from flask import flash, redirect, render_template, request, url_for
+from flask.ext.login import (current_user, login_required, login_user,
+                             logout_user)
+
 from . import mod_auth as auth
 from .. import db
-from ..models import User
 from ..email import send_email
-from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
-    PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
+from ..models import User
+from .forms import (ChangeEmailForm, ChangePasswordForm, LoginForm,
+                    PasswordResetForm, PasswordResetRequestForm,
+                    RegistrationForm)
 
 
 @auth.before_app_request
