@@ -31,7 +31,7 @@ class RegistrationForm(Form):
                                           'numbers, dots or underscores')])
     password = PasswordField('Password', validators=[
         Required(), EqualTo('password2', message='Passwords must match.')])
-    password2 = PasswordField('Confirm password', validators=[Required()])
+    confirm_password = PasswordField('Confirm password', validators=[Required()])
     submit = SubmitField('Register')
 
     def validate_email(self, field):

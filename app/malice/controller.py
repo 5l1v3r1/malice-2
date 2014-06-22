@@ -90,7 +90,7 @@ def allowed_file(filename):
 
 
 @malice.route('/', methods=['GET', 'POST'])
-# @login_required
+# @ldap.login_required
 # @login_required
 def index():
     form = SearchForm(request.form)
