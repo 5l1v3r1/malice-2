@@ -22,8 +22,8 @@ config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
 class BaseConfig:
     # SERVER_NAME = ''
     DATABASE_CONNECT_OPTIONS = {}
-    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
-    SQLALCHEMY_RECORD_QUERIES = True
+    # SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    # SQLALCHEMY_RECORD_QUERIES = True
     # Application threads. A common general assumption is
     # using 2 per available processor cores - to handle
     # incoming requests using one and performing background

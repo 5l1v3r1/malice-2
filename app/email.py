@@ -7,16 +7,6 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/email.py'
 
-import time
-from datetime import datetime
-from threading import Thread
-
-from flask import current_app, render_template, url_for
-from flask.ext.mail import Message
-
-from app import db, mail
-from mod_users.models import PendingEmail
-
 from threading import Thread
 from flask import current_app, render_template
 from flask.ext.mail import Message

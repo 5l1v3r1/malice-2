@@ -47,9 +47,13 @@ def login():
 
 
 @auth.route('/logout')
-@login_required
+# @login_required TODO: Uncomment this!!
 def logout():
-    logout_user()
+    try:
+        logout_user()
+    except Exception as e:
+        print e
+        pass
     flash('You have been logged out.')
     return redirect(url_for('malice.index'))
 
