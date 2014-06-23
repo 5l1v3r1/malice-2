@@ -21,9 +21,9 @@ from distutils.version import StrictVersion
 from lib.common.abstracts import AntiVirus, FileAnalysis, Intel, Sandbox
 from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT, MALICE_VERSION
-from lib.common.exceptions import (MaliceCriticalError, MaliceDependencyError,
-                                   MaliceOperationalError,
-                                   MaliceAntivirusError, MaliceReportError)
+from lib.common.exceptions import (MaliceAntivirusError, MaliceCriticalError,
+                                   MaliceDependencyError, MaliceIntelError,
+                                   MaliceOperationalError, MaliceReportError)
 
 # from lib.common.abstracts import Report, Signature
 # from lib.core.database import Database
@@ -64,6 +64,7 @@ def load_plugins(module):
             elif issubclass(value, Sandbox) and value is not Sandbox:
                 register_plugin("sandbox", value)
 
+
 def register_plugin(group, name):
     global _modules
     group = _modules.setdefault(group, [])
@@ -87,9 +88,11 @@ class RunAntiVirus(object):
 
     def __init__(self, task_id):
         """@param task_id: ID of the analyses to process."""
-        # self.task = Database().view_task(task_id).to_dict() TODO: Implement task queue
+        # TODO: Implement task queue
+        # self.task = Database().view_task(task_id).to_dict()
         # TODO: Change this to the tmp file folder
-        self.analysis_path = os.path.join(MALICE_ROOT, "storage", "analyses", str(task_id))
+        self.analysis_path = os.path.join(MALICE_ROOT, "storage", "analyses",
+                                          str(task_id))
         self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "av.conf"))
 
     def process(self, module):
@@ -141,7 +144,8 @@ class RunAntiVirus(object):
             # appended to it.
             return {current.key: data}
         except MaliceDependencyError as e:
-            log.warning("The antivirus module \"%s\" has missing dependencies: %s", current.__class__.__name__, e)
+            log.warning("The antivirus module \"%s\" has missing dependencies: %s",
+                        current.__class__.__name__, e)
         except MaliceAntivirusError as e:
             log.warning("The antivirus module \"%s\" returned the following "
                         "error: %s", current.__class__.__name__, e)
@@ -184,7 +188,6 @@ class RunAntiVirus(object):
 
         # Return the fat dict.
         return results
-
 
 
 class RunIntel(object):
@@ -250,7 +253,8 @@ class RunIntel(object):
             # appended to it.
             return {current.key: data}
         except MaliceDependencyError as e:
-            log.warning("The processing module \"%s\" has missing dependencies: %s", current.__class__.__name__, e)
+            log.warning("The processing module \"%s\" has missing dependencies: %s",
+                        current.__class__.__name__, e)
         except MaliceIntelError as e:
             log.warning("The processing module \"%s\" returned the following "
                         "error: %s", current.__class__.__name__, e)
@@ -516,10 +520,12 @@ class RunReporting:
 
     def __init__(self, task_id, results):
         """@param analysis_path: analysis folder path."""
-        self.task = Database().view_task(task_id).to_dict()
+        # self.task = Database().view_task(task_id).to_dict() TODO : FIX This
         self.results = results
-        self.analysis_path = os.path.join(MALICE_ROOT, "storage", "analyses", str(task_id))
-        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf", "reporting.conf"))
+        self.analysis_path = os.path.join(MALICE_ROOT, "storage", "analyses",
+                                          str(task_id))
+        self.cfg = Config(cfg=os.path.join(MALICE_ROOT, "conf",
+                                           "reporting.conf"))
 
     def process(self, module):
         """Run a single reporting module.
@@ -530,7 +536,8 @@ class RunReporting:
         try:
             current = module()
         except:
-            log.exception("Failed to load the reporting module \"{0}\":".format(module))
+            log.exception("Failed to load the reporting module \"{0}\":"
+                          .format(module))
             return
 
         # Extract the module name.
@@ -541,7 +548,8 @@ class RunReporting:
         try:
             options = self.cfg.get(module_name)
         except MaliceOperationalError:
-            log.debug("Reporting module %s not found in configuration file", module_name)
+            log.debug("Reporting module %s not found in configuration file",
+                      module_name)
             return
 
         # If the reporting module is disabled in the config, skip it.

@@ -231,11 +231,11 @@ except NameError:
         xor_key = binascii.hexlify(xor_key_ascii.encode('ascii'))
         # xor_key = ''.join(long_xor_key[i:i + 2] 
         #                for i in range(0, len(long_xor_key), 2))
-        #print (xor_key)                
+        # print (xor_key)
     except NameError: 
         # when the user have not provided any guess about the XOR key  
         long_xor_key = str(longest_common_substring(binascii.hexlify(content)))
-        #print ("longxorkey: " +  long_xor_key)
+        # print ("longxorkey: " +  long_xor_key)
         formatted_hex = ''.join(long_xor_key[i:i + 2] for i in range(0,
                         len(long_xor_key), 2))
         print ("XOR key: " + formatted_hex)

@@ -56,7 +56,7 @@ if __name__ == "__main__":
             sys.exit(1)
         else:
             assert False, "unhandled option: %s" % o
-    if (search_file == None):
+    if search_file is None:
         print "Missing filename"
         usage()
         sys.exit(1)
@@ -64,16 +64,16 @@ if __name__ == "__main__":
     for l in key_lengths:
         key_delta = xor_delta(search_string, l)
 
-        if (verbose):
+        if verbose:
             print "%d:%s" % (l, binascii.hexlify(key_delta))
 
         doc_delta = xor_delta(search_file, l)
 
         offset = -1
-        while (True):
+        while True:
             offset += 1
             offset = doc_delta.find(key_delta, offset)
-            if (offset > 0):
+            if offset > 0:
                 print ("Key length: %d offset: %08X" % (l, offset))
             else:
                 break

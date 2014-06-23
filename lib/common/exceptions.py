@@ -24,6 +24,11 @@ class MaliceDependencyError(MaliceCriticalError):
     pass
 
 
+class MaliceIntelError(MaliceCriticalError):
+    """Intel Error"""
+    pass
+
+
 class MaliceOperationalError(Exception):
     """Malice operation error."""
     pass

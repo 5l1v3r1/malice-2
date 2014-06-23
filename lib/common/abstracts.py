@@ -40,6 +40,7 @@ PLATFORM_CHOICES = (
     (L64_PLATFORM, 'Linux 64')
 )
 
+
 # TODO: Finish AntiVirus Abstract
 class AntiVirus(object):
     """Base class for Malice anti-virus."""
@@ -192,6 +193,7 @@ class AntiVirus(object):
             alert=self.alert,
         )
 
+
 # TODO: Finish FileAnalysis Abstract
 class FileAnalysis(object):
     """Base class for Malice file analysis."""
@@ -259,6 +261,7 @@ class FileAnalysis(object):
             families=self.families
         )
 
+
 # TODO: Finish Intel Abstract
 class Intel(object):
     """Base abstract class for reporting module."""
@@ -282,10 +285,11 @@ class Intel(object):
         self.shots_path = os.path.join(self.analysis_path, "shots")
         self.pcap_path = os.path.join(self.analysis_path, "dump.pcap")
 
-        try:
-            create_folder(folder=self.reports_path)
-        except MaliceOperationalError as e:
-            MaliceReportError(e)
+        # TODO : FIX This
+        # try:
+        #     create_folder(folder=self.reports_path)
+        # except MaliceOperationalError as e:
+        #     MaliceReportError(e)
 
     def set_options(self, options):
         """Set report options.

@@ -8,7 +8,7 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 
 import os
 import ConfigParser
-from api.metascan_api import MetaScan, Admin
+# from api.metascan_api import MetaScan, Admin
 from lib.common.constants import MALICE_ROOT
 
 

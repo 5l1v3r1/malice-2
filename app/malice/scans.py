@@ -11,7 +11,7 @@ import hashlib
 import logging
 import os
 
-from dateutil import parser
+# from dateutil import parser
 from flask import Config, current_app, flash, g
 
 # from api.metascan_api import MetaScan
@@ -292,8 +292,8 @@ def batch_search_hash(hash_list):
         return search_results
 
 
-def scan_to_dict(scan, av):
-    return dict(av=av,
+def scan_to_dict(scan, av_name):
+    return dict(av=av_name,
                 digest=scan.digest,
                 infected=scan.infected,
                 infected_string=scan.infected_string,

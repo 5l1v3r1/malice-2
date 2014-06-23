@@ -4,9 +4,9 @@ __author__ = 'Josh Maine'
 
 from flask import Blueprint, request, g
 
-api = Blueprint('api', __name__)
+mod_api = Blueprint('api', __name__)
 
-from app.mod_users.models import User
+from . import controller
 from . import errors
 
 

@@ -19,18 +19,18 @@ import os
 from dateutil import parser
 from flask import (abort, current_app, flash, g, jsonify, redirect,
                    render_template, request, url_for)
-from flask.ext.ldap import login_required
+# from flask.ext.ldap import login_required
 from flask.ext.login import login_required
 from werkzeug.utils import secure_filename
 
-from app import ldap
+# from app import ldap
 from app.malice.scans import *
 from lib.common.pagination import Pagination
 from lib.common.utils import parse_hash_list
 from lib.core.database import (db_insert, insert_in_samples_db, is_hash_in_db,
                                update_sample_in_db)
 from rethinkdb.errors import RqlDriverError
-from scans import ScanManager
+# from scans import ScanManager
 
 from . import malice
 from .forms import SearchForm
@@ -58,7 +58,7 @@ else:
 
 # csrf = CsrfProtect(app)
 
-sm = ScanManager()
+# sm = ScanManager()
 
 github = 'https://github.com/blacktop/malice'  #current_app.config['GITHUB']
 
