@@ -13,16 +13,17 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-import os
 import json
+import os
 
 from dateutil import parser
-from flask import (abort, current_app, flash, g, redirect, render_template,
-                   request, url_for, jsonify)
+from flask import (abort, current_app, flash, g, jsonify, redirect,
+                   render_template, request, url_for)
+from flask.ext.ldap import login_required
 from flask.ext.login import login_required
-# from flask.ext.ldap import login_required
 from werkzeug.utils import secure_filename
 
+from app import ldap
 from app.malice.scans import *
 from lib.common.pagination import Pagination
 from lib.common.utils import parse_hash_list
@@ -31,7 +32,6 @@ from lib.core.database import (db_insert, insert_in_samples_db, is_hash_in_db,
 from rethinkdb.errors import RqlDriverError
 from scans import ScanManager
 
-# from app import ldap
 from . import malice
 from .forms import SearchForm
 
@@ -60,7 +60,8 @@ else:
 
 sm = ScanManager()
 
-github = 'https://github.com/blacktop/malice' #current_app.config['GITHUB']
+github = 'https://github.com/blacktop/malice'  #current_app.config['GITHUB']
+
 
 # open connection before each request
 @malice.before_request
@@ -104,7 +105,8 @@ def index():
 # @ldap.login_required
 # @login_required
 def intel():
-    # TODO : Handle edge case where VT didn't return anything, but when you requery it only pulls cached results
+    # TODO : Handle edge case where VT didn't return anything,
+    # TODO (cont) : but when you requery it only pulls cached results
     form = SearchForm(request.form)
     selection = []
     if form.validate_on_submit():
@@ -123,7 +125,10 @@ def intel():
     # selection = list(r.table('sessions').run(g.rdb_sess_conn))
     # print selection
     # r.table('sessions').delete().run(g.rdb_sess_conn)
-    return render_template('intel.html', form=form, searchs=selection, my_github=github)
+    return render_template('intel.html',
+                           form=form,
+                           searchs=selection,
+                           my_github=github)
 
 
 def update_upload_file_metadata(sample):
@@ -149,14 +154,15 @@ def update_upload_file_metadata(sample):
                 'filesize': sample['filesize'],
                 'filetype': sample['filetype'],
                 'filemime': sample['filemime']
-        }
+                }
         upload = {'filename': sample['filename'],
                   'upload_date': sample['upload_date'],
                   'uploaded_by': sample['uploaded_by'],
                   'detection_ratio': sample['detection_ratio']
-        }
+                  }
         file.setdefault('user_uploads', []).append(upload)
         db_insert(file)
+
 
 def _upload_handler(files, force=False):
     if not files:
@@ -180,7 +186,7 @@ def _upload_handler(files, force=False):
                       'filetype': magic.from_buffer(file_stream),
                       'filemime': upload_file.mimetype,
                       'upload_date': r.now(),
-                      'uploaded_by': "anonymous", # g.user
+                      'uploaded_by': g.user or "anonymous",
                       'detection_ratio': dict(infected=0, count=0),
                       'filestatus': 'Processing'}
             insert_in_samples_db(sample)
@@ -218,16 +224,18 @@ def upload():
 
 
 def parse_sample_data(found):
-    av_results = metascan_results = exif = file_metadata = pe = tags = trid = None
+    av_results = metascan_results = exif = \
+        file_metadata = pe = tags = trid = None
     detection_ratio = dict(infected=0, count=0)
     #: Parse out File Metadata
     if 'user_uploads' in found:
         # TODO : Add an analysis_data field for automated rescanning of files
-        file_metadata = {'filename': found['user_uploads'][-1]['filename'],
-                         'analysis_date': found['user_uploads'][-1]['upload_date'],
-                         'first_uploaded': found['user_uploads'][0]['upload_date'],
-                         'last_uploaded': found['user_uploads'][-1]['upload_date'],
-                         'file_names': ', '.join(name['filename'] for name in found['user_uploads'])}
+        file_metadata = dict(filename=found['user_uploads'][-1]['filename'],
+                             analysis_date=found['user_uploads'][-1]['upload_date'],
+                             first_uploaded=found['user_uploads'][0]['upload_date'],
+                             last_uploaded=found['user_uploads'][-1]['upload_date'],
+                             file_names=', '.join(name['filename']
+                             for name in found['user_uploads']))
         #: Parse out Analysis Sections
         for upload in reversed(found['user_uploads']):
             if 'av_results' in upload:
@@ -239,7 +247,8 @@ def parse_sample_data(found):
                 break
         for upload in reversed(found['user_uploads']):
             if 'metascan_results' in upload:
-                metascan_results = upload['metascan_results'][-1]['scan_results']['scan_details']
+                metascan_results = \
+                    upload['metascan_results'][-1]['scan_results']['scan_details']
                 #: Fix av def update time formatting
                 for av in metascan_results:
                     detection_ratio['count'] += 1
@@ -249,14 +258,16 @@ def parse_sample_data(found):
         #: Parse out PE Header Info
         if 'pe' in found:
             pe = found['pe']
-            pe['attributes']['compile_time'] = parser.parse(pe['attributes']['compile_time'])
+            pe['attributes']['compile_time'] = \
+                parser.parse(pe['attributes']['compile_time'])
         if 'exif' in found and 'File Type' in found['exif']:
             exif = found['exif']
             tags = exif['File Type'].lower()
         #: Parse out TrID
         if 'trid' in found:
             trid = found['trid']
-    return av_results, metascan_results, detection_ratio, exif, file_metadata, pe, tags, trid
+    return av_results, metascan_results, detection_ratio, exif, file_metadata, \
+        pe, tags, trid
 
 
 @malice.route('/sample/<id>', methods=['GET', 'POST'])
@@ -272,9 +283,19 @@ def sample(id):
     if not found:
         abort(404)
     #: Pull out all important information from sample to display to user
-    av_results, metascan_results, detection_ratio, exif, file_metadata, pe, tags, trid = parse_sample_data(found)
-    return render_template('analysis.html', sample=found, file=file_metadata, tags=tags, pe=pe, exif=exif, trid=trid,
-                           av_results=av_results, metascan_results=metascan_results, detection_ratio=detection_ratio)
+    av_results, metascan_results, detection_ratio, exif, file_metadata, \
+        pe, tags, trid = parse_sample_data(found)
+    return render_template('analysis.html',
+                           sample=found,
+                           file=file_metadata,
+                           tags=tags,
+                           pe=pe,
+                           exif=exif,
+                           trid=trid,
+                           av_results=av_results,
+                           metascan_results=metascan_results,
+                           detection_ratio=detection_ratio)
+
 
 @malice.route('/samples/', defaults={'page': 1})
 @malice.route('/samples/page/<int:page>', methods=['GET'])
@@ -291,10 +312,18 @@ def samples(page):
     else:
         limit = total_sample_count - skip
     # set up the pagination params, set count later
-    p = Pagination(total=total_sample_count, per_page=samples_per_page, current_page=page)
-    samples = list(r.table('samples').order_by(r.desc('upload_date')).skip(skip).limit(limit).run(g.rdb_sample_conn))
+    p = Pagination(total=total_sample_count, per_page=samples_per_page,
+                   current_page=page)
+    samples = list(r.table('samples')
+                    .order_by(r.desc('upload_date'))
+                    .skip(skip).limit(limit)
+                    .run(g.rdb_sample_conn))
 
-    return render_template('samples.html', samples=samples, per_page=samples_per_page, pagination=p, my_github=github)
+    return render_template('samples.html',
+                           samples=samples,
+                           per_page=samples_per_page,
+                           pagination=p,
+                           my_github=github)
 
 
 @malice.route('/system', methods=['GET'])
@@ -310,10 +339,13 @@ def system():
 def help():
     url = current_app.config['URL']
     email = current_app.config['EMAIL']
-    return render_template('help.html', my_url=url, my_email=email, my_github=github)
+    return render_template('help.html',
+                           my_url=url,
+                           my_email=email,
+                           my_github=github)
 
 
-#: Template Filters >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#: Template Filters >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 @malice.app_template_filter('time_from_now')
 def time_from_now(this_date):
     pass
@@ -334,8 +366,7 @@ def tail_filename(s):
 def percent(s):
     return "{0:.0%}".format(s)
 
-#:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+#: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # TODO - Display Hashes that Weren't Found
 # TODO - Progress Bar
 # TODO - handle sha256

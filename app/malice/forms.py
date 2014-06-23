@@ -18,7 +18,7 @@ from wtforms.validators import Length, Required
 
 
 class SearchForm(Form):
-    hashes = TextAreaField('hashes')#, [Required("Please enter a message.")])
+    hashes = TextAreaField('hashes')
     label = TextField('label')
     submit = SubmitField("Search")
     force = BooleanField('Force', default=False)

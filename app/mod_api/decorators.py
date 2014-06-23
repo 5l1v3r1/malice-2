@@ -94,7 +94,7 @@ def rate_limit(limit, per, scope_func=lambda: request.remote_addr):
                     rv = f(*args, **kwargs)
                 else:
                     rv = too_many_requests('You have exceeded your request rate')
-                #rv = make_response(rv)
+                # rv = make_response(rv)
                 g.headers = {
                     'X-RateLimit-Remaining': str(limiter.remaining),
                     'X-RateLimit-Limit': str(limiter.limit),

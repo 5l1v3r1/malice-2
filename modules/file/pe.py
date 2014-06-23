@@ -8,7 +8,6 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 
 import hashlib
 from datetime import datetime
-from os import path
 
 from lib.common.abstracts import FileAnalysis
 from lib.common.constants import MALICE_ROOT

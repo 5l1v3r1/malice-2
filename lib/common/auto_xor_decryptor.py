@@ -103,7 +103,7 @@ def longest_common_substring(text):
             j1, j2, h = sa[i - 1], sa[i], lcp[i]
             assert text[j1:j1 + h] == text[j2:j2 + h]
             substring = text[j1:j1 + h]
-            if not substring in result:
+            if substring not in result:
                 result[substring] = [j1]
             # result[substring].append(j2)
     # return dict((k, sorted(v)) for k, v in result.items())
@@ -218,7 +218,7 @@ filename = args.input
 # only guess the XOR key based on the first 500 (or whatever you defined) bytes
 with open(filename, 'rb') as f:
     content = f.read(int(args.xorkeymaxsearch))
-    #print (args.xorkeymaxsearch)
+    # print (args.xorkeymaxsearch)
 f.close()
 
 try:
@@ -242,7 +242,7 @@ except NameError:
         r = re.compile("(.{" + args.keyminlen + r",}?)\1+")             
         xor_key_list = r.findall(formatted_hex)
         xor_key = xor_key_list[0] 
-#print (xor_key)    
+# print (xor_key)
 # binary XOR key to be used in decryption
 xor_key_bin = binascii.unhexlify(xor_key)
 print ("XOR key ascii: " + str(xor_key_bin))

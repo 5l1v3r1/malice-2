@@ -37,7 +37,9 @@ def split_seq(iterable, size):
 
 
 def parse_hash_list(data):
-    found_hashes = re.findall('((?i)(?<![a-z0-9])[a-fA-F0-9]{32}(?![a-z0-9])|(?i)(?<![a-z0-9])[a-fA-F0-9]{40}(?![a-z0-9])|(?i)(?<![a-z0-9])[a-fA-F0-9]{64}(?![a-z0-9]))', data)
+    found_hashes = re.findall('((?i)(?<![a-z0-9])[a-fA-F0-9]{32}'
+                              '(?![a-z0-9])|(?i)(?<![a-z0-9])[a-fA-F0-9]{40}'
+                              '(?![a-z0-9])|(?i)(?<![a-z0-9])[a-fA-F0-9]{64}(?![a-z0-9]))', data)
     hash_list = list(set(found_hashes))
     if len(hash_list) == 1:
         return hash_list[0]
@@ -153,7 +155,7 @@ def convert_char(c):
 def is_printable(s):
     """ Test if a string is printable."""
     for c in s:
-        if not c in PRINTABLE_CHARACTERS:
+        if c not in PRINTABLE_CHARACTERS:
             return False
     return True
 
