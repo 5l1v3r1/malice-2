@@ -27,16 +27,20 @@ from lib.common.utils import list_to_string, parse_hash_list
 from lib.core.database import (insert_in_samples_db, is_hash_in_db,
                                update_sample_in_db)
 
+from . import mod_api as api
+from ..models import User
 from .decorators import get_view_rate_limit, ratelimit
 
 try:
     import pydeep
 except ImportError:
+    pydeep = None
     raise MaliceDependencyError("Unable to import pydeep "
                                 "(install with `pip install pydeep`)")
 try:
     import magic
 except ImportError:
+    magic = None
     raise MaliceDependencyError("Unable to import magic "
                                 "(install with `pip install magic`)")
 
@@ -45,9 +49,9 @@ except ImportError:
 @ratelimit(limit=300, per=60 * 15)
 def search_view():
     arg_hash = request.args['md5']
-    hash = parse_hash_list((arg_hash))
-    if hash:
-        found = single_hash_search(hash)
+    this_hash = parse_hash_list(arg_hash)
+    if this_hash:
+        found = single_hash_search(this_hash)
         if found:
             return jsonify(found), 200
         else:
@@ -73,6 +77,7 @@ def batch_search_view():
                                 response=404)), 404
     else:
         return jsonify(dict(error='Missing Parameters', response=400)), 400
+
 
 # @csrf.exempt
 @api.route('/file/scan', methods=['POST'])
