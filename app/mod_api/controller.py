@@ -18,8 +18,6 @@ import hashlib
 from flask import jsonify, request
 from werkzeug.utils import secure_filename
 
-import rethinkdb as r
-from app import mod_api as api
 from app.malice.controller import update_upload_file_metadata
 from app.malice.scans import batch_search_hash, scan_upload, single_hash_search
 from lib.common.exceptions import MaliceDependencyError
@@ -28,9 +26,15 @@ from lib.core.database import (insert_in_samples_db, is_hash_in_db,
                                update_sample_in_db)
 
 from . import mod_api as api
-from ..models import User
+# from ..models import User
 from .decorators import get_view_rate_limit, ratelimit
 
+try:
+    import rethinkdb as r
+except ImportError:
+    r = None
+    raise MaliceDependencyError("Unable to import rethinkdb."
+                                "(install with `pip install rethinkdb`)")
 try:
     import pydeep
 except ImportError:

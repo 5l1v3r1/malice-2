@@ -6,13 +6,12 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
-import ConfigParser
 import hashlib
 import logging
 import os
 
 # from dateutil import parser
-from flask import Config, current_app, flash, g
+from flask import current_app, flash, g
 
 # from api.metascan_api import MetaScan
 from app.malice.worker.av.avast.scanner import avast_engine
@@ -29,7 +28,7 @@ from app.malice.worker.file.trid import trid
 from app.malice.worker.intel.bit9 import batch_query_bit9, single_query_bit9
 from app.malice.worker.intel.virustotal import (batch_query_virustotal,
                                                 single_query_virustotal)
-from lib.common.config import Config
+# from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT
 from lib.common.exceptions import MaliceDependencyError
 from lib.common.out import *
@@ -54,10 +53,6 @@ except ImportError:
                                 "(install with `pip install redis`)")
 
 q = Queue('low', connection=Redis())
-
-conf_path = os.path.normpath(os.path.join(MALICE_ROOT, "conf", "config.cfg"))
-config = ConfigParser.ConfigParser()
-config.read(conf_path)
 
 log = logging.getLogger(__name__)
 
