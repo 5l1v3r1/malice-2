@@ -31,7 +31,7 @@ class RegistrationForm(Form):
                                           'Usernames must have only letters, '
                                           'numbers, dots or underscores')])
     password = PasswordField('Password', validators=[
-        Required(), EqualTo('password2', message='Passwords must match.')])
+        Required(), EqualTo('confirm_password', message='Passwords must match.')])
     confirm_password = PasswordField('Confirm password', validators=[Required()])
     recaptcha = RecaptchaField()
 
@@ -49,8 +49,8 @@ class RegistrationForm(Form):
 class ChangePasswordForm(Form):
     old_password = PasswordField('Old password', validators=[Required()])
     password = PasswordField('New password', validators=[
-        Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm new password', validators=[Required()])
+        Required(), EqualTo('confirm_password', message='Passwords must match')])
+    confirm_password = PasswordField('Confirm new password', validators=[Required()])
     submit = SubmitField('Update Password')
 
 
@@ -64,8 +64,8 @@ class PasswordResetForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64),
                                              Email()])
     password = PasswordField('New Password', validators=[
-        Required(), EqualTo('password2', message='Passwords must match')])
-    password2 = PasswordField('Confirm password', validators=[Required()])
+        Required(), EqualTo('confirm_password', message='Passwords must match')])
+    confirm_password = PasswordField('Confirm Password', validators=[Required()])
     submit = SubmitField('Reset Password')
 
     def validate_email(self, field):

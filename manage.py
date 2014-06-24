@@ -110,9 +110,6 @@ def createdb():
     # create user roles
     Role.insert_roles()
 
-    # create self-follows for all users
-    User.add_self_follows()
-
 
 @manager.command
 def runserver():

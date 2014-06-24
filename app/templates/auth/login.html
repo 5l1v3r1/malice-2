@@ -14,6 +14,8 @@
         {{ form.csrf_token }}
         {{ render_field(form.email, class="input-xlarge",placeholder="email") }}
         {{ render_field(form.password, class="input-xlarge", placeholder="password") }}
+        {{ render_field(form.remember_me, class="checkbox") }}
+
         <div class="control-group">
             <label class="control-label"></label>
 
@@ -21,8 +23,11 @@
                 <button type="submit" id="sign_in" class="btn btn-primary">Log In</button>
 
             </div>
+            <label class="control-label"></label>
+            <div class="controls">
                 <p>Forgot your password? <a href="{{ url_for('auth.password_reset_request') }}">Reset</a></p>
-                <p>New user? <a href="{{ url_for('auth.register') }}">Register</a></p>
+
+                <p>New user? <a href="{{ url_for('auth.register') }}">Register</a></p></div>
         </div>
     </form>
 
