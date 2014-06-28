@@ -44,6 +44,7 @@ before_script:
   - export CAPTCHA_PUBKEY=pubkey
   - export CAPTCHA_PRIVKEY=privkey
   - sudo rethinkdb &
+  - python manage.py createdb
 services:
   - sqlite3
 #  - mongodb
