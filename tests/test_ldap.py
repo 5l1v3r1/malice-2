@@ -8,9 +8,9 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 
 import unittest
 import simpleldap
-from flask import Flask, url_for
-from app import create_app, db
-from app.models import User, AnonymousUser, Role, Permission
+# from flask import Flask, url_for
+# from app import create_app, db
+# from app.models import User, AnonymousUser, Role, Permission
 # import json
 # import re
 # from base64 import b64encode
@@ -28,22 +28,19 @@ BIND_PASSWORD = 'password'
 
 class UserModelTestCase(unittest.TestCase):
     def setUp(self):
-        self.app = create_app('testing')
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-        Role.insert_roles()
-        self.client = self.app.test_client(use_cookies=True)
+        pass
+        # self.app = create_app('testing')
+        # self.app_context = self.app.app_context()
+        # self.app_context.push()
+        # db.create_all()
+        # Role.insert_roles()
+        # self.client = self.app.test_client(use_cookies=True)
 
     def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
-
-   # Ensure that Flask was set up correctly
-    def test_home_page(self):
-        response = self.client.get(url_for('malice.index'))
-        self.assertTrue(b'Upload' in response.data)
+        pass
+        # db.session.remove()
+        # db.drop_all()
+        # self.app_context.pop()
 
     @staticmethod
     def ldap_fetch(uid=None, name=None, passwd=BIND_PASSWORD):
@@ -76,5 +73,5 @@ class UserModelTestCase(unittest.TestCase):
         self.assertTrue(ldapres['name'] == u'Bernhard Riemann')
         self.assertTrue(ldapres['mail'] == u'riemann@ldap.forumsys.com')
 
-if __name__ == '__main__':
-    unittest.main()
+# if __name__ == '__main__':
+#     unittest.main()
