@@ -44,7 +44,8 @@ before_script:
   - export CAPTCHA_PUBKEY=pubkey
   - export CAPTCHA_PRIVKEY=privkey
   - sudo rethinkdb &
-#services:
+services:
+  - sqlite3
 #  - mongodb
 # command to run tests
 script: "nosetests -v --with-coverage --cover-package=app --cover-branches --cover-erase --cover-html --cover-html-dir=cover"
