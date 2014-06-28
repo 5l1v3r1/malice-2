@@ -68,3 +68,4 @@ shadow-server-api
 ForgeryPy
 bleach
 markdown
+selenium

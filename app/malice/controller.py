@@ -222,10 +222,10 @@ def upload():
                           'upload_date': r.now(),
                           'detection_ratio': dict(infected=0, count=0),
                           'filestatus': 'Processing'}
-                if not current_user.is_anonymous():
-                    sample['uploaded_by'] = current_user.username
-                else:
+                if current_user.is_anonymous():
                     sample['uploaded_by'] = 'anonymous'
+                else:
+                    sample['uploaded_by'] = current_user.username
                 insert_in_samples_db(sample)
                 update_upload_file_metadata(sample)
                 #: Run all configured scanners
