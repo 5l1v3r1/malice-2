@@ -45,9 +45,9 @@ manager = Manager(app)
 @manager.command
 def test(with_coverage=False):
     """Run the unit tests."""
-    if with_coverage and not os.environ.get('FLASK_COVERAGE'):
+    if with_coverage and not os.environ.get('MALICE_COVERAGE'):
         import sys
-        os.environ['FLASK_COVERAGE'] = '1'
+        os.environ['MALICE_COVERAGE'] = '1'
         os.execvp(sys.executable, [sys.executable] + sys.argv)
     import unittest
     tests = unittest.TestLoader().discover('tests')

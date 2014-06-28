@@ -42,7 +42,7 @@ class UserModelTestCase(unittest.TestCase):
 
    # Ensure that Flask was set up correctly
     def test_home_page(self):
-        response = self.client.get('/')
+        response = self.client.get(url_for('malice.index'))
         self.assertTrue(b'Upload' in response.data)
 
     @staticmethod

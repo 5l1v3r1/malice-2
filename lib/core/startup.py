@@ -170,7 +170,7 @@ def init_logging():
     # log.addHandler(dh)
 
     # log.setLevel(logging.INFO)
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging.ERROR)
 
 
 # def init_tasks():

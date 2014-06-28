@@ -40,14 +40,6 @@ login_manager.login_view = 'auth.login'
 
 
 def create_app(config):
-
-    logo()
-    check_configs()
-    check_version()
-    init_logging()
-    #log.setLevel(logging.DEBUG)
-    init_modules()
-
     #create_structure()
 
     # Define the WSGI application object
@@ -58,6 +50,13 @@ def create_app(config):
     app.config.from_object(settings[config])
     settings[config].init_app(app)
 
+    if not app.testing:
+        logo()
+        check_version()
+    check_configs()
+    init_logging()
+    #log.setLevel(logging.DEBUG)
+    init_modules()
     # Init All Flask Add-ons
     bootstrap.init_app(app)
     #pagedown.init_app(app)

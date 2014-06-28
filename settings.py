@@ -105,6 +105,7 @@ class TestConfig(BaseConfig):
     SQLALCHEMY_ECHO = True
     CSRF_ENABLED = True
     SECRET_KEY = 'test_secret'
+    SERVER_NAME = '127.0.0.1'
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
         'sqlite:///' + os.path.join(MALICE_ROOT, 'users-test.sqlite')
     MAIL_FLUSH_INTERVAL = 60  # one minute
