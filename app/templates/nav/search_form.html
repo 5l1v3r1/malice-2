@@ -1,6 +1,6 @@
 {% block search_upload_form %}
 
-    <form class="navbar-form navbar-right" action="{{ url_for('index') }}" method="POST" name="search_hash">
+    <form class="navbar-form navbar-right" action="{{ url_for('malice.index') }}" method="POST" name="search_hash">
         <div class="input-group" style="display: inline-block;vertical-align: middle;width: auto;">
             {{ form.label(type="text", class="form-control", id="inputHash", style="min-width:22em", placeholder="Enter MD5 Here...") }}
             {{ form.csrf_token }}
@@ -34,7 +34,7 @@
                     <h4 class="modal-title" id="myModalLabel">Enter Multiple Hashes</h4>
                 </div>
                 <div class="modal-body input-group" style="width:100%">
-                    <form action="{{ url_for('index') }}" class="" method="POST" name="search_hash_modal">
+                    <form action="{{ url_for('malice.index') }}" class="" method="POST" name="search_hash_modal">
                         <input type="text" class="form-control center-block" placeholder="Enter MD5 Here..."/>
                         {{ form.csrf_token }}
                         <div class="form-group">

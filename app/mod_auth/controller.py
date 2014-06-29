@@ -89,7 +89,7 @@ def confirm(token):
     return redirect(url_for('malice.index'), code=307)
 
 
-@auth.route('/confirm')
+@auth.route('/confirm', methods=['POST'])
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()

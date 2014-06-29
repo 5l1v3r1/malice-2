@@ -19,8 +19,9 @@ __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/manage.py'
 import os
 
 COV = None
-if os.environ.get('MALICE_COVERAGE'):
+if os.environ.get('MALICE_COVERAGE', False):
     import coverage
+    print "Running with coverage now ..."
     COV = coverage.coverage(branch=True, include='app/*')
     COV.start()
 

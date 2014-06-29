@@ -54,7 +54,7 @@ def create_app(config):
         logo()
         check_version()
     check_configs()
-    init_logging()
+    init_logging('debug')
     #log.setLevel(logging.DEBUG)
     init_modules()
     # Init All Flask Add-ons

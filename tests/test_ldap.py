@@ -7,7 +7,9 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 
 import unittest
+
 import simpleldap
+
 # from flask import Flask, url_for
 # from app import create_app, db
 # from app.models import User, AnonymousUser, Role, Permission
@@ -20,7 +22,7 @@ import simpleldap
 
 
 LDAP_SERVER = 'ldap.forumsys.com'
-LDAP_PORT = 389 # your port
+LDAP_PORT = 389  # your port
 BIND_DN = "cn=read-only-admin,dc=example,dc=com"
 BASE_DN = 'dc=example,dc=com'
 BIND_PASSWORD = 'password'
@@ -47,13 +49,17 @@ class UserModelTestCase(unittest.TestCase):
         try:
             if name is not None and passwd is not None:
                 l = simpleldap.Connection(LDAP_SERVER,
-                                            port=LDAP_PORT,
-                                            dn=BIND_DN,
-                                            password=BIND_PASSWORD)
+                                          port=LDAP_PORT,
+                                          dn=BIND_DN,
+                                          password=BIND_PASSWORD)
                 r = l.search('uid={0}'.format(name), base_dn=BASE_DN)
             else:
-                conn = simpleldap.Connection(hostname=LDAP_SERVER, port=LDAP_PORT, dn=BIND_DN, password=BIND_PASSWORD)
-                is_valid = conn.authenticate('uid={0},{1}'.format(uid, BASE_DN), 'password')
+                conn = simpleldap.Connection(hostname=LDAP_SERVER,
+                                             port=LDAP_PORT,
+                                             dn=BIND_DN,
+                                             password=BIND_PASSWORD)
+                is_valid = conn.authenticate('uid={0},{1}'.format(uid, BASE_DN),
+                                             'password')
                 r = conn.search('uid={0}'.format(uid), BASE_DN)
 
             return {

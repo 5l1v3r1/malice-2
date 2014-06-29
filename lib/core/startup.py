@@ -153,7 +153,7 @@ class ConsoleHandler(logging.StreamHandler):
         logging.StreamHandler.emit(self, colored)
 
 
-def init_logging():
+def init_logging(logging_level='error'):
     """Initializes logging."""
     formatter = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 
@@ -169,8 +169,18 @@ def init_logging():
     # dh.setLevel(logging.ERROR)
     # log.addHandler(dh)
 
-    # log.setLevel(logging.INFO)
-    log.setLevel(logging.ERROR)
+    if logging_level == 'info':
+        log.setLevel(logging.INFO)
+    if logging_level == 'debug':
+        log.setLevel(logging.DEBUG)
+    if logging_level == 'warn':
+        log.setLevel(logging.WARN)
+    if logging_level == 'error':
+        log.setLevel(logging.ERROR)
+    if logging_level == 'critical':
+        log.setLevel(logging.CRITICAL)
+    if logging_level == 'fatal':
+        log.setLevel(logging.FATAL)
 
 
 # def init_tasks():

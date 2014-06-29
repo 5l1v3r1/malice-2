@@ -29,7 +29,7 @@ def login_view():
         login_user(user)
         # g.user = user.name
         flash("Logged in successfully.", 'error')
-        return redirect(request.args.get("next") or url_for("index"))
+        return redirect(request.args.get("next") or url_for("malice.index"))
     return render_template('users/../templates/auth/login.html', form=form)
 
 
@@ -44,7 +44,7 @@ def register_view():
         db.session.add(user)
         db.session.commit()
         login_user(user)
-        return redirect(url_for('index'))
+        return redirect(url_for('malice.index'))
     return render_template('users/../templates/auth/register.html', form=form)
 
 
@@ -52,4 +52,4 @@ def register_view():
 @mod_user.route('/logout/')
 def logout_view():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('malice.index'))
