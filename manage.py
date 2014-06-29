@@ -35,7 +35,7 @@ if os.path.exists('.env'):
 from flask.ext.script import Manager, prompt_bool
 
 from app import create_app, db
-from app.models import Role, User, Permission
+from app.models import Role, User  # Permission
 from lib.core.database import db_setup, destroy_db
 
 

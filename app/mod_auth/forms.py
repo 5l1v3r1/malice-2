@@ -7,20 +7,14 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/auth/forms.py'
 
-import ConfigParser
-import os
-
 from flask.ext.wtf import Form, RecaptchaField
 
-from lib.common.constants import MALICE_ROOT
+from settings import BaseConfig
 from wtforms import (BooleanField, PasswordField, StringField, SubmitField,
                      ValidationError)
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
 
 from ..models import User
-
-config = ConfigParser.SafeConfigParser()
-config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
 
 
 class LoginForm(Form):
@@ -47,7 +41,7 @@ class RegistrationForm(Form):
     confirm_password = PasswordField('Confirm password',
                                      validators=[DataRequired()])
 
-    if config.get('reCAPTCHA', 'enabled') == 'yes':
+    if BaseConfig.RECAPTCHA_ENABLE == 'yes':
         recaptcha = RecaptchaField()
 
     submit = SubmitField('Register')

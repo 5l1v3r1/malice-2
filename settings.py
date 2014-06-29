@@ -80,6 +80,7 @@ class BaseConfig:
     # LDAP_PROFILE_KEY = os.environ.get('LDAP_PROFILE_KEY') or config.get('ldap', 'profile_key')
     LDAP_AUTH_VIEW = os.environ.get('LDAP_AUTH_VIEW') or config.get('ldap', 'auth_view')
 
+    RECAPTCHA_ENABLE = os.environ.get('RECAPTCHA_ENABLE') or config.get('reCAPTCHA', 'enabled') or 'no'
     RECAPTCHA_USE_SSL = False
     RECAPTCHA_PUBLIC_KEY = os.environ.get('CAPTCHA_PUBKEY') or config.get('reCAPTCHA', 'pubkey')
     RECAPTCHA_PRIVATE_KEY = os.environ.get('CAPTCHA_PRIVKEY') or config.get('reCAPTCHA', 'privkey')
