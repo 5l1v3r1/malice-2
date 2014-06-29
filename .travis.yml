@@ -51,6 +51,6 @@ before_script:
 # command to run tests
 script:
 #  - nosetests -v --with-coverage --cover-package=app --cover-branches --cover-erase --cover-html --cover-html-dir=cover
-  - coverage run --source=app python manage.py test
+  - coverage run --source=app manage.py test
 after_success:
   coveralls
