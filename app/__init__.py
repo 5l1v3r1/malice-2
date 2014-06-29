@@ -55,7 +55,7 @@ def create_app(config):
         check_version()
     check_configs()
     if app.testing:
-        init_logging('error')
+        init_logging('info')
     else:
         init_logging('debug')
     #log.setLevel(logging.DEBUG)

@@ -103,7 +103,7 @@ class DevConfig(BaseConfig):
 
 class TestConfig(BaseConfig):
     TESTING = True
-    SQLALCHEMY_ECHO = True
+    # SQLALCHEMY_ECHO = True
     CSRF_ENABLED = True
     SECRET_KEY = 'test_secret'
     SERVER_NAME = '127.0.0.1'
