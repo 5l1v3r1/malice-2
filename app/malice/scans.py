@@ -25,9 +25,9 @@ from app.malice.worker.av.sophos.scanner import sophos_engine
 from app.malice.worker.file.exe.pe import pe
 from app.malice.worker.file.exif import exif
 from app.malice.worker.file.trid import trid
-from app.malice.worker.intel.bit9 import batch_query_bit9, single_query_bit9
-from app.malice.worker.intel.virustotal import (batch_query_virustotal,
-                                                single_query_virustotal)
+from modules.intel.bit9 import single_query_bit9, batch_query_bit9
+from modules.intel.virustotal import single_query_virustotal, batch_query_virustotal
+
 # from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT
 from lib.common.exceptions import MaliceDependencyError
