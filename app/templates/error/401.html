@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Unauthorized{% endblock %}
+
+
+{% block banner %}
+    <div class="container jumbotron">
+        <h1 class="text-center">
+            <small> Come back when you got some damn street cred kid!</small>
+        </h1>
+        <img src="../../static/img/rage/sad-forever-alone-face-only.png" alt="Responsive image"
+             class="img-responsive img-circle center-block"></div>
+{% endblock %}
+
+{% block content %}
+    <h1>Unauthorized</h1>
+    <br>
+    <p><a class="btn btn-primary" href="{{ url_for('malice.index') }}">home</a></p>
+{% endblock %}
