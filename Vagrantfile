@@ -34,8 +34,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Boot in headless mode
     vb.gui = false
     vb.name = "malice_dev"
-    vb.memory = 1024
-    vb.cpus = 2
+    vb.memory = 4096
+    vb.cpus = 4
 
     ## For masterless, mount your file roots file root
     config.vm.synced_folder "install/salt/roots/", "/srv/"#, type: "rsync"
