@@ -1,9 +1,16 @@
-from wtforms.validators import Required, Email, EqualTo
-from wtforms import TextField, PasswordField
-from flask.ext.wtf import Form, validators, RecaptchaField
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+__author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
 
-from app.mod_users.models import User
+from flask.ext.wtf import Form, RecaptchaField, validators
+
 from app import db
+from app.mod_users.models import User
+from wtforms import PasswordField, TextField
+from wtforms.validators import Email, EqualTo, Required
 
 
 def validate_login(form, field):

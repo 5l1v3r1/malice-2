@@ -6,15 +6,16 @@ base:
     - core
 #    - nginx
     - python
-#    - uwsgi
-#    - rethinkdb
-#    - mongodb
+    - uwsgi
+    - rethinkdb
+    - mongodb
     - redis
-#    - nodejs
-    - requirements
-#    - trid
-#    - exif
-#    - clamav
-#    - avg
+    - nodejs
+    - trid
+    - exif
+    - clamav
+    - avg
+    - comodo
+    - f-prot
 #    - eset
 #    - kaspersky

@@ -1,13 +1,24 @@
-from datetime import datetime
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+__author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+
 import hashlib
-from markdown import markdown
-import bleach
-from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import request, current_app
+from datetime import datetime
+
+from flask import current_app, request
 from flask.ext.login import UserMixin
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from app import db, login_manager
-from app.mixins import CRUDMixin
+from app.mod_users.mixins import CRUDMixin
+
+
+# from markdown import markdown
+# import bleach
 
 
 class User(UserMixin, CRUDMixin, db.Model):
@@ -20,9 +31,8 @@ class User(UserMixin, CRUDMixin, db.Model):
     location = db.Column(db.String(64))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     avatar_hash = db.Column(db.String(32))
-    # sites = db.relationship('Site', backref='site',
-    #
-    #                      lazy='dynamic')
+    # sites = db.relationship('Site', backref='site', lazy='dynamic')
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.email is not None and self.avatar_hash is None:
@@ -46,16 +56,16 @@ class User(UserMixin, CRUDMixin, db.Model):
         else:
             url = 'http://www.gravatar.com/avatar'
         hash = self.avatar_hash or \
-               hashlib.md5(self.email.encode('utf-8')).hexdigest()
+            hashlib.md5(self.email.encode('utf-8')).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
 
     # TODO : Add User Comments to Malware Samples
     # def for_moderation(self, admin=False):
-    #     if admin and self.is_admin:
-    #         return Comment.for_moderation()
-    #     return Comment.query.join(Talk, Comment.talk_id == Talk.id). \
-    #         filter(Talk.author == self).filter(Comment.approved == False)
+    # if admin and self.is_admin:
+    # return Comment.for_moderation()
+    # return Comment.query.join(Talk, Comment.talk_id == Talk.id). \
+    # filter(Talk.author == self).filter(Comment.approved == False)
 
     def get_api_token(self, expiration=300):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
@@ -90,14 +100,14 @@ class PendingEmail(db.Model):
     subject = db.Column(db.String(128))
     body_text = db.Column(db.Text())
     body_html = db.Column(db.Text())
-    talk_id = db.Column(db.Integer, db.ForeignKey('talks.id'))
+    # talk_id = db.Column(db.Integer, db.ForeignKey('talks.id'))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     @staticmethod
     def already_in_queue(email, talk):
         return PendingEmail.query \
-                   .filter(PendingEmail.talk_id == talk.id) \
-                   .filter(PendingEmail.email == email).count() > 0
+            .filter(PendingEmail.email == email).count() > 0
+        # .filter(PendingEmail.talk_id == talk.id) \
 
     @staticmethod
     def remove(email):

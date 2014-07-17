@@ -3,20 +3,19 @@ avg-reqts:
     - names:
       - libc6-i386
 
-avg-installer:
+/tmp/avg2013flx-r3118-a6926.i386.deb:
   file.managed:
-    - name: /root/avg/avg2013flx-r3118-a6926.i386.deb
-    - source: salt://avg/install_media/avg2013flx-r3118-a6926.i386.deb
+    - source: http://download.avgfree.com/filedir/inst/avg2013flx-r3118-a6926.i386.deb
+    - source_hash: md5=e27ce887fb583c19deffb03e15e55225
     - require:
       - pkg: avg-reqts
 
 avg-installation:
   cmd.run:
-    - name: dpkg -i /root/avg/avg2013flx-r3118-a6926.i386.deb
-    - unless: test -f /root/avg/avg2013flx-r3118-a6926.i386.deb
-    - user: root
+    - name: dpkg -i /tmp/avg2013flx-r3118-a6926.i386.deb
+    # - user: root
     - require:
-      - file: avg-installer
+      - file: /tmp/avg2013flx-r3118-a6926.i386.deb
 
 avgd:
   service:
@@ -24,9 +23,8 @@ avgd:
     - enable: True
     - reload: True
 
-avast-updater-sudoers:
+/etc/sudoers.d/avg_sudoers:
   file.managed:
-    - name: /etc/sudoers.d/avg_sudoers
     - source: salt://avg/avg_sudoers
     - mode: 0440
     - require:

@@ -2,19 +2,23 @@
 # -*- coding: utf-8 -*-
 
 __author__ = 'Josh Maine'
-
-import time
-from functools import update_wrapper
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+__reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/auth/views.py'
 
 import functools
 import hashlib
-from flask import jsonify, request, url_for, current_app, make_response, g
-from .rate_limit import RateLimit
-from .errors import too_many_requests, precondition_failed, not_modified
+import time
+from functools import update_wrapper
 
+from flask import current_app, g, jsonify, make_response, request, url_for
 
-from flask import request, g
 from redis import Redis
+
+from .errors import not_modified, precondition_failed, too_many_requests
+
+# from app.mod_api.rate_limit import RateLimit
 
 redis = Redis()
 
@@ -94,7 +98,7 @@ def rate_limit(limit, per, scope_func=lambda: request.remote_addr):
                     rv = f(*args, **kwargs)
                 else:
                     rv = too_many_requests('You have exceeded your request rate')
-                #rv = make_response(rv)
+                # rv = make_response(rv)
                 g.headers = {
                     'X-RateLimit-Remaining': str(limiter.remaining),
                     'X-RateLimit-Limit': str(limiter.limit),

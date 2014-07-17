@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col col-sm-8 col-lg-6">
                 <!-- Search Hash Form -->
-                <form class="form" action="{{ url_for('intel') }}" role="search" method="POST" name="search_hash">
+                <form class="form" action="{{ url_for('malice.intel') }}" role="search" method="POST" name="search_hash">
                     <div class="form-group">
                         <div class="input-group">
                             {{ form.label(type="text", class="form-control", id="inputHash", placeholder="Enter MD5 Here...") }}
@@ -39,7 +39,7 @@
                         <h4 class="modal-title" id="myModalLabel">Enter Multiple Hashes</h4>
                     </div>
                     <div class="modal-body input-group" style="width:100%">
-                        <form action="{{ url_for('intel') }}" class="" method="POST" name="search_hash_modal">
+                        <form action="{{ url_for('malice.intel') }}" class="" method="POST" name="search_hash_modal">
                             {{ form.csrf_token }}
                             <div class="form-group">
                                 {{ form.hashes(cols="30", rows="20", style="width:100%;resize:vertical",

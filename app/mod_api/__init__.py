@@ -1,16 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 __author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+__reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/auth/views.py'
 
 from flask import Blueprint, request, g
 
-api = Blueprint('api', __name__)
+mod_api = Blueprint('api', __name__)
 
-from mod_users.models import User
+from . import controller
 from . import errors
+from ..models import User
 
-
-@api.before_request
+@mod_api.before_request
 def before_api_request():
     if request.json is None:
         return errors.bad_request('Invalid JSON in body.')

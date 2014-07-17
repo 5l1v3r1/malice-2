@@ -1,3 +1,0 @@
-
-class YaraRuleDirectoryNotFound(Exception):
-    pass

@@ -1,61 +1,118 @@
-from flask import g, flash
-import rethinkdb as r
-from rethinkdb import RqlRuntimeError
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 __author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
+
+from flask import flash, g
+
+from lib.common.exceptions import MaliceDependencyError
+from lib.common.out import print_error, print_info, print_success, print_warning
+# try:
+#     import rethinkdb as r
+#     from rethinkdb import RqlRuntimeError
+# except ImportError:
+#     raise MaliceDependencyError("Unable to import rethinkdb "
+#                                 "(install with `pip install rethinkdb`)")
+try:
+    import pymongo
+except ImportError:
+    raise MaliceDependencyError("Unable to import pymongo "
+                                "(install with `pip install pymongo`)")
+
+# def db_setup():
+#     connection = r.connect(host='localhost', port=28015)
+#     try:
+#         r.db_create('file').run(connection)
+#         r.db('file').table_create('files', primary_key='md5').run(connection)
+#         print 'file Database setup completed'
+#         r.db_create('session').run(connection)
+#         r.db('session').table_create('sessions', primary_key='md5').run(connection)
+#         print 'session Database setup completed'
+#         r.db_create('sample').run(connection)
+#         r.db('sample').table_create('samples', primary_key='md5').run(connection)
+#         print 'sample Database setup completed'
+#     except RqlRuntimeError:
+#         print 'Database already exists.'
+#     finally:
+#         print
+#         connection.close()
 
 
 def db_setup():
-    connection = r.connect(host='localhost', port=28015)
+    client = pymongo.MongoClient('localhost', 27017)
+
+    db = client['malice']
+
     try:
-        r.db_create('file').run(connection)
-        r.db('file').table_create('files', primary_key='md5').run(connection)
-        print 'file Database setup completed'
-        r.db_create('session').run(connection)
-        r.db('session').table_create('sessions', primary_key='md5').run(connection)
-        print 'session Database setup completed'
-        r.db_create('sample').run(connection)
-        r.db('sample').table_create('samples', primary_key='md5').run(connection)
-        print 'sample Database setup completed'
-    except RqlRuntimeError:
-        print 'Database already exists.'
+        db.create_collection('files')
+        print_info('files database setup completed')
+    except pymongo.errors.CollectionInvalid as e:
+        print_warning(e)
     finally:
-        print
-        connection.close()
+        client.disconnect()
+
+    # try:
+    #     db.create_collection('session')
+    #     print_info('session database setup completed')
+    # except pymongo.errors.CollectionInvalid as e:
+    #     print_warning(e)
+    # finally:
+    #     client.disconnect()
+
+    try:
+        db.create_collection('samples')
+        print_info('samples database setup completed')
+    except pymongo.errors.CollectionInvalid as e:
+        print_warning(e)
+    finally:
+        client.disconnect()
 
 
 # TODO: FIX THIS !!!!!
 def db_insert(file_data):
-    if is_hash_in_db(file_data['md5']):
-        r.table('files').get(file_data['md5']).update(file_data).run(g.rdb_conn)
-        # r.table('sessions').get(file_data['md5']).update(file_data).run(g.rdb_sess_conn)
+    if is_hash_in_db(file_data['_id']):
+        # g.conn.files.update({'_id': file_data['_id']}, file_data)
+        g.conn.files.update({'_id': file_data['_id']}, {"$set": file_data}, upsert=False, multi=False)
+        # r.table('files').get(file_data['_id']).update(file_data).run(g.rdb_conn)
+        # r.table('sessions').get(file_data['_id']).update(file_data).run(g.rdb_sess_conn)
     else:
-        r.table('files').insert(file_data).run(g.rdb_conn)
+        g.conn.files.insert(file_data)
+        # r.table('files').insert(file_data).run(g.rdb_conn)
         # r.table('sessions').insert(file_data).run(g.rdb_sess_conn)
-    # TODO : Add flashing back in for files that weren't found.
+        # TODO : Add flashing back in for files that weren't found.
 
 
 def is_hash_in_db(this_hash):
-    return r.table('files').get(this_hash.upper()).run(g.rdb_conn)
+    return g.conn.files.find_one({'_id': this_hash})
 
 
 def insert_in_samples_db(sample):
-    r.table('samples').insert(sample).run(g.rdb_sample_conn)
+    try:
+        g.conn.samples.insert(sample)
+    except pymongo.errors.DuplicateKeyError:
+        pass
+    # r.table('samples').insert(sample).run(g.rdb_sample_conn)
 
 
 def update_sample_in_db(sample):
-    r.table('samples').update(sample).run(g.rdb_sample_conn)
+    g.conn.samples.update({'_id': sample['_id']}, sample)
+    # r.table('samples').update(sample).run(g.rdb_sample_conn)
 
 
 def destroy_db():
+    client = pymongo.MongoClient('localhost', 27017)
     try:
-        connection = r.connect(host='localhost', port=28015)
-        r.db_drop('file').run(connection)
-        r.db_drop('session').run(connection)
-        r.db_drop('sample').run(connection)
-        print "Databases destroyed...you monster!"
-        print
-    except RqlRuntimeError:
+        db = client.malice
+        db.drop_collection('files')
+        # db.drop_collection('session')
+        db.drop_collection('samples')
+        print_success("Databases destroyed...you monster!")
+        print_info('All containers dropped from database')
+    except pymongo.errors.PyMongoError as e:
         print 'Database cannot be killed ... as was prophesized!'
+        print_error(e)
     finally:
-        connection.close()
+        client.disconnect()

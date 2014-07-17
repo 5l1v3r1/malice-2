@@ -1,16 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 __author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
 
-import sys
 import json
 import re
+import sys
+
 import requests
 
-
+# TODO possible use http://www.telize.com instead ?
 def valid_ip(ip):
-    pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+    pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" \
+              r"\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" \
+              r"\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" \
+              r"\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
     return re.match(pattern, ip)
 
 

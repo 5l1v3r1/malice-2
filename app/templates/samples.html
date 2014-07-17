@@ -23,7 +23,7 @@
             {% for sample in samples %}
                 <tr>
                     <td>{{ sample.filename }}</td>
-                    <td><a href="{{ url_for('sample', id=sample.md5) }}">{{ sample.md5 }}</a></td>
+                    <td><a href="{{ url_for('malice.sample', id=sample.md5) }}">{{ sample.md5 }}</a></td>
                     <td>
                         <script>
                             document.write(moment("{{ sample.upload_date }}").format("MM-DD-YYYY HH:mm:ss"));
@@ -47,15 +47,16 @@
         </table>
     </div>
     <div class="col-md-12 text-center">
+        {% if pagination %}
         <ul class="pagination">
             <li{% if not pagination.prev_page %} class="disabled"{% endif %}><a
                     {% if pagination.prev_page %}
-                        href="{{ url_for('samples', page=pagination.prev_page) }}"
+                        href="{{ url_for('malice.samples', page=pagination.prev_page) }}"
                     {% endif %}>Prev</a>
             </li>
             {% for page in pagination.pages %}
-                {% set url_paged = url_for('samples', page=page) %}
-                {% set url_not_paged = url_for('samples') %}
+                {% set url_paged = url_for('malice.samples', page=page) %}
+                {% set url_not_paged = url_for('malice.samples') %}
                 <li {% if page == pagination.current_page %}class="active"{% endif %}><a
                         {% if page != pagination.current_page %}href="
                                 {% if page == 1 %}
@@ -70,10 +71,11 @@
             <li {% if not pagination.next_page %}
                 class="disabled"
             {% endif %}><a{% if pagination.next_page %}
-                href="{{ url_for('samples', page=pagination.next_page) }}"
+                href="{{ url_for('malice.samples', page=pagination.next_page) }}"
             {% endif %}>Next</a>
             </li>
         </ul>
+        {% endif %}
     </div>
 
     <script type="text/javascript"

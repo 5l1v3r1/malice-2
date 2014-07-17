@@ -1,44 +1,66 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__author__ = 'Josh Maine'
 
-from .decorators import get_view_rate_limit, ratelimit
-from werkzeug.utils import secure_filename
-from flask import request, g, jsonify
-from flask_wtf.csrf import CsrfProtect
-# TODO : FIX THIS!
-from . import mod_api as api
+# ███╗   ███╗ █████╗ ██╗     ██╗ ██████╗███████╗
+# ████╗ ████║██╔══██╗██║     ██║██╔════╝██╔════╝
+# ██╔████╔██║███████║██║     ██║██║     █████╗
+# ██║╚██╔╝██║██╔══██║██║     ██║██║     ██╔══╝
+# ██║ ╚═╝ ██║██║  ██║███████╗██║╚██████╗███████╗
+# ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝ ╚═════╝╚══════╝
+
+__author__ = 'Josh Maine'
+__copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
+                   This file is part of Malice - https://github.com/blacktop/malice
+                   See the file 'docs/LICENSE' for copying permission.'''
 
 import hashlib
-import rethinkdb as r
 
-from app.scans import single_hash_search, batch_search_hash, scan_upload
-from app.views import update_upload_file_metadata
-from lib.common.utils import parse_hash_list, list_to_string
-from lib.core.database import insert_in_samples_db, update_sample_in_db, is_hash_in_db
+from flask import jsonify, request
+from werkzeug.utils import secure_filename
 
+from app.malice.controller import update_upload_file_metadata
+from app.malice.scans import batch_search_hash, scan_upload, single_hash_search
+from lib.common.exceptions import MaliceDependencyError
+from lib.common.utils import list_to_string, parse_hash_list
+from lib.core.database import (insert_in_samples_db, is_hash_in_db,
+                               update_sample_in_db)
+
+from . import mod_api as api
+# from ..models import User
+from .decorators import get_view_rate_limit, ratelimit
+
+try:
+    import rethinkdb as r
+except ImportError:
+    r = None
+    raise MaliceDependencyError("Unable to import rethinkdb."
+                                "(install with `pip install rethinkdb`)")
 try:
     import pydeep
 except ImportError:
-    pass
+    pydeep = None
+    raise MaliceDependencyError("Unable to import pydeep "
+                                "(install with `pip install pydeep`)")
 try:
     import magic
 except ImportError:
-    pass
+    magic = None
+    raise MaliceDependencyError("Unable to import magic "
+                                "(install with `pip install magic`)")
 
-# csrf = CsrfProtect(app)
 
 @api.route('/search/file', methods=['GET'])
 @ratelimit(limit=300, per=60 * 15)
 def search_view():
     arg_hash = request.args['md5']
-    hash = parse_hash_list((arg_hash))
-    if hash:
-        found = single_hash_search(hash)
+    this_hash = parse_hash_list(arg_hash)
+    if this_hash:
+        found = single_hash_search(this_hash)
         if found:
             return jsonify(found), 200
         else:
-            return jsonify(dict(error='Not a valid API end point.', response=404)), 404
+            return jsonify(dict(error='Not a valid API end point.',
+                                response=404)), 404
     else:
         return 'Missing Parameters', 400
 
@@ -55,9 +77,11 @@ def batch_search_view():
             # return json.dumps(found)
             # return jsonify(json.dumps(found))
         else:
-            return jsonify(dict(error='Not a valid API end point.', response=404)), 404
+            return jsonify(dict(error='Not a valid API end point.',
+                                response=404)), 404
     else:
         return jsonify(dict(error='Missing Parameters', response=400)), 400
+
 
 # @csrf.exempt
 @api.route('/file/scan', methods=['POST'])
@@ -91,9 +115,11 @@ def upload_view():
         if found:
             return jsonify(found)
         else:
-            return jsonify(dict(error='Not a valid API end point.', response=404)), 404
+            return jsonify(dict(error='Not a valid API end point.',
+                                response=404)), 404
     else:
         return jsonify(dict(error='Missing Parameters', response=400)), 400
+
 
 @api.route('/file/report', methods=['GET'])
 @ratelimit(limit=300, per=60 * 15)
