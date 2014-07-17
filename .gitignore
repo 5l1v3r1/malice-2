@@ -108,6 +108,7 @@ Icon
 # Covers Configuration Files
 ##########################################
 *.cfg
+.env
 
 # Covers bower files
 ####################
@@ -118,17 +119,21 @@ drafts/
 
 # user database
 *.db
+*.sqlite
 
 # file hash bloomfilter
 *.bloom
+
+# Coverage folder
+cover/
 
 # AV Binaries/Licenses
 install-media/
 install_media/
 licenses/
-avast/
-avira/
-bitdefender/
-eset/
-kaspersky/
-sophos/
+install/salt/roots/salt/avast/
+install/salt/roots/salt/avira/
+install/salt/roots/salt/bitdefender/
+install/salt/roots/salt/eset/
+install/salt/roots/salt/kaspersky/
+install/salt/roots/salt/sophos/
