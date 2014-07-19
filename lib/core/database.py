@@ -73,20 +73,27 @@ def db_setup():
 
 # TODO: FIX THIS !!!!!
 def db_insert(file_data):
-    if is_hash_in_db(file_data['_id']):
+    if is_hash_in_db(file_data['md5']):
         # g.conn.files.update({'_id': file_data['_id']}, file_data)
-        g.conn.files.update({'_id': file_data['_id']}, {"$set": file_data}, upsert=False, multi=False)
+        try:
+            g.conn.files.update({'md5': file_data['md5']}, file_data, upsert=True, multi=False)
+            # g.conn.files.update({'_id': file_data['_id']}, {"$set": {'intel': file_data}}, upsert=True, multi=False)
+        except pymongo.errors.OperationFailure as e:
+            print_error(e)
         # r.table('files').get(file_data['_id']).update(file_data).run(g.rdb_conn)
         # r.table('sessions').get(file_data['_id']).update(file_data).run(g.rdb_sess_conn)
     else:
-        g.conn.files.insert(file_data)
+        try:
+            g.conn.files.insert(file_data)
+        except pymongo.errors.OperationFailure as e:
+            print_error(e)
         # r.table('files').insert(file_data).run(g.rdb_conn)
         # r.table('sessions').insert(file_data).run(g.rdb_sess_conn)
         # TODO : Add flashing back in for files that weren't found.
 
 
 def is_hash_in_db(this_hash):
-    return g.conn.files.find_one({'_id': this_hash})
+    return g.conn.files.find_one({'md5': this_hash})
 
 
 def insert_in_samples_db(sample):
@@ -98,9 +105,26 @@ def insert_in_samples_db(sample):
 
 
 def update_sample_in_db(sample):
-    g.conn.samples.update({'_id': sample['_id']}, sample)
+    g.conn.samples.update({'md5': sample['md5']}, sample)
     # r.table('samples').update(sample).run(g.rdb_sample_conn)
 
+
+def sample_contains_module(sample_id, module_category, is_module_name):
+    sample = g.conn.files.find_one({'md5': sample_id})
+    return is_module_name in ','.join(module.keys()[0] for module in sample[module_category])
+
+def insert_sample_module(sample_id, module_category, module_name, data):
+    if sample_contains_module(sample_id, module_name, module_category):
+        update_sample_module(sample_id, module_category, module_name, data)
+    else:
+        g.conn.files.update({'md5': sample_id}, {'$addToSet': {module_category: data}}, upsert=True)
+
+def update_sample_module(sample_id, module_category, module_name, data):
+    found = is_hash_in_db(sample_id)
+    for i, module in enumerate(found[module_category]):
+        if module_name in module.keys()[0]:
+            found[module_category][i] = data
+    g.conn.files.save(found)
 
 def destroy_db():
     client = pymongo.MongoClient('localhost', 27017)

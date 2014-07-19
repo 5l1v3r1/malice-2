@@ -224,14 +224,14 @@ def scan_upload(file_stream, sample):
     exif_scan(file_stream, sample['md5'])
     print_item("Scanning with TrID now.", 1)
     trid_scan(file_stream, sample['md5'])
-    if file_is_pe(file_stream):
-        #: Run PE Analysis
+    # if file_is_pe(file_stream):
+    if True:
         print_item("Scanning with PE Analysis now.", 1)
         pe_scan(file_stream, sample['md5'])
-    if file_is_pdf(file_stream):
-        #: Run PDF Analysis
-        pdfparser_scan(file_stream, sample['md5'])
-        pdfid_scan(file_stream, sample['md5'])
+    # if file_is_pdf(file_stream):
+    #     #: Run PDF Analysis
+    #     pdfparser_scan(file_stream, sample['md5'])
+    #     pdfid_scan(file_stream, sample['md5'])
     #: Run Intel workers
     print_item("Searching for Intel now.", 1)
     single_hash_search(sample['md5'])
@@ -538,50 +538,6 @@ def pe_scan(this_file, file_md5):
     else:
         print_error("PE Analysis Failed - "
                     "This file might not be a PE Executable.")
-
-
-def file_is_pdf(this_file):
-    return False
-
-
-def file_is_pe(this_file):
-    return True
-
-
-def pdfparser_scan(this_file, file_md5):
-    pass
-    # this_pdf = pdfparser.PdfParser(this_file)
-    # if this_pdf:
-    #     key, pe_results = this_pdf.scan()
-    #     found = is_hash_in_db(file_md5)
-    #     if found:
-    #         found[key] = pe_results
-    #         data = found
-    #     else:
-    #         data = dict(md5=file_md5)
-    #         data[key] = pe_results
-    #     db_insert(data)
-    #     return data
-    # else:
-    #     pass
-
-
-def pdfid_scan(this_file, file_md5):
-    pass
-    # this_pdfid = pdfid.PDFiD(this_file)
-    # if this_pdfid:
-    #     key, pdfid_results = this_pdfid.scan()
-    #     found = is_hash_in_db(file_md5)
-    #     if found:
-    #         found[key] = pdfid_results
-    #         data = found
-    #     else:
-    #         data = dict(md5=file_md5)
-    #         data[key] = pdfid_results
-    #     db_insert(data)
-    #     return data
-    # else:
-    #     pass
 
 
 # def run_metascan(this_file, file_md5):

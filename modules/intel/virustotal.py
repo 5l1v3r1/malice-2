@@ -109,7 +109,7 @@ def single_query_virustotal(new_hash):
             data['md5'] = vt_result['resource'].upper()
         # vt_result['timestamp'] = r.now()  # datetime.utcnow()
         vt_result['timestamp'] = datetime.datetime.utcnow()
-        data['VirusTotal'] = vt_result
+        data['intel'] = [{'VirusTotal': vt_result}]
         db_insert(data)
         data.clear()
     else:

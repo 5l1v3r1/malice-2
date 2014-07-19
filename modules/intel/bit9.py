@@ -108,14 +108,14 @@ def single_query_bit9(new_hash):
         hash_info['isfound'] = True
         # hash_info['timestamp'] = r.now()  # datetime.utcnow()
         hash_info['timestamp'] = datetime.datetime.utcnow(),
-        data['Bit9'] = hash_info
+        data['intel'] = [{'Bit9': hash_info}]
     elif result['response_code'] == 404:
         data = {'_id': new_hash.upper(),
                 'md5': new_hash.upper(),
                 # 'Bit9': {'timestamp': r.now(),  # datetime.utcnow(),
-                'Bit9': {'timestamp': datetime.datetime.utcnow(),
-                         'isfound': False,
-                         'requestmd5': new_hash.upper()}
+                'intel': [{'Bit9': dict(timestamp=datetime.datetime.utcnow(),
+                                        isfound=False,
+                                        requestmd5=new_hash.upper())}]
                 }
     db_insert(data)
     data.clear()
