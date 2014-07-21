@@ -3,8 +3,8 @@
 malice
 ======
 <!-- [![Build Status](https://drone.io/github.com/blacktop/malice/status.png)](https://drone.io/github.com/blacktop/malice/latest) -->
-[![Build Status](https://travis-ci.org/blacktop/malice.svg?branch=master)](https://travis-ci.org/blacktop/malice)
-[![Code Health](https://landscape.io/github/blacktop/malice/master/landscape.png)](https://landscape.io/github/blacktop/malice/master)
+[![Build Status](https://travis-ci.org/blacktop/malice.svg?branch=mongo)](https://travis-ci.org/blacktop/malice)
+[![Code Health](https://landscape.io/github/blacktop/malice/mongo/landscape.png)](https://landscape.io/github/blacktop/malice/mongo)
 [![Coverage Status](https://coveralls.io/repos/blacktop/malice/badge.png)](https://coveralls.io/r/blacktop/malice)
 [![Support blacktop via Gittip](http://img.shields.io/gittip/blacktop.svg)](https://www.gittip.com/blacktop/)
 
