@@ -18,6 +18,7 @@ from flask.ext.login import LoginManager
 from flask.ext.mail import Mail
 # from flask.ext.pagedown import PageDown
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask_debugtoolbar import DebugToolbarExtension
 
 from lib.common.logo import logo
 from lib.common.exceptions import MaliceDependencyError
@@ -58,6 +59,7 @@ def create_app(config):
         init_logging('info')
     else:
         init_logging('debug')
+        toolbar = DebugToolbarExtension(app)
     #log.setLevel(logging.DEBUG)
     init_modules()
     # Init All Flask Add-ons
@@ -65,6 +67,7 @@ def create_app(config):
     #pagedown.init_app(app)
     db.init_app(app)
     mail.init_app(app)
+    # DebugToolbarExtension.init_app(app)
     if app.config['USE_LDAP'] == 'yes':
         # LDAP Login
         # TODO : Test out LDAP

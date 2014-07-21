@@ -110,7 +110,7 @@ def single_query_virustotal(new_hash):
             data['md5'] = vt_result['resource'].upper()
         # vt_result['timestamp'] = r.now()  # datetime.utcnow()
         vt_result['timestamp'] = datetime.datetime.utcnow()
-        vt_result['module'] = 'virustotal'
+        vt_result['module_id'] = 'virustotal'
         data['intel'].append(vt_result)
         db_insert('files', data)
         data.clear()

@@ -70,3 +70,4 @@ bleach
 markdown
 selenium
 pymongo
+flask-debugtoolbar

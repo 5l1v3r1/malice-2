@@ -4,7 +4,8 @@
     <div class="container jumbotron myjumbo" style="background: linear-gradient(to right, #3e4957 , #22303e)">
         <h1>
             &lt;<img src="../static/img/bit9-590x254.png" class="img-rounded" style="height:80px;"/>
-            <small> Hash Search + VirusTotal</small> &gt;
+            <small> Hash Search + VirusTotal</small>
+            &gt;
         </h1>
     </div>
 {% endblock %}
@@ -26,29 +27,29 @@
             {% for search in searches %}
                 <tr>
                     <!-- Bit9 -->
-                    {% if search.module.bit9 %}
-                        {% if search.isfound %}
-                            {% if search.peheadermetadata.originalname %}
-                                <td id="filename">{{ search.peheadermetadata.originalname.lower() }}</td>
-                            {% elif search.peheadermetadata.productname %}
-                                <td id="filename">{{ search.peheadermetadata.productname }}</td>
+                    {% if search.bit9 %}
+                        {% if search.bit9.isfound %}
+                            {% if search.bit9.peheadermetadata.originalname %}
+                                <td id="filename">{{ search.bit9.peheadermetadata.originalname.lower() }}</td>
+                            {% elif search.bit9.peheadermetadata.productname %}
+                                <td id="filename">{{ search.bit9.peheadermetadata.productname }}</td>
                             {% else %}
-                                <td id="filename">{{ search.fileinfo.firstseenname | tail }}</td>
+                                <td id="filename">{{ search.bit9.fileinfo.firstseenname | tail }}</td>
                             {% endif %}
-                            <td id="description">{{ search.peheadermetadata.description }}</td>
+                            <td id="description">{{ search.bit9.peheadermetadata.description }}</td>
                         {% else %} <!-- Hash Not Found in Bit9 -->
                             <td>{{ '' }}</td>
                             <td>{{ '' }}</td>
                         {% endif %}
-                        <td id="filehash">{{ search.md5 }}</td>
-                        {% if search.Bit9 and search.isfound %}
+                        <td id="filehash">{{ search.bit9.fileinfo.md5 }}</td>
+                        {% if search.bit9 and search.bit9.isfound %}
                             <td id="filetrust"><span class="label label-success" id="label_span">
                                     <span class="glyphicon glyphicon-ok" id="glyph_span"></span>&nbsp;&nbsp;
-                                    {{ search.trust }}
+                                    {{ search.bit9.trust }}
                                 </span></td>
                             <td id="filethreat"><span class="label label-success" id="label_span">
                                 <span class="glyphicon glyphicon-ok" id="glyph_span"></span>&nbsp;&nbsp;
-                                    {{ search.threat }}
+                                    {{ search.bit9.threat }}
                                 </span></td>
                         {% else %} <!-- Hash Not Found in Bit9 -->
                             <td id="filetrust"><span class="label label-default" id="label_span">
@@ -62,12 +63,12 @@
                         {% endif %}
                     {% endif %}
                     <!-- VirusTotal -->
-                    {% if search.VirusTotal %}
-                        {% if search.VirusTotal.response_code %}
+                    {% if virustotal %}
+                        {% if virustotal.response_code %}
                             <td id="virustotal">
-                                <a href="{{ search.VirusTotal.permalink }}" role="button"
+                                <a href="{{ virustotal.permalink }}" role="button"
                                    class="btn btn-success btn-xs" id="vt_button">
-                                    {{ (search.VirusTotal.positives/search.VirusTotal.total) | percent | safe }}
+                                    {{ (virustotal.positives/virustotal.total) | percent | safe }}
                                 </a></td>
                         {% else %} <!-- Hash Not Found in VirusTotal -->
                             <td id="virustotal"><span class="label label-default" id="label_span">

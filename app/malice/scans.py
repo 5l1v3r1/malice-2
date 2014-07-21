@@ -241,20 +241,20 @@ def scan_upload(file_stream, sample):
 
 
 def single_hash_search(this_hash):
-    found = is_hash_in_db('files', this_hash)
+    found = is_hash_in_db('files', this_hash.upper())
     if not found:
         #: Run all Intel Workers on hash
         # TODO: Make these async with .delay(this_hash)
         single_query_bit9(this_hash)
-        single_query_virustotal(this_hash)
+        # single_query_virustotal(this_hash)
         return is_hash_in_db('files', this_hash)
     else:  #: Fill in the blanks
         # if 'bit9' not in list(found.keys()):
-        modules = [module['module'] for module in found['intel']]
+        modules = [key for module in found['intel'] for key in module.keys() ]
         if 'bit9' not in modules:
             single_query_bit9(this_hash)
-        if 'virustotal' not in modules:
-            single_query_virustotal(this_hash)
+        # if 'virustotal' not in modules:
+        #     single_query_virustotal(this_hash)
         if found:
             # TODO: handle case where all fields are filled out
             # TODO (cont): (session not updating on first submission)
@@ -270,10 +270,10 @@ def batch_search_hash(hash_list):
     search_results = []
     #: Check DB for hashes, if found do not query API
     for a_hash in hash_list:
-        found = is_hash_in_db(a_hash)
+        found = is_hash_in_db('files', a_hash)
         if found:
             search_results.append(found)
-            insert_in_samples_db(found)
+            # insert_in_samples_db(found)
             # r.table('sessions').insert(found).run(g.rdb_sess_conn)
         else:
             new_hash_list.append(a_hash)
@@ -283,7 +283,7 @@ def batch_search_hash(hash_list):
         # batch_query_bit9.delay(new_hash_list)
         batch_query_virustotal(new_hash_list)
         for a_new_hash in new_hash_list:
-            found = is_hash_in_db(a_new_hash)
+            found = is_hash_in_db('files', a_new_hash)
             if found:
                 search_results.append(found)
         return search_results

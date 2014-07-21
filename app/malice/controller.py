@@ -131,7 +131,8 @@ def intel():
     # selection = list(r.table('sessions').run(g.rdb_sess_conn))
     # print selection
     # r.table('sessions').delete().run(g.rdb_sess_conn)
-    intel_searches = [result['intel'] for result in search_results]
+    if search_results:
+        intel_searches = [intel_result for result in search_results for intel_result in result['intel']]
     return render_template('intel.html', form=form, searches=intel_searches, my_github=github)
 
 

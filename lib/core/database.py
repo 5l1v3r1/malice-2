@@ -57,7 +57,7 @@ def db_insert(collection, file_data):
 
 
 def is_hash_in_db(collection, this_hash):
-    return g.mongo[collection].find_one({'md5': this_hash})
+    return g.mongo[collection].find_one({'md5': this_hash.upper()})
 
 
 def insert_in_db(collection, sample):
