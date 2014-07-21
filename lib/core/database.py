@@ -43,7 +43,7 @@ def db_insert(collection, file_data):
     if is_hash_in_db(collection, file_data['md5']):
         # g.mongo.files.update({'_id': file_data['_id']}, file_data)
         try:
-            g.mongo.files.update({'md5': file_data['md5']},
+            g.mongo[collection].update({'md5': file_data['md5']},
                                 file_data,
                                 upsert=True,
                                 multi=False)
@@ -51,7 +51,7 @@ def db_insert(collection, file_data):
             print_error(e)
     else:
         try:
-            g.mongo.files.insert(file_data)
+            g.mongo[collection].insert(file_data)
         except pymongo.errors.OperationFailure as e:
             print_error(e)
 

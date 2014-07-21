@@ -81,21 +81,22 @@ def batch_query_virustotal(new_hash_list):
             for result in vt_results:
                 if result['response_code']:
                     # print "Evilness: %d" % result['positives']
-                    data['_id'] = result['md5'].upper()
                     data['md5'] = result['md5'].upper()
+                    data['sha1'] = result['sha1'].upper()
+                    data['sha256'] = result['sha256'].upper()
                 else:
-                    data['_id'] = result['resource'].upper()
                     data['md5'] = result['resource'].upper()
                 # result['timestamp'] = r.now()  # datetime.utcnow()
                 result['timestamp'] = datetime.datetime.utcnow()
-                data['VirusTotal'] = result
+                data['module'] = 'virustotal'
+                data['intel'].append(result)
                 db_insert(data)
                 data.clear()
 
 
 # @job('low', connection=Redis(), timeout=50)
 def single_query_virustotal(new_hash):
-    data = {}
+    data = dict(intel=[], av=[], file=[])
     response = vt.get_file_report(new_hash)
     # error = vt.handle_response_status_code(response)
     if response['response_code'] == 200:
@@ -109,10 +110,9 @@ def single_query_virustotal(new_hash):
             data['md5'] = vt_result['resource'].upper()
         # vt_result['timestamp'] = r.now()  # datetime.utcnow()
         vt_result['timestamp'] = datetime.datetime.utcnow()
-        data['intel'] = [{'virustotal': vt_result}]
-        # data['intel'][-1].setdefault('av_results', [])\
-        #     .append({'virustotal': vt_result})
-        db_insert(data)
+        vt_result['module'] = 'virustotal'
+        data['intel'].append(vt_result)
+        db_insert('files', data)
         data.clear()
     else:
         flash(response['error'])

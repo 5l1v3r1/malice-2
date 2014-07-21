@@ -114,24 +114,25 @@ def index():
 def intel():
     # TODO : Handle edge case where VT didn't return anything, but when you requery it only pulls cached results
     form = SearchForm(request.form)
-    selection = []
+    search_results = []
     if form.validate_on_submit():
         #: Check if User is using Single Hash Search
         if form.label.data:
             user_hash = parse_hash_list(form.label.data)
-            selection.append(single_hash_search(user_hash))
+            search_results.append(single_hash_search(user_hash))
             #: Check if User is using Batch Hash Search
         if form.hashes.data:
             hash_list = parse_hash_list(form.hashes.data)
             if isinstance(hash_list, list):
                 selection = batch_search_hash(hash_list)
             else:
-                selection.append(single_hash_search(hash_list))
+                search_results.append(single_hash_search(hash_list))
                 # return redirect(url_for('intel'))
     # selection = list(r.table('sessions').run(g.rdb_sess_conn))
     # print selection
     # r.table('sessions').delete().run(g.rdb_sess_conn)
-    return render_template('intel.html', form=form, searchs=selection, my_github=github)
+    intel_searches = [result['intel'] for result in search_results]
+    return render_template('intel.html', form=form, searches=intel_searches, my_github=github)
 
 
 def update_upload_file_metadata(sample):
