@@ -102,14 +102,16 @@ def single_query_virustotal(new_hash):
         vt_result = response['results']
         if vt_result['response_code']:
             # print "Evilness: %d" % vt_result['positives']
-            data['_id'] = vt_result['md5'].upper()
             data['md5'] = vt_result['md5'].upper()
+            data['sha1'] = vt_result['sha1'].upper()
+            data['sha256'] = vt_result['sha256'].upper()
         else:
-            data['_id'] = vt_result['resource'].upper()
             data['md5'] = vt_result['resource'].upper()
         # vt_result['timestamp'] = r.now()  # datetime.utcnow()
         vt_result['timestamp'] = datetime.datetime.utcnow()
-        data['intel'] = [{'VirusTotal': vt_result}]
+        data['intel'] = [{'virustotal': vt_result}]
+        # data['intel'][-1].setdefault('av_results', [])\
+        #     .append({'virustotal': vt_result})
         db_insert(data)
         data.clear()
     else:

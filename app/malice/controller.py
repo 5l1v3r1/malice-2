@@ -70,7 +70,7 @@ github = 'https://github.com/blacktop/malice' #current_app.config['GITHUB']
 @malice.before_request
 def before_request():
     try:
-        g.conn = pymongo.MongoClient('localhost', 27017)['malice']
+        g.mongo = pymongo.MongoClient('localhost', 27017)['malice']
         # g.rdb_conn = r.connect(host='localhost', port=28015, db='file')
         # g.rdb_sess_conn = r.connect(host='localhost', port=28015, db='session')
         # g.rdb_sample_conn = r.connect(host='localhost', port=28015, db='sample')
@@ -84,7 +84,7 @@ def before_request():
 def teardown_request(exception):
     try:
         print_warning('Fix Conn Teardown in malice/controller.py')
-        # g.conn.disconnect()
+        g.mongo.connection.close()
         # g.rdb_conn.close()
         # g.rdb_sess_conn.close()
         # g.rdb_sample_conn.close()

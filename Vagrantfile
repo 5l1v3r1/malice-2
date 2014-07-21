@@ -12,8 +12,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # For Flask App
   config.vm.network "forwarded_port", guest: 5000, host: 5000, auto_correct: true
-  # For RethinkDB Admin Web Interface
-  config.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
+  # For MongoDB
+  config.vm.network "forwarded_port", guest: 27017, host: 27017, auto_correct: true
 
   config.vm.provider :aws do |aws, override|
     aws.access_key_id = "YOUR KEY"

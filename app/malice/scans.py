@@ -241,7 +241,7 @@ def scan_upload(file_stream, sample):
 
 
 def single_hash_search(this_hash):
-    found = is_hash_in_db(this_hash)
+    found = is_hash_in_db('files', this_hash)
     if not found:
         #: Run all Intel Workers on hash
         # TODO: Make these async with .delay(this_hash)
@@ -249,9 +249,11 @@ def single_hash_search(this_hash):
         single_query_virustotal(this_hash)
         return is_hash_in_db(this_hash)
     else:  #: Fill in the blanks
-        if 'Bit9' not in list(found.keys()):
+        # if 'bit9' not in list(found.keys()):
+        modules = [module.keys()[0] for module in found['intel']]
+        if 'bit9' not in modules:
             single_query_bit9(this_hash)
-        if 'VirusTotal' not in list(found.keys()):
+        if 'virustotal' not in modules:
             single_query_virustotal(this_hash)
         if found:
             # TODO: handle case where all fields are filled out

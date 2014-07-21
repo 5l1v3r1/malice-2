@@ -99,23 +99,22 @@ def batch_query_bit9(new_hash_list):
 
 # @job('low', connection=Redis(), timeout=50)
 def single_query_bit9(new_hash):
-    data = {}
+    data = dict(md5='md5', intel=[], av=[], file=[])
     result = bit9.lookup_hashinfo(new_hash)
     if result['response_code'] == 200 and result['results']['hashinfo']:
         hash_info = result['results']['hashinfo']
-        data['_id'] = hash_info['fileinfo']['md5'].upper()
+        # data['_id'] = hash_info['fileinfo']['md5'].upper()
         data['md5'] = hash_info['fileinfo']['md5'].upper()
         hash_info['isfound'] = True
         # hash_info['timestamp'] = r.now()  # datetime.utcnow()
-        hash_info['timestamp'] = datetime.datetime.utcnow(),
-        data['intel'] = [{'Bit9': hash_info}]
+        hash_info['timestamp'] = datetime.datetime.utcnow()
+        hash_info['module'] = 'bit9'
+        data['intel'].append(hash_info)
     elif result['response_code'] == 404:
-        data = {'_id': new_hash.upper(),
-                'md5': new_hash.upper(),
-                # 'Bit9': {'timestamp': r.now(),  # datetime.utcnow(),
-                'intel': [{'Bit9': dict(timestamp=datetime.datetime.utcnow(),
-                                        isfound=False,
-                                        requestmd5=new_hash.upper())}]
-                }
-    db_insert(data)
+        data['md5'] = new_hash.upper()
+        data['intel'].append(dict(module='bit9',
+                                  timestamp=datetime.datetime.utcnow(),
+                                  isfound=False,
+                                  requestmd5=new_hash.upper()))
+    db_insert('files', data)
     data.clear()
