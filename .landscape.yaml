@@ -1,0 +1,8 @@
+autodetect: yes
+ignore-paths:
+    - data
+    - docs
+    - logs
+    - install
+    - app/malice/worker
+    - lib/scanworker
