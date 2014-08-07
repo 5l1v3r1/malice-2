@@ -6,14 +6,11 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
 
+import datetime
 import hashlib
 import logging
 import os
-import datetime
-# from dateutil import parser
-from flask import current_app, flash, g
 
-# from api.metascan_api import MetaScan
 from app.malice.worker.av.avast.scanner import avast_engine
 from app.malice.worker.av.avg import scanner as avg_engine
 from app.malice.worker.av.avira.scanner import avira_engine
@@ -25,16 +22,22 @@ from app.malice.worker.av.sophos.scanner import sophos_engine
 from app.malice.worker.file.exe.pe import pe
 from app.malice.worker.file.exif import exif
 from app.malice.worker.file.trid import trid
-from modules.intel.bit9 import single_query_bit9, batch_query_bit9
-from modules.intel.virustotal import single_query_virustotal, batch_query_virustotal
-
-# from lib.common.config import Config
+from flask import current_app, flash, g
 from lib.common.constants import MALICE_ROOT
 from lib.common.exceptions import MaliceDependencyError
 from lib.common.out import *
-from lib.core.database import db_insert, is_hash_in_db, insert_in_samples_db
+from lib.core.database import db_insert, insert_in_samples_db, is_hash_in_db
 from lib.scanworker.file import PickleableFileSample
 from modules import av, file, intel
+from modules.intel.bit9 import batch_query_bit9, single_query_bit9
+from modules.intel.virustotal import (batch_query_virustotal,
+                                      single_query_virustotal)
+
+# from dateutil import parser
+
+# from api.metascan_api import MetaScan
+
+# from lib.common.config import Config
 
 # from app.malice.worker.av.f_prot import scanner as f_prot_engine
 # from app.malice.worker.file.doc.pdf import pdfparser, pdfid
@@ -250,7 +253,7 @@ def single_hash_search(this_hash):
         return is_hash_in_db('files', this_hash)
     else:  #: Fill in the blanks
         # if 'bit9' not in list(found.keys()):
-        modules = [key for module in found['intel'] for key in module.keys() ]
+        modules = [key for module in found['intel'] for key in module.keys()]
         if 'bit9' not in modules:
             single_query_bit9(this_hash)
         # if 'virustotal' not in modules:

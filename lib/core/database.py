@@ -22,21 +22,14 @@ def db_setup():
 
     db = client['malice']
 
-    try:
-        db.create_collection('files')
-        print_info('files database setup completed')
-    except pymongo.errors.CollectionInvalid as e:
-        print_warning(e)
-    finally:
-        client.disconnect()
-
-    try:
-        db.create_collection('samples')
-        print_info('samples database setup completed')
-    except pymongo.errors.CollectionInvalid as e:
-        print_warning(e)
-    finally:
-        client.disconnect()
+    for collection in ['files', 'samples']:
+        try:
+            db.create_collection(collection)
+            print_info('files database setup completed')
+        except pymongo.errors.CollectionInvalid as e:
+            print_warning(e)
+        finally:
+            client.disconnect()
 
 
 def db_insert(collection, file_data):
@@ -44,9 +37,9 @@ def db_insert(collection, file_data):
         # g.mongo.files.update({'_id': file_data['_id']}, file_data)
         try:
             g.mongo[collection].update({'md5': file_data['md5']},
-                                file_data,
-                                upsert=True,
-                                multi=False)
+                                       file_data,
+                                       upsert=True,
+                                       multi=False)
         except pymongo.errors.OperationFailure as e:
             print_error(e)
     else:
@@ -72,7 +65,7 @@ def insert_in_samples_db(sample):
         g.mongo.samples.insert(sample)
     except pymongo.errors.DuplicateKeyError:
         pass
-    # r.table('samples').insert(sample).run(g.rdb_sample_conn)
+        # r.table('samples').insert(sample).run(g.rdb_sample_conn)
 
 
 def update_sample_in_db(sample):
@@ -84,13 +77,15 @@ def sample_contains_module(sample_id, module_category, is_module_name):
     sample = g.mongo.files.find_one({'md5': sample_id})
     return is_module_name in ','.join(module.keys()[0] for module in sample[module_category])
 
+
 def insert_sample_module(sample_id, module_category, module_name, data):
     if sample_contains_module(sample_id, module_name, module_category):
         update_sample_module(sample_id, module_category, module_name, data)
     else:
         g.mongo.files.update({'md5': sample_id},
-                            {'$addToSet': {module_category: data}},
-                            upsert=True)
+                             {'$addToSet': {module_category: data}},
+                             upsert=True)
+
 
 def update_sample_module(sample_id, module_category, module_name, data):
     found = is_hash_in_db(sample_id)
@@ -99,12 +94,12 @@ def update_sample_module(sample_id, module_category, module_name, data):
             found[module_category][i] = data
     g.mongo.files.save(found)
 
+
 def destroy_db():
     client = pymongo.MongoClient('localhost', 27017)
     try:
         db = client.malice
         db.drop_collection('files')
-        # db.drop_collection('session')
         db.drop_collection('samples')
         print_success("Databases destroyed...you monster!")
         print_info('All containers dropped from database')
