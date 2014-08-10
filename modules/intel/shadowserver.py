@@ -45,13 +45,8 @@ class ShadowServer(Intel):
             ss_data['isfound'] = True
             ss_data['timestamp'] = datetime.datetime.utcnow()
             ss_data['module_id'] = self.name
-            valid_utf8 = True
-            try:
-                bin_response['results']['dirname'].decode('utf-8')
-            except UnicodeDecodeError:
-                valid_utf8 = False
-            if not valid_utf8:
-                bin_response['results']['dirname'] = self.fix_unicode(bin_response['results']['dirname'])
+            av_response = self.fix_unicode(av_response)
+            bin_response = self.fix_unicode(bin_response)
             ss_data['av'] = av_response
             ss_data['bintest'] = bin_response
             data['intel'].append({self.name: ss_data})
@@ -65,9 +60,19 @@ class ShadowServer(Intel):
         db_insert('files', data)
         data.clear()
 
-    @staticmethod
-    def fix_unicode(unicode_string):
-        return to_unicode(unicode_string)
+    def fix_unicode(self, data):
+        for key, value in data.iteritems():
+            valid_utf8 = True
+            try:
+                if isinstance(value, dict):
+                    data[key] = self.fix_unicode(value)
+                if isinstance(value, basestring):
+                    value.decode('utf-8')
+            except UnicodeDecodeError:
+                valid_utf8 = False
+            if not valid_utf8:
+                data[key] = to_unicode(value)
+        return data
 
     def run(self, this_hash):
         self.single_query(this_hash)
