@@ -25,7 +25,7 @@ def db_setup():
     for collection in ['files', 'samples']:
         try:
             db.create_collection(collection)
-            print_info('files database setup completed')
+            print_info(collection + ' database setup completed')
         except pymongo.errors.CollectionInvalid as e:
             print_warning(e)
         finally:

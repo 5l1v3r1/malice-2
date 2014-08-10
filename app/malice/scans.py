@@ -29,6 +29,7 @@ from lib.common.out import *
 from lib.core.database import db_insert, insert_in_samples_db, is_hash_in_db
 from lib.scanworker.file import PickleableFileSample
 from modules import av, file, intel
+from modules.intel.shadowserver import ShadowServer
 from modules.intel.bit9 import batch_query_bit9, single_query_bit9
 from modules.intel.virustotal import (batch_query_virustotal,
                                       single_query_virustotal)
@@ -248,7 +249,9 @@ def single_hash_search(this_hash):
     if not found:
         #: Run all Intel Workers on hash
         # TODO: Make these async with .delay(this_hash)
-        single_query_bit9(this_hash)
+        # single_query_bit9(this_hash)
+        ss = ShadowServer()
+        ss.run(this_hash)
         # single_query_virustotal(this_hash)
         return is_hash_in_db('files', this_hash)
     else:  #: Fill in the blanks

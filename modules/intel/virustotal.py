@@ -88,9 +88,8 @@ def batch_query_virustotal(new_hash_list):
                     data['md5'] = result['resource'].upper()
                 # result['timestamp'] = r.now()  # datetime.utcnow()
                 result['timestamp'] = datetime.datetime.utcnow()
-                data['module'] = 'virustotal'
-                data['intel'].append(result)
-                db_insert(data)
+                data['virustotal'] = result
+                db_insert('files', data)
                 data.clear()
 
 
@@ -111,7 +110,8 @@ def single_query_virustotal(new_hash):
         # vt_result['timestamp'] = r.now()  # datetime.utcnow()
         vt_result['timestamp'] = datetime.datetime.utcnow()
         vt_result['module_id'] = 'virustotal'
-        data['intel'].append(vt_result)
+        # data['intel'].append(hash_info)
+        data['intel'].append(dict(virustotal=vt_result))
         db_insert('files', data)
         data.clear()
     else:

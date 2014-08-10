@@ -264,10 +264,13 @@ class FileAnalysis(object):
 
 # TODO: Finish Intel Abstract
 class Intel(object):
-    """Base abstract class for reporting module."""
+    """Base abstract class for intel module."""
     order = 1
 
     def __init__(self):
+        self.name = ""
+        self.description = ""
+        self.categories = []
         self.analysis_path = ""
         self.reports_path = ""
         self.task = None
@@ -303,8 +306,14 @@ class Intel(object):
         """
         self.task = task
 
-    def run(self):
-        """Start report processing.
+    def batch_query(self, data):
+        """Perform batch query against intel source."""
+
+    def single_query(self, data):
+        """Perform single query against intel source."""
+
+    def run(self, data):
+        """Start intel query.
         @raise NotImplementedError: this method is abstract.
         """
         raise NotImplementedError
