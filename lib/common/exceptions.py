@@ -57,3 +57,7 @@ class MaliceResultError(MaliceOperationalError):
 class MaliceMachineError(MaliceOperationalError):
     """Malice machine error."""
     pass
+
+class MaliceGuestError(MaliceOperationalError):
+    """Malice guest agent error."""
+    pass

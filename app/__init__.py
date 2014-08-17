@@ -23,7 +23,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from lib.common.logo import logo
 from lib.common.exceptions import MaliceDependencyError
 from lib.core.startup import (check_configs, check_version, init_logging,
-                              init_modules)
+                              init_modules, init_yara)
 from settings import settings
 
 log = logging.getLogger()
@@ -62,6 +62,7 @@ def create_app(config):
         toolbar = DebugToolbarExtension(app)
     #log.setLevel(logging.DEBUG)
     init_modules()
+    init_yara()
     # Init All Flask Add-ons
     bootstrap.init_app(app)
     #pagedown.init_app(app)

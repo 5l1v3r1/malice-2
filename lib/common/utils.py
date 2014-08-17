@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 __author__ = 'Josh Maine'
 __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
@@ -10,12 +9,14 @@ import itertools
 import ntpath
 import os
 import re
+import shutil
 import string
 import tempfile
 from datetime import datetime
 
 from lib.common.config import Config
 from lib.common.constants import MALICE_ROOT
+from lib.common.exceptions import MaliceOperationalError
 
 try:
     import chardet
@@ -66,6 +67,131 @@ def groupby_hash_type(hash_list):
         if a_hash_type is not None:
             result.setdefault(a_hash_type, []).append(a_hash)
     return result
+
+def create_folders(root=".", folders=[]):
+    """Create directories.
+    @param root: root path.
+    @param folders: folders list to be created.
+    @raise CuckooOperationalError: if fails to create folder.
+    """
+    for folder in folders:
+        create_folder(root, folder)
+
+def create_folder(root=".", folder=None):
+    """Create directory.
+    @param root: root path.
+    @param folder: folder name to be created.
+    @raise CuckooOperationalError: if fails to create folder.
+    """
+    folder_path = os.path.join(root, folder)
+    if folder and not os.path.isdir(folder_path):
+        try:
+            os.makedirs(folder_path)
+        except OSError:
+            raise MaliceOperationalError("Unable to create folder: %s" %
+                                         folder_path)
+
+
+def delete_folder(folder):
+    """Delete a folder and all its subdirectories.
+    @param folder: path to delete.
+    @raise CuckooOperationalError: if fails to delete folder.
+    """
+    if os.path.exists(folder):
+        try:
+            shutil.rmtree(folder)
+        except OSError:
+            raise MaliceOperationalError("Unable to delete folder: "
+                                         "{0}".format(folder))
+
+
+# Don't allow all characters in "string.printable", as newlines, carriage
+# returns, tabs, \x0b, and \x0c may mess up reports.
+PRINTABLE_CHARACTERS = \
+    string.letters + string.digits + string.punctuation + " \t\r\n"
+
+
+def convert_char(c):
+    """Escapes characters.
+    @param c: dirty char.
+    @return: sanitized char.
+    """
+    if c in PRINTABLE_CHARACTERS:
+        return c
+    else:
+        return "\\x%02x" % ord(c)
+
+
+def is_printable(s):
+    """ Test if a string is printable."""
+    for c in s:
+        if c not in PRINTABLE_CHARACTERS:
+            return False
+    return True
+
+
+def convert_to_printable(s):
+    """Convert char to printable.
+    @param s: string.
+    @return: sanitized string.
+    """
+    if is_printable(s):
+        return s
+    return "".join(convert_char(c) for c in s)
+
+
+def datetime_to_iso(timestamp):
+    """Parse a datatime string and returns a datetime in iso format.
+    @param timestamp: timestamp string
+    @return: ISO datetime
+    """
+    return datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").isoformat()
+
+
+def get_filename_from_path(path):
+    """Cross-platform filename extraction from path.
+    @param path: file path.
+    @return: filename.
+    """
+    dirpath, filename = ntpath.split(path)
+    return filename if filename else ntpath.basename(dirpath)
+
+
+def store_temp_file(filedata, filename, path=None):
+    """Store a temporary file.
+    @param filedata: content of the original file.
+    @param filename: name of the original file.
+    @param path: optional path for temp directory.
+    @return: path to the temporary file.
+    """
+    filename = get_filename_from_path(filename)
+
+    # Reduce length (100 is arbitrary).
+    filename = filename[:100]
+
+    options = Config(os.path.join(MALICE_ROOT, "conf", "cuckoo.conf"))
+    # Create temporary directory path.
+    if path:
+        target_path = path
+    else:
+        tmp_path = options.cuckoo.tmppath
+        target_path = os.path.join(tmp_path, "cuckoo-tmp")
+    if not os.path.exists(target_path):
+        os.mkdir(target_path)
+
+    tmp_dir = tempfile.mkdtemp(prefix="upload_", dir=target_path)
+    tmp_file_path = os.path.join(tmp_dir, filename)
+    with open(tmp_file_path, "wb") as tmp_file:
+        # If filedata is file object, do chunked copy.
+        if hasattr(filedata, "read"):
+            chunk = filedata.read(1024)
+            while chunk:
+                tmp_file.write(chunk)
+                chunk = filedata.read(1024)
+        else:
+            tmp_file.write(filedata)
+
+    return tmp_file_path
 
 
 # These functions is part of Cuckoo Sandbox - http://www.cuckoosandbox.org
@@ -134,85 +260,3 @@ def sanitize_filename(x):
             out += "_"
 
     return out
-
-
-# don't allow all characters in "string.printable", as newlines, carriage
-# returns, tabs, \x0b, and \x0c may mess up reports
-PRINTABLE_CHARACTERS = string.letters + string.digits + string.punctuation + " \t\r\n"
-
-
-def convert_char(c):
-    """Escapes characters.
-    @param c: dirty char.
-    @return: sanitized char.
-    """
-    if c in PRINTABLE_CHARACTERS:
-        return c
-    else:
-        return "\\x%02x" % ord(c)
-
-
-def is_printable(s):
-    """ Test if a string is printable."""
-    for c in s:
-        if c not in PRINTABLE_CHARACTERS:
-            return False
-    return True
-
-def convert_to_printable(s):
-    """Convert char to printable.
-    @param s: string.
-    @return: sanitized string.
-    """
-    if is_printable(s):
-        return s
-    return "".join(convert_char(c) for c in s)
-
-
-def datetime_to_iso(timestamp):
-    """Parse a datatime string and returns a datetime in iso format.
-    @param timestamp: timestamp string
-    @return: ISO datetime
-    """
-    return datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").isoformat()
-
-
-def get_filename_from_path(path):
-    """Cross-platform filename extraction from path.
-    @param path: file path.
-    @return: filename.
-    """
-    dirpath, filename = ntpath.split(path)
-    return filename if filename else ntpath.basename(dirpath)
-
-
-def store_temp_file(filedata, filename):
-    """Store a temporary file.
-    @param filedata: content of the original file.
-    @param filename: name of the original file.
-    @return: path to the temporary file.
-    """
-    filename = get_filename_from_path(filename)
-
-    # Reduce length (100 is arbitrary).
-    filename = filename[:100]
-
-    options = Config(os.path.join(MALICE_ROOT, "conf", "cuckoo.conf"))
-    tmppath = options.cuckoo.tmppath
-    targetpath = os.path.join(tmppath, "cuckoo-tmp")
-    if not os.path.exists(targetpath):
-        os.mkdir(targetpath)
-
-    tmp_dir = tempfile.mkdtemp(prefix="upload_", dir=targetpath)
-    tmp_file_path = os.path.join(tmp_dir, filename)
-    with open(tmp_file_path, "wb") as tmp_file:
-        # If filedata is file object, do chunked copy.
-        if hasattr(filedata, "read"):
-            chunk = filedata.read(1024)
-            while chunk:
-                tmp_file.write(chunk)
-                chunk = filedata.read(1024)
-        else:
-            tmp_file.write(filedata)
-
-    return tmp_file_path

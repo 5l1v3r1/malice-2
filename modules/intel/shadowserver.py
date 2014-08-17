@@ -31,7 +31,7 @@ class ShadowServer(Intel):
         self.categories = ["intel", "hash"]
         self.ss = ShadowServerApi()
 
-    def batch_query(self, new_hash):
+    def batch_query(self, hash_list):
         pass
 
     def single_query(self, new_hash):
