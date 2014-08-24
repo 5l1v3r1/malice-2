@@ -23,10 +23,11 @@ from lib.common.exceptions import (MaliceCriticalError, MaliceGuestError,
                                    MaliceMachineError, MaliceOperationalError)
 from lib.common.objects import File
 from lib.common.utils import create_folder
-from lib.core.database import Database, TASK_COMPLETED, TASK_REPORTED
-# from lib.core.guest import GuestManager
+# from lib.core.database import Database, TASK_COMPLETED, TASK_REPORTED
 from lib.core.plugins import (list_plugins, RunAntiVirus, RunIntel,
                               RunReporting, RunSignatures)
+
+# from lib.core.guest import GuestManager
 # from lib.core.resultserver import ResultServer
 
 log = logging.getLogger(__name__)
@@ -35,6 +36,20 @@ machinery = None
 machine_lock = Lock()
 
 active_analysis_count = 0
+
+
+class ScanManager(object):
+    """Analysis Manager."""
+    def __init__(self, task, error_queue):
+        self.task = task
+        self.errors = error_queue
+        self.cfg = Config()
+        self.storage = ""
+        self.binary = ""
+
+    def run(self):
+        RunIntel(task_id=self.task)
+        RunAntiVirus(task_id=self.task)
 
 
 class MaliceDeadMachine(Exception):
@@ -97,7 +112,8 @@ class AnalysisManager(Thread):
 
         sha256 = File(self.task.target).get_sha256()
         if sha256 != sample.sha256:
-            log.error("Target file has been modified after submission: \"%s\"", self.task.target)
+            log.error("Target file has been modified after submission: \"%s\"",
+                      self.task.target)
             return False
 
         return True
@@ -258,7 +274,8 @@ class AnalysisManager(Thread):
         else:
             try:
                 # Initialize the guest manager.
-                guest = GuestManager(self.machine.name, self.machine.ip, self.machine.platform)
+                guest = GuestManager(self.machine.name, self.machine.ip,
+                                     self.machine.platform)
                 # Start the analysis.
                 guest.start_analysis(options)
             except MaliceGuestError as e:
@@ -404,6 +421,7 @@ class AnalysisManager(Thread):
             log.exception("Failure in AnalysisManager.run")
 
         active_analysis_count -= 1
+
 
 class Scheduler:
     """Tasks Scheduler.

@@ -264,17 +264,16 @@ class File:
         """Get all information available.
         @return: information dict.
         """
-        infos = {}
-        infos["name"] = self.get_name()
-        infos["path"] = self.file_path
-        infos["size"] = self.get_size()
-        infos["crc32"] = self.get_crc32()
-        infos["md5"] = self.get_md5()
-        infos["sha1"] = self.get_sha1()
-        infos["sha256"] = self.get_sha256()
-        infos["sha512"] = self.get_sha512()
-        infos["ssdeep"] = self.get_ssdeep()
-        infos["type"] = self.get_type()
-        infos["yara"] = self.get_yara()
+        info = {"name": self.get_name(),
+                "path": self.file_path,
+                "size": self.get_size(),
+                "crc32": self.get_crc32(),
+                "md5": self.get_md5(),
+                "sha1": self.get_sha1(),
+                "sha256": self.get_sha256(),
+                "sha512": self.get_sha512(),
+                "ssdeep": self.get_ssdeep(),
+                "type": self.get_type(),
+                "yara": self.get_yara()}
 
-        return infos
+        return info

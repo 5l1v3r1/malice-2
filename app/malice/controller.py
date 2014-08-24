@@ -15,18 +15,22 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
 
 import os
 
-from dateutil import parser
-from flask import (abort, current_app, flash, g, redirect, render_template,
-                   request, url_for, jsonify)
-from flask.ext.login import current_user, login_required
-# from flask.ext.ldap import login_required
-from werkzeug.utils import secure_filename
-
 from app.malice.scans import *
+from dateutil import parser
+from flask import (abort, current_app, flash, g, jsonify, redirect,
+                   render_template, request, url_for)
+from flask.ext.login import current_user, login_required
 from lib.common.pagination import Pagination
 from lib.common.utils import parse_hash_list
 from lib.core.database import (db_insert, insert_in_samples_db, is_hash_in_db,
                                update_sample_in_db)
+from lib.core.scanner import AnalysisManager
+from werkzeug.utils import secure_filename
+
+from . import malice
+from .forms import SearchForm
+
+# from flask.ext.ldap import login_required
 # from rethinkdb.errors import RqlDriverError
 try:
     import pymongo
@@ -36,8 +40,6 @@ except ImportError:
 # from scans import ScanManager
 
 # from app import ldap
-from . import malice
-from .forms import SearchForm
 
 try:
     import pydeep
@@ -117,11 +119,17 @@ def intel():
     search_results = []
     if form.validate_on_submit():
         #: Check if User is using Single Hash Search
-        if form.label.data:
-            user_hash = parse_hash_list(form.label.data)
+        if form.hash.data:
+            user_hash = parse_hash_list(form.hash.data)
+            # Initialize and start the analysis manager.
+            # analysis = AnalysisManager(task, errors)
+            # analysis.start()
             search_results.append(single_hash_search(user_hash))
             #: Check if User is using Batch Hash Search
         if form.hashes.data:
+            # Initialize and start the analysis manager.
+            # analysis = AnalysisManager(task, errors)
+            # analysis.start()
             hash_list = parse_hash_list(form.hashes.data)
             if isinstance(hash_list, list):
                 selection = batch_search_hash(hash_list)
@@ -133,6 +141,8 @@ def intel():
     # r.table('sessions').delete().run(g.rdb_sess_conn)
     if search_results:
         intel_searches = [intel_result for result in search_results for intel_result in result['intel']]
+    else:
+        intel_searches = None
     return render_template('intel.html', form=form, searches=intel_searches, my_github=github)
 
 
@@ -327,6 +337,7 @@ def sample(id):
     return render_template('analysis.html', sample=found, file=file_metadata, tags=tags, pe=pe, exif=exif, trid=trid,
                            av_results=av_results, metascan_results=metascan_results, detection_ratio=detection_ratio)
 
+
 @malice.route('/samples/', defaults={'page': 1})
 @malice.route('/samples/page/<int:page>', methods=['GET'])
 # @ldap.login_required
@@ -361,10 +372,13 @@ def system():
 def help():
     url = current_app.config['URL']
     email = current_app.config['EMAIL']
-    return render_template('help.html', my_url=url, my_email=email, my_github=github)
+    return render_template('help.html',
+                           my_url=url,
+                           my_email=email,
+                           my_github=github)
 
 
-#: Template Filters >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#: Template Filters >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 @malice.app_template_filter('time_from_now')
 def time_from_now(this_date):
     pass
@@ -385,7 +399,7 @@ def tail_filename(s):
 def percent(s):
     return "{0:.0%}".format(s)
 
-#:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # TODO - Display Hashes that Weren't Found
 # TODO - Progress Bar

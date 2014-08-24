@@ -23,6 +23,7 @@ class Config:
 
     def __init__(self, cfg=os.path.join(MALICE_ROOT, "conf", "malice.conf")):
         """@param cfg: configuration file path."""
+        self.cfg = cfg
         config = ConfigParser.ConfigParser()
         config.read(cfg)
 
@@ -51,3 +52,20 @@ class Config:
             raise MaliceOperationalError("Option %s is not found in "
                                          "configuration, error: %s" %
                                          (section, e))
+
+    def get_enabled(self):
+        """Get all enabled options.
+        @raise MaliceOperationalError: if nothing found.
+        @return: enabled option list.
+        """
+        enabled_options = []
+        config = ConfigParser.ConfigParser()
+        config.read(self.cfg)
+        try:
+            for section in config.sections():
+                for name, raw_value in config.items(section):
+                    if name == 'enabled' and config.getboolean(section, name):
+                        enabled_options.append(section)
+        except Exception as e:
+            raise MaliceOperationalError(e)
+        return enabled_options

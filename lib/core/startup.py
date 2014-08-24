@@ -157,7 +157,9 @@ def init_logging(logging_level='error'):
     """Initializes logging."""
     formatter = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 
-    fh = logging.handlers.WatchedFileHandler(os.path.join(MALICE_ROOT, "logs", "malice.log"))
+    fh = logging.handlers.WatchedFileHandler(os.path.join(MALICE_ROOT,
+                                                          "logs",
+                                                          "malice.log"))
     fh.setFormatter(formatter)
     log.addHandler(fh)
 

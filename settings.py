@@ -104,7 +104,8 @@ class DevConfig(BaseConfig):
 class TestConfig(BaseConfig):
     TESTING = True
     # SQLALCHEMY_ECHO = True
-    CSRF_ENABLED = True
+    CSRF_ENABLED = False
+    WTF_CSRF_ENABLED = False
     SECRET_KEY = 'test_secret'
     SERVER_NAME = '127.0.0.1'
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
