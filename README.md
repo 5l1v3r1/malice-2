@@ -7,6 +7,7 @@ malice
 [![Code Health](https://landscape.io/github/blacktop/malice/mongo/landscape.png)](https://landscape.io/github/blacktop/malice/mongo)
 [![Coverage Status](https://coveralls.io/repos/blacktop/malice/badge.png)](https://coveralls.io/r/blacktop/malice)
 [![Support blacktop via Gittip](http://img.shields.io/gittip/blacktop.svg)](https://www.gittip.com/blacktop/)
+[![Gitter Chat](https://badges.gitter.im/blacktop/malice.png)](https://gitter.im/blacktop/malice)
 
 VirusTotal Wanna Be
 

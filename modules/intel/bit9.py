@@ -7,8 +7,8 @@ __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    See the file 'docs/LICENSE' for copying permission.'''
 
 import ConfigParser
-import os
 import datetime
+import os
 
 from lib.common.abstracts import Intel
 from lib.common.constants import MALICE_ROOT
@@ -29,91 +29,106 @@ except ImportError:
 
 
 class Bit9(Intel):
-    pass
+    def __init__(self):
+        super(Bit9, self).__init__()
+        self.name = "bit9"
+        self.description = "Bit9 API for their Cyber Forensics Service"
+        self.site_url = "https://github.com/blacktop/bit9-api"
+        self.categories = ["intel", "hash"]
+        # self.ss = ShadowServerApi()
+        BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY = self.get_config()
+        if HTTPS_PROXY:
+            self.bit9 = Bit9Api(BIT9_USER, BIT9_PASS, dict(http=HTTP_PROXY, https=HTTPS_PROXY))
+        else:
+            self.bit9 = Bit9Api(BIT9_USER, BIT9_PASS)
 
-def get_config():
-    BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY = None, None, None, None
-    # Read config.cfg file
-    intel_config = ConfigParser.SafeConfigParser()
-    malice_config = ConfigParser.SafeConfigParser()
-    intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf'))
-    malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
-    # Parse config.cfg file
-    if intel_config.has_section('bit9') and intel_config.get('bit9', 'enabled') == "yes":
-        BIT9_USER = intel_config.get('bit9', 'user')
-        BIT9_PASS = intel_config.get('bit9', 'password')
-        if malice_config.has_section('proxie') and malice_config.get('proxie', 'enabled') == "yes":
-            if malice_config.has_option('proxie', 'http'):
-                HTTP_PROXY = malice_config.get('proxie', 'http')
-            if malice_config.has_option('proxie', 'https'):
-                HTTPS_PROXY = malice_config.get('proxie', 'https')
-    else:
-        # No config.cfg creds so try the environment or use test creds
-        BIT9_USER = os.environ.get('BIT9_USER') or 'test_user'
-        BIT9_PASS = os.environ.get('BIT9_PASS') or 'test_pass'
-        HTTP_PROXY = os.environ.get('HTTP_PROXY') or False
-        HTTPS_PROXY = os.environ.get('HTTPS_PROXY') or False
+    @staticmethod
+    def get_config():
+        BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY = None, None, False, False
+        # Read config.cfg file
+        intel_config = ConfigParser.SafeConfigParser()
+        malice_config = ConfigParser.SafeConfigParser()
+        intel_config.read(os.path.join(MALICE_ROOT, 'conf/intel.conf'))
+        malice_config.read(os.path.join(MALICE_ROOT, 'conf/malice.conf'))
+        # Parse config.cfg file
+        if intel_config.has_section('bit9') and intel_config.get('bit9', 'enabled') == "yes":
+            BIT9_USER = os.environ.get('BIT9_USER') or \
+                intel_config.get('bit9', 'user') or 'test_user'
+            BIT9_PASS = os.environ.get('BIT9_PASS') or \
+                intel_config.get('bit9', 'password') or 'test_pass'
+            if malice_config.has_option('proxie', 'http') or \
+                    malice_config.has_option('proxie', 'https'):
+                HTTP_PROXY = os.environ.get('HTTP_PROXY') or \
+                    malice_config.get('proxie', 'http') or False
+                HTTPS_PROXY = os.environ.get('HTTPS_PROXY') or \
+                    malice_config.get('proxie', 'https') or False
+        return BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY
 
-    return BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY
+    # @job('low', connection=Redis(), timeout=50)
+    def batch_query_bit9(self, new_hash_list):
+        data = {}
+        # : Break list into 1000 unit chunks for Bit9
+        bit9_batch_hash_list = list(split_seq(new_hash_list, 1000))
+        for thousand_hashes in bit9_batch_hash_list:
+            result = self.bit9.lookup_hashinfo(thousand_hashes)
+            if result['response_code'] == 200 and result['results']['hashinfos']:
+                for hash_info in result['results']['hashinfos']:
+                    if hash_info['isfound']:
+                        data['md5'] = hash_info['fileinfo']['md5'].upper()
+                    else:
+                        data['md5'] = hash_info['requestmd5'].upper()
+                    # hash_info['timestamp'] = r.now()  # datetime.utcnow()
+                    hash_info['timestamp'] = datetime.datetime.utcnow(),
+                    data['bit9'] = hash_info
+                    db_insert('files', data)
+                    return data
+                    # data.clear()
+            elif result['response_code'] == 404:
+                for new_hash in new_hash_list:
+                    data = {'md5': new_hash.upper(),
+                            # 'Bit9': {'timestamp': r.now(),  # datetime.utcnow(),
+                            'bit9': {'timestamp': datetime.datetime.utcnow(),
+                                     'isfound': False,
+                                     'requestmd5': new_hash.upper()}
+                            }
+                    db_insert('files', data)
+                    # data.clear()
+                    return data
 
+    # @job('low', connection=Redis(), timeout=50)
+    def single_query_bit9(self, new_hash):
+        data = dict(md5='md5', intel=[], av=[], file=[])
+        result = self.bit9.lookup_hashinfo(new_hash)
+        if result['response_code'] == 200 and result['results']['hashinfo']:
+            hash_info = result['results']['hashinfo']
+            # data['_id'] = hash_info['fileinfo']['md5'].upper()
+            data['md5'] = hash_info['fileinfo']['md5'].upper()
+            hash_info['isfound'] = True
+            # hash_info['timestamp'] = r.now()  # datetime.utcnow()
+            hash_info['timestamp'] = datetime.datetime.utcnow()
+            hash_info['module_id'] = 'bit9'
+            # data['intel'].append(hash_info)
+            data['intel'].append(dict(bit9=hash_info))
+        # elif result['response_code'] == 404:
+        else:
+            data['md5'] = new_hash.upper()
+            bit9_data = dict(module_id='bit9',
+                             timestamp=datetime.datetime.utcnow(),
+                             isfound=False,
+                             error=result.error,
+                             requestmd5=new_hash.upper())
+            data['intel'].append(dict(bit9=bit9_data))
+        db_insert('files', data)
+        # data.clear()
+        return data
 
-BIT9_USER, BIT9_PASS, HTTP_PROXY, HTTPS_PROXY = get_config()
+    def run(self, query_data):
+        """
 
-if HTTPS_PROXY:
-    bit9 = Bit9Api(BIT9_USER, BIT9_PASS, dict(http=HTTP_PROXY, https=HTTPS_PROXY))
-else:
-    bit9 = Bit9Api(BIT9_USER, BIT9_PASS)
-
-# @job('low', connection=Redis(), timeout=50)
-def batch_query_bit9(new_hash_list):
-    data = {}
-    # : Break list into 1000 unit chunks for Bit9
-    bit9_batch_hash_list = list(split_seq(new_hash_list, 1000))
-    for thousand_hashes in bit9_batch_hash_list:
-        result = bit9.lookup_hashinfo(thousand_hashes)
-        if result['response_code'] == 200 and result['results']['hashinfos']:
-            for hash_info in result['results']['hashinfos']:
-                if hash_info['isfound']:
-                    data['md5'] = hash_info['fileinfo']['md5'].upper()
-                else:
-                    data['md5'] = hash_info['requestmd5'].upper()
-                # hash_info['timestamp'] = r.now()  # datetime.utcnow()
-                hash_info['timestamp'] = datetime.datetime.utcnow(),
-                data['bit9'] = hash_info
-                db_insert('files', data)
-                data.clear()
-        elif result['response_code'] == 404:
-            for new_hash in new_hash_list:
-                data = {'md5': new_hash.upper(),
-                        # 'Bit9': {'timestamp': r.now(),  # datetime.utcnow(),
-                        'bit9': {'timestamp': datetime.datetime.utcnow(),
-                                 'isfound': False,
-                                 'requestmd5': new_hash.upper()}
-                        }
-                db_insert('files', data)
-                data.clear()
-
-
-# @job('low', connection=Redis(), timeout=50)
-def single_query_bit9(new_hash):
-    data = dict(md5='md5', intel=[], av=[], file=[])
-    result = bit9.lookup_hashinfo(new_hash)
-    if result['response_code'] == 200 and result['results']['hashinfo']:
-        hash_info = result['results']['hashinfo']
-        # data['_id'] = hash_info['fileinfo']['md5'].upper()
-        data['md5'] = hash_info['fileinfo']['md5'].upper()
-        hash_info['isfound'] = True
-        # hash_info['timestamp'] = r.now()  # datetime.utcnow()
-        hash_info['timestamp'] = datetime.datetime.utcnow()
-        hash_info['module_id'] = 'bit9'
-        # data['intel'].append(hash_info)
-        data['intel'].append(dict(bit9=hash_info))
-    elif result['response_code'] == 404:
-        data['md5'] = new_hash.upper()
-        bit9_data = dict(module_id='bit9',
-                         timestamp=datetime.datetime.utcnow(),
-                         isfound=False,
-                         requestmd5=new_hash.upper())
-        data['intel'].append(dict(bit9=bit9_data))
-    db_insert('files', data)
-    data.clear()
+        :param query_data:
+        """
+        if query_data:
+            if isinstance(query_data, basestring):
+                return self.single_query_bit9(query_data)
+            else:
+                return self.batch_query_bit9(query_data)

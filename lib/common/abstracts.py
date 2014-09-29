@@ -270,7 +270,9 @@ class Intel(object):
     def __init__(self):
         self.name = ""
         self.description = ""
+        self.site_url = ""
         self.categories = []
+        self.query_data = ""
         self.analysis_path = ""
         self.reports_path = ""
         self.task = None

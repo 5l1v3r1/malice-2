@@ -23,9 +23,10 @@ from lib.common.exceptions import (MaliceCriticalError, MaliceGuestError,
                                    MaliceMachineError, MaliceOperationalError)
 from lib.common.objects import File
 from lib.common.utils import create_folder
-# from lib.core.database import Database, TASK_COMPLETED, TASK_REPORTED
 from lib.core.plugins import (list_plugins, RunAntiVirus, RunIntel,
                               RunReporting, RunSignatures)
+
+# from lib.core.database import Database, TASK_COMPLETED, TASK_REPORTED
 
 # from lib.core.guest import GuestManager
 # from lib.core.resultserver import ResultServer
@@ -40,16 +41,26 @@ active_analysis_count = 0
 
 class ScanManager(object):
     """Analysis Manager."""
-    def __init__(self, task, error_queue):
-        self.task = task
+    def __init__(self, scan_type, scan_data, error_queue=None):
+        self.scan_type = scan_type
+        self.scan_data = scan_data
         self.errors = error_queue
         self.cfg = Config()
         self.storage = ""
         self.binary = ""
 
     def run(self):
-        RunIntel(task_id=self.task)
-        RunAntiVirus(task_id=self.task)
+        if self.scan_type is 'intel' or self.scan_type is 'all':
+            results = RunIntel(scan_id=self.scan_data).run()
+        if self.scan_type is 'av' or self.scan_type is 'all':
+            RunAntiVirus(scan_id=self.scan).run()
+        # if self.scan_type is 'file' or self.scan_type is 'all':
+        #     RunFile(scan_id=self.scan).run()
+        # if self.scan_type is 'sandbox' or self.scan_type is 'all':
+        #     RunSandbox(scan_id=self.scan).run()
+        # if self.scan_type is 'intel' or self.scan_type is 'all':
+        #     RunReporting(task_id=self.task.id, results=results).run()
+        return results
 
 
 class MaliceDeadMachine(Exception):

@@ -31,6 +31,13 @@ test_hashes = """60B7C0FEAD45F2066E5B805A91F4F0FC
                  5e28284f9b5f9097640d58a73d38ad4c
                  60B7C0FEAD45F2066E5B805A91F4F0FD"""
 
+if os.path.exists(os.path.join(MALICE_ROOT, ".env")):
+    print('Importing environment from .env...')
+    for line in open(os.path.join(MALICE_ROOT, ".env")):
+        var = line.strip().split('=')
+        if len(var) == 2 and '#' not in var[0]:
+            os.environ[var[0]] = var[1]
+
 
 def get_modules():
     # modules = ['bit9', 'virustotal', 'shadowserver']
@@ -88,13 +95,15 @@ class IntelTestCase(unittest.TestCase):
         # print dumps(found, sort_keys=False, indent=4)
         self.assertEquals(response.status, "200 OK",
                           "Did not get a 200 Response Status")
-        # self.assertTrue('bit9' in ','.join(module.keys()[0]
-        #                                    for module in found['intel']),
-        #                 "Did not find the bit9 module in the mongo DB")
-        self.assertTrue(all(module in ','.join(module.keys()[0]
-                                               for module in found['intel'])
-                            for module in modules),
-                        "Not all enabled modules were found in mongo DB")
+        self.assertTrue('teamcymru' in ','.join(module.keys()[0]
+                                           for module in found['intel']),
+                        "Did not find the teamcymru module in the mongo DB")
+
+        # self.assertTrue(all(module in ','.join(module.keys()[0]
+        #                                        for module in found['intel'])
+        #                     for module in modules),
+        #                 "Not all enabled modules were found in mongo DB")
+
         # self.assertTrue('calc.exe' in response.get_data(as_text=True),
         #                 "Bit9 Results for calc.exe not being shown in response")
 

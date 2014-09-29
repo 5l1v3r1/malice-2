@@ -40,7 +40,8 @@ class ShadowServer(Intel):
         av_response = self.ss.get_av(new_hash)
         bin_response = self.ss.get_bintest(new_hash)
 
-        if av_response['response_code'] == 200 and bin_response['response_code'] == 200:
+        if av_response['response_code'] == 200 and \
+                bin_response['response_code'] == 200:
             data['md5'] = new_hash.upper()
             ss_data['isfound'] = True
             ss_data['timestamp'] = datetime.datetime.utcnow()
@@ -50,15 +51,17 @@ class ShadowServer(Intel):
             ss_data['av'] = av_response
             ss_data['bintest'] = bin_response
             data['intel'].append({self.name: ss_data})
-        elif av_response['response_code'] == 404 and bin_response['response_code'] == 404:
+        elif av_response['response_code'] == 404 and \
+                bin_response['response_code'] == 404:
             data['md5'] = new_hash.upper()
             ss_data = dict(module_id=self.name,
-                             timestamp=datetime.datetime.utcnow(),
-                             isfound=False,
-                             requestmd5=new_hash.upper())
+                           timestamp=datetime.datetime.utcnow(),
+                           isfound=False,
+                           requestmd5=new_hash.upper())
             data['intel'].append({self.name: ss_data})
         db_insert('files', data)
-        data.clear()
+        return data
+        # data.clear()
 
     def fix_unicode(self, data):
         for key, value in data.iteritems():
@@ -75,4 +78,4 @@ class ShadowServer(Intel):
         return data
 
     def run(self, this_hash):
-        self.single_query(this_hash)
+        return self.single_query(this_hash)

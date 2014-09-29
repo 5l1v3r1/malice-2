@@ -20,11 +20,12 @@ from dateutil import parser
 from flask import (abort, current_app, flash, g, jsonify, redirect,
                    render_template, request, url_for)
 from flask.ext.login import current_user, login_required
+from lib.common.constants import MALICE_ROOT
 from lib.common.pagination import Pagination
 from lib.common.utils import parse_hash_list
 from lib.core.database import (db_insert, insert_in_samples_db, is_hash_in_db,
                                update_sample_in_db)
-from lib.core.scanner import AnalysisManager
+from lib.core.scanner import ScanManager
 from werkzeug.utils import secure_filename
 
 from . import malice
@@ -57,10 +58,10 @@ except ImportError:
     raise MaliceDependencyError("Unable to import pybloomfilter "
                                 "(install with `pip install pybloomfilter`)")
 
-if os.path.isfile('filter.bloom'):
+if os.path.isfile(os.path.join(MALICE_ROOT, 'filter.bloom')):
     bf = BloomFilter.open('filter.bloom')
 else:
-    bf = BloomFilter(10000000, 0.01, 'filter.bloom')
+    bf = BloomFilter(10000000, 0.01, os.path.join(MALICE_ROOT, 'filter.bloom'))
 
 # csrf = CsrfProtect(app)
 
@@ -121,10 +122,10 @@ def intel():
         #: Check if User is using Single Hash Search
         if form.hash.data:
             user_hash = parse_hash_list(form.hash.data)
-            # Initialize and start the analysis manager.
-            # analysis = AnalysisManager(task, errors)
-            # analysis.start()
-            search_results.append(single_hash_search(user_hash))
+            # Initialize and start the scan manager.
+            analysis = ScanManager(scan_type='intel', scan_data=user_hash)
+            results = analysis.run()
+            # search_results.append(single_hash_search(user_hash))
             #: Check if User is using Batch Hash Search
         if form.hashes.data:
             # Initialize and start the analysis manager.

@@ -47,6 +47,9 @@ def create_app(config):
     app = Flask(__name__)
     app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024  # 200MB
 
+    # Speed fix
+    # https://medium.com/@5hreyans/the-one-weird-trick-that-cut-our-flask-page-load-time-by-70-87145335f679
+    app.jinja_env.cache = {}
     # Configurations
     app.config.from_object(settings[config])
     settings[config].init_app(app)

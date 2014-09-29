@@ -30,7 +30,7 @@ from lib.core.database import db_insert, insert_in_samples_db, is_hash_in_db
 from lib.scanworker.file import PickleableFileSample
 from modules import av, file, intel
 from modules.intel.shadowserver import ShadowServer
-from modules.intel.bit9 import batch_query_bit9, single_query_bit9
+from modules.intel.bit9 import Bit9 #batch_query_bit9, single_query_bit9
 from modules.intel.virustotal import (batch_query_virustotal,
                                       single_query_virustotal)
 
@@ -258,7 +258,7 @@ def single_hash_search(this_hash):
         # if 'bit9' not in list(found.keys()):
         modules = [key for module in found['intel'] for key in module.keys()]
         if 'bit9' not in modules:
-            single_query_bit9(this_hash)
+            Bit9.single_query_bit9(this_hash)
         # if 'virustotal' not in modules:
         #     single_query_virustotal(this_hash)
         if found:
@@ -285,7 +285,7 @@ def batch_search_hash(hash_list):
             new_hash_list.append(a_hash)
 
     if new_hash_list:
-        batch_query_bit9(new_hash_list)
+        Bit9.batch_query_bit9(new_hash_list)
         # batch_query_bit9.delay(new_hash_list)
         batch_query_virustotal(new_hash_list)
         for a_new_hash in new_hash_list:
