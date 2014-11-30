@@ -90,7 +90,6 @@ class BaseConfig:
     def init_app(app):
         pass
 
-
 class DevConfig(BaseConfig):
     DEBUG = True
     CSRF_ENABLED = False
