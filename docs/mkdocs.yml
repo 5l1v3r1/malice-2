@@ -2,4 +2,6 @@ site_name: Malice
 pages:
 - [index.md, Home]
 - [about.md, About]
+- [CHANGELOG.md, Change Log]
+- [LICENSE.md, License]
 theme: readthedocs
