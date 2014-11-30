@@ -45,6 +45,7 @@ Note: for additional notes please see the Malice `wiki <https://github.com/black
 Usage
 -----
 (While ssh'd into the VM via ```vagrant ssh```)
+
 .. code-block:: bash
 
     $ source ~/malice/venv/bin/activate
