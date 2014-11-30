@@ -3,7 +3,7 @@
 malice
 ======
 [![Build Status][travis-badge]](https://travis-ci.org/blacktop/malice)
-[![Documentation Status][docs-badge]](https://readthedocs.org/projects/malice/?badge=mongo)
+[![Documentation Status][docs-badge]](http://malice.readthedocs.org/en/mongo/)
 [![Code Health][health-badge]](https://landscape.io/github/blacktop/malice/mongo)
 [![Coverage Status][cov-badge]](https://coveralls.io/r/blacktop/malice)
 [![Support blacktop via Gittip][gittip-badge]](https://www.gittip.com/blacktop/)
