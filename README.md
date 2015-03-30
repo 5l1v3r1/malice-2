@@ -141,7 +141,7 @@ Contributing
 [travis-badge]: https://travis-ci.org/blacktop/malice.svg?branch=mongo
 [docs-badge]: https://readthedocs.org/projects/malice/badge/?version=mongo
 [health-badge]: https://landscape.io/github/blacktop/malice/mongo/landscape.png
-[cov-badge]: https://coveralls.io/repos/blacktop/malice/badge.png
+[cov-badge]: https://coveralls.io/repos/blacktop/malice/badge.svg?branch=master
 [gittip-badge]: http://img.shields.io/gittip/blacktop.svg
 [gitter-badge]: https://badges.gitter.im/blacktop/malice.png
 [index]: https://raw.githubusercontent.com/blacktop/malice/master/docs/images/index.png
