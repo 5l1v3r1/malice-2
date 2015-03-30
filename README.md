@@ -6,6 +6,7 @@ malice
 [![Documentation Status][docs-badge]](http://malice.readthedocs.org/en/mongo/)
 [![Code Health][health-badge]](https://landscape.io/github/blacktop/malice/mongo)
 [![Coverage Status][cov-badge]](https://coveralls.io/r/blacktop/malice)
+[![License][license]](http://www.apache.org/licenses/LICENSE-2.0)
 [![Support blacktop via Gittip][gittip-badge]](https://www.gittip.com/blacktop/)
 [![Gitter Chat][gitter-badge]](https://gitter.im/blacktop/malice)
 
@@ -146,3 +147,4 @@ Contributing
 [index]: https://raw.githubusercontent.com/blacktop/malice/master/docs/images/index.png
 [samples]: https://raw.githubusercontent.com/blacktop/malice/master/docs/images/samples.png
 [analysis]: https://raw.githubusercontent.com/blacktop/malice/master/docs/images/analysis.png
+[license]: https://img.shields.io/badge/licence-Apache%202-blue.svg
