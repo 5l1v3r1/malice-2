@@ -148,3 +148,4 @@ Contributing
 [samples]: https://raw.githubusercontent.com/blacktop/malice/master/docs/images/samples.png
 [analysis]: https://raw.githubusercontent.com/blacktop/malice/master/docs/images/analysis.png
 [license]: https://img.shields.io/badge/licence-Apache%202-blue.svg
+[![Analytics](https://ga-beacon.appspot.com/UA-61764375-1/malice/readme?pixel)](https://github.com/igrigorik/ga-beacon)
