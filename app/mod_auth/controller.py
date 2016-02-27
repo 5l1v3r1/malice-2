@@ -5,18 +5,17 @@ __author__ = 'Josh Maine'
 __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
+
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/app/auth/views.py'
 
 from flask import flash, redirect, render_template, request, url_for
-from flask.ext.login import (current_user, login_required, login_user,
-                             logout_user)
+from flask.ext.login import (current_user, login_required, login_user, logout_user)
 
 from . import mod_auth as auth
 from .. import db
 from ..email import send_email
 from ..models import User
-from .forms import (ChangeEmailForm, ChangePasswordForm, LoginForm,
-                    PasswordResetForm, PasswordResetRequestForm,
+from .forms import (ChangeEmailForm, ChangePasswordForm, LoginForm, PasswordResetForm, PasswordResetRequestForm,
                     RegistrationForm)
 
 
@@ -24,9 +23,11 @@ from .forms import (ChangeEmailForm, ChangePasswordForm, LoginForm,
 def before_request():
     if current_user.is_authenticated():
         current_user.ping()
-        if not current_user.confirmed \
-                and request.endpoint[:5] != 'auth.':
-            return redirect(url_for('auth.unconfirmed'))
+        print request.endpoint
+        if not current_user.confirmed:
+            if request.endpoint == None or request.endpoint[:5] != 'auth.':
+                resend_confirmation()
+                return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')
@@ -49,6 +50,8 @@ def login():
 
 
 @auth.route('/logout')
+
+
 # @login_required TODO: Uncomment this!!
 def logout():
     try:
@@ -64,14 +67,11 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(email=form.email.data,
-                    username=form.username.data,
-                    password=form.password.data)
+        user = User(email=form.email.data, username=form.username.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()
-        send_email(user.email, 'Confirm Your Account',
-                   'auth/email/confirm', user=user, token=token)
+        send_email(user.email, 'Confirm Your Account', 'auth/email/confirm', user=user, token=token)
         flash('A confirmation email has been sent to you by email.', 'warning')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
@@ -93,8 +93,7 @@ def confirm(token):
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
-    send_email(current_user.email, 'Confirm Your Account',
-               'auth/email/confirm', user=current_user, token=token)
+    send_email(current_user.email, 'Confirm Your Account', 'auth/email/confirm', user=current_user, token=token)
     flash('A new confirmation email has been sent to you by email.', 'warning')
     return redirect(url_for('malice.index'), code=307)
 
@@ -123,12 +122,13 @@ def password_reset_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             token = user.generate_reset_token()
-            send_email(user.email, 'Reset Your Password',
+            send_email(user.email,
+                       'Reset Your Password',
                        'auth/email/reset_password',
-                       user=user, token=token,
+                       user=user,
+                       token=token,
                        next=request.args.get('next'))
-        flash('An email with instructions to reset your password has been '
-              'sent to you.', 'warning')
+        flash('An email with instructions to reset your password has been ' 'sent to you.', 'warning')
         return redirect(url_for('auth.login'))
     return render_template('auth/password_reset_request.html', form=form)
 
@@ -158,11 +158,12 @@ def change_email_request():
         if current_user.verify_password(form.password.data):
             new_email = form.email.data
             token = current_user.generate_email_change_token(new_email)
-            send_email(new_email, 'Confirm your email address',
+            send_email(new_email,
+                       'Confirm your email address',
                        'auth/email/change_email',
-                       user=current_user, token=token)
-            flash('An email with instructions to confirm your new email '
-                  'address has been sent to you.', 'warning')
+                       user=current_user,
+                       token=token)
+            flash('An email with instructions to confirm your new email ' 'address has been sent to you.', 'warning')
             return redirect(url_for('malice.index'))
         else:
             flash('Invalid email or password.', 'warning')

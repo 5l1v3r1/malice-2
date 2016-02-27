@@ -5,6 +5,7 @@ __author__ = 'Josh Maine'
 __copyright__ = '''Copyright (C) 2013-2014 Josh "blacktop" Maine
                    This file is part of Malice - https://github.com/blacktop/malice
                    See the file 'docs/LICENSE' for copying permission.'''
+
 __reference__ = 'https://github.com/miguelgrinberg/flasky/blob/master/config.py'
 
 import ConfigParser
@@ -90,6 +91,7 @@ class BaseConfig:
     def init_app(app):
         pass
 
+
 class DevConfig(BaseConfig):
     DEBUG = True
     CSRF_ENABLED = False
@@ -113,7 +115,7 @@ class TestConfig(BaseConfig):
 
 
 class ProductionConfig(BaseConfig):
-    THREADS_PER_PAGE = 2 * psutil.NUM_CPUS
+    THREADS_PER_PAGE = 2 * psutil.cpu_count()
     USE_TOKEN_AUTH = True
     USE_RATE_LIMITS = True
     SSL_DISABLE = False
@@ -133,18 +135,18 @@ class ProductionConfig(BaseConfig):
             credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
             if getattr(cls, 'MAIL_USE_TLS', None):
                 secure = ()
-        mail_handler = SMTPHandler(
-            mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
-            fromaddr=cls.DEFAULT_MAIL_SENDER,
-            toaddrs=[cls.MALICE_ADMIN],
-            subject=cls.MALICE_MAIL_SUBJECT_PREFIX + ' Application Error',
-            credentials=credentials,
-            secure=secure)
+        mail_handler = SMTPHandler(mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
+                                   fromaddr=cls.DEFAULT_MAIL_SENDER,
+                                   toaddrs=[cls.MALICE_ADMIN],
+                                   subject=cls.MALICE_MAIL_SUBJECT_PREFIX + ' Application Error',
+                                   credentials=credentials,
+                                   secure=secure)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
 
 
 class UnixConfig(ProductionConfig):
+
     @classmethod
     def init_app(cls, app):
         ProductionConfig.init_app(app)
@@ -162,6 +164,5 @@ settings = {
     'testing': TestConfig,
     'production': ProductionConfig,
     'unix': UnixConfig,
-
     'default': DevConfig
 }
