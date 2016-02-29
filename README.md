@@ -18,6 +18,8 @@ It is a python Flask web app/api that can operate in standalone mode or as a dis
 
 I have been told that every serious information security team designs there own version of this tool.  I want to build one so well designed and easy to use that everyone will stop recreating the wheel and instead use that time sharing intel and plugins with each other.
 
+> NOTE: Malice's evolution continues here - https://github.com/maliceio/malice
+
 Requirements
 ------------
 1. [VirtualBox](https://www.virtualbox.org/wiki/Downloads) or [VMWare](https://www.vmware.com/products/fusion/)
