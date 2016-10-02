@@ -1,7 +1,9 @@
 ![malice logo][malice-logo]
 
-malice
-======
+> **NOTE:** Malice's evolution continues here - https://github.com/maliceio/malice
+
+malice (Deprecated)
+===================
 [![Build Status][travis-badge]](https://travis-ci.org/blacktop/malice)
 [![Documentation Status][docs-badge]](http://malice.readthedocs.org/en/mongo/)
 [![Code Health][health-badge]](https://landscape.io/github/blacktop/malice/master)
@@ -17,8 +19,6 @@ Malice's mission is to be a free open source version of VirusTotal that anyone c
 It is a python Flask web app/api that can operate in standalone mode or as a distributed scalable web app.
 
 I have been told that every serious information security team designs there own version of this tool.  I want to build one so well designed and easy to use that everyone will stop recreating the wheel and instead use that time sharing intel and plugins with each other.
-
-> **NOTE:** Malice's evolution continues here - https://github.com/maliceio/malice
 
 Requirements
 ------------
