@@ -1,8 +1,6 @@
 ![malice logo][malice-logo]
 
-> **NOTE:** Malice's evolution continues here - https://github.com/maliceio/malice
-
-malice (Deprecated)
+malice (Deprecated) evolution continues here - https://github.com/maliceio/malice
 ===================
 [![Build Status][travis-badge]](https://travis-ci.org/blacktop/malice)
 [![Documentation Status][docs-badge]](http://malice.readthedocs.org/en/mongo/)
